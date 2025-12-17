@@ -26,5 +26,7 @@ jobs:
         run: |
           echo "${{ secrets.SERVER_SSH_KEY }}" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
-          ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} || true
+          ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no -o BatchMode=yes ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 2>&1
+          EXIT_CODE=$?
           rm /tmp/deploy_key
+          exit $EXIT_CODE

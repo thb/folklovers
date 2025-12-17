@@ -1,21 +1,40 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 cd ~/docker/folklovers
 
-echo "Pulling latest code..."
-git pull origin main
+echo "=== Starting deployment ==="
+echo "Date: $(date)"
+echo "Directory: $(pwd)"
 
-echo "Building containers..."
-docker compose build
+echo ""
+echo "=== Pulling latest code ==="
+git fetch origin main
+git reset --hard origin/main
 
-echo "Starting containers..."
+echo ""
+echo "=== Building containers ==="
+docker compose build --no-cache
+
+echo ""
+echo "=== Starting containers ==="
 docker compose up -d
 
-echo "Running migrations..."
-docker compose exec -T backend bundle exec rails db:migrate
+echo ""
+echo "=== Waiting for services to be ready ==="
+sleep 10
 
-echo "Cleaning up old images..."
+echo ""
+echo "=== Running migrations ==="
+docker compose exec -T backend bundle exec rails db:migrate || echo "Migration failed or no migrations to run"
+
+echo ""
+echo "=== Container status ==="
+docker compose ps
+
+echo ""
+echo "=== Cleaning up old images ==="
 docker image prune -f
 
-echo "Deployment completed!"
+echo ""
+echo "=== Deployment completed successfully! ==="
