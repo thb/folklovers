@@ -13,8 +13,8 @@ git fetch origin main
 git reset --hard origin/main
 
 echo ""
-echo "=== Building containers (with cache) ==="
-DOCKER_BUILDKIT=1 docker compose build
+echo "=== Building containers ==="
+docker compose build
 
 echo ""
 echo "=== Rolling restart (zero-downtime) ==="

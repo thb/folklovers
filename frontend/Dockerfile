@@ -3,10 +3,9 @@ FROM node:22-slim AS builder
 
 WORKDIR /app
 
-# Install dependencies (with cache)
+# Install dependencies
 COPY package.json package-lock.json ./
-RUN --mount=type=cache,target=/root/.npm \
-    npm ci
+RUN npm ci
 
 # Copy source and build
 COPY . .
