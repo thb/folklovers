@@ -26,6 +26,9 @@ export function CoverCard({ cover }: CoverCardProps) {
           <img
             src={thumbnailUrl}
             alt={`${cover.artist} cover`}
+            width={320}
+            height={180}
+            loading="lazy"
             className="w-full h-full object-cover"
           />
         ) : (
