@@ -1,10 +1,10 @@
 function getApiUrl() {
   // Server-side (SSR): use internal Docker network or localhost
   if (typeof window === 'undefined') {
-    return process.env.API_URL_INTERNAL || 'http://localhost:7000'
+    return process.env.API_URL_INTERNAL || 'http://localhost:7001'
   }
   // Client-side: use public URL
-  return import.meta.env.VITE_API_URL || 'http://localhost:7000'
+  return import.meta.env.VITE_API_URL || 'http://localhost:7001'
 }
 
 const API_URL = getApiUrl()

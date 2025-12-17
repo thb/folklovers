@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/lib/auth'
 import { ApiError } from '@/lib/api'
+import { GoogleSignInButton } from '@/components/GoogleSignInButton'
 
 export const Route = createFileRoute('/login')({
   component: LoginPage,
@@ -52,12 +53,24 @@ function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <div className="p-3 mb-4 text-sm text-red-500 bg-red-50 rounded-md">
+              {error}
+            </div>
+          )}
+
+          <GoogleSignInButton onError={setError} />
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">ou</span>
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md">
-                {error}
-              </div>
-            )}
 
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">

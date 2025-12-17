@@ -103,4 +103,70 @@ RSpec.describe "Auth", type: :request do
       end
     end
   end
+
+  describe "POST /auth/google" do
+    let(:google_payload) do
+      {
+        "sub" => "google123456",
+        "email" => "googleuser@example.com",
+        "email_verified" => true,
+        "picture" => "https://lh3.googleusercontent.com/avatar.jpg"
+      }
+    end
+
+    context "with valid Google token" do
+      before do
+        allow(GoogleAuth).to receive(:verify).and_return(google_payload)
+      end
+
+      it "returns a JWT token" do
+        post "/auth/google", params: { credential: "valid_google_token" }
+        expect(response).to have_http_status(:ok)
+        expect(json_response[:token]).to be_present
+      end
+
+      it "returns user data" do
+        post "/auth/google", params: { credential: "valid_google_token" }
+        expect(json_response[:user][:email]).to eq("googleuser@example.com")
+      end
+
+      it "creates a new user if not exists" do
+        expect {
+          post "/auth/google", params: { credential: "valid_google_token" }
+        }.to change(User, :count).by(1)
+      end
+
+      it "links existing user by email" do
+        existing_user = create(:user, email: "googleuser@example.com")
+
+        expect {
+          post "/auth/google", params: { credential: "valid_google_token" }
+        }.not_to change(User, :count)
+
+        expect(existing_user.reload.google_id).to eq("google123456")
+      end
+
+      it "finds existing user by google_id" do
+        existing_user = create(:user, :google_user, google_id: "google123456", email: "other@example.com")
+
+        expect {
+          post "/auth/google", params: { credential: "valid_google_token" }
+        }.not_to change(User, :count)
+
+        expect(json_response[:user][:id]).to eq(existing_user.id)
+      end
+    end
+
+    context "with invalid Google token" do
+      before do
+        allow(GoogleAuth).to receive(:verify).and_return(nil)
+      end
+
+      it "returns unauthorized" do
+        post "/auth/google", params: { credential: "invalid_token" }
+        expect(response).to have_http_status(:unauthorized)
+        expect(json_response[:error]).to eq("Invalid Google token")
+      end
+    end
+  end
 end

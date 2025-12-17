@@ -1,2 +1,2 @@
-backend: cd backend && PORT=7000 bin/rails server
-frontend: cd frontend && PORT=7001 npm run dev
+frontend: cd frontend && PORT=7000 npm run dev
+backend: cd backend && PORT=7001 bin/rails server
