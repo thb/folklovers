@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   has_secure_password validations: false
 
+  enum :role, { user: 0, admin: 1 }, default: :user
+
   has_many :votes, dependent: :destroy
   has_many :submitted_covers, class_name: "Cover", foreign_key: :submitted_by_id
 

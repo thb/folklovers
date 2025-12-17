@@ -123,6 +123,7 @@ export type User = {
   email?: string
   username: string
   avatar_url: string | null
+  role?: 'user' | 'admin'
   created_at: string
 }
 
@@ -167,6 +168,67 @@ export type Pagination = {
   total_pages: number
   total_count: number
   per_page: number
+}
+
+// Admin API
+export const admin = {
+  songs: {
+    list: (token: string, params?: { page?: number; per_page?: number }) => {
+      const searchParams = new URLSearchParams()
+      if (params?.page) searchParams.set('page', params.page.toString())
+      if (params?.per_page) searchParams.set('per_page', params.per_page.toString())
+      const query = searchParams.toString()
+      return request<{ songs: Song[]; pagination: Pagination }>(
+        `/admin/songs${query ? `?${query}` : ''}`,
+        { token }
+      )
+    },
+
+    get: (token: string, id: number) =>
+      request<{ song: SongWithCovers }>(`/admin/songs/${id}`, { token }),
+
+    create: (token: string, data: Omit<Song, 'id' | 'slug' | 'covers_count' | 'created_at'>) =>
+      request<{ song: Song }>('/admin/songs', { method: 'POST', body: data, token }),
+
+    update: (token: string, id: number, data: Partial<Omit<Song, 'id' | 'slug' | 'covers_count' | 'created_at'>>) =>
+      request<{ song: Song }>(`/admin/songs/${id}`, { method: 'PATCH', body: data, token }),
+
+    delete: (token: string, id: number) =>
+      request<void>(`/admin/songs/${id}`, { method: 'DELETE', token }),
+  },
+
+  covers: {
+    list: (token: string, params?: { page?: number; per_page?: number }) => {
+      const searchParams = new URLSearchParams()
+      if (params?.page) searchParams.set('page', params.page.toString())
+      if (params?.per_page) searchParams.set('per_page', params.per_page.toString())
+      const query = searchParams.toString()
+      return request<{ covers: AdminCover[]; pagination: Pagination }>(
+        `/admin/covers${query ? `?${query}` : ''}`,
+        { token }
+      )
+    },
+
+    get: (token: string, id: number) =>
+      request<{ cover: AdminCover }>(`/admin/covers/${id}`, { token }),
+
+    create: (token: string, data: { song_id: number; artist: string; year?: number; youtube_url: string; description?: string }) =>
+      request<{ cover: Cover }>('/admin/covers', { method: 'POST', body: data, token }),
+
+    update: (token: string, id: number, data: Partial<{ artist: string; year: number; youtube_url: string; description: string }>) =>
+      request<{ cover: Cover }>(`/admin/covers/${id}`, { method: 'PATCH', body: data, token }),
+
+    delete: (token: string, id: number) =>
+      request<void>(`/admin/covers/${id}`, { method: 'DELETE', token }),
+  },
+}
+
+export type AdminCover = Cover & {
+  song: {
+    id: number
+    title: string
+    slug: string
+  }
 }
 
 export { ApiError }

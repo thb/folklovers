@@ -5,5 +5,6 @@ class UserBlueprint < Blueprinter::Base
 
   view :with_email do
     field :email
+    field :role
   end
 end

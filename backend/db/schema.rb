@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_15_223657) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_17_164952) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -51,6 +51,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_223657) do
     t.string "avatar_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "role", default: 0, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["google_id"], name: "index_users_on_google_id", unique: true, where: "(google_id IS NOT NULL)"
     t.index ["username"], name: "index_users_on_username", unique: true

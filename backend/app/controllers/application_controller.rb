@@ -21,6 +21,13 @@ class ApplicationController < ActionController::API
     render json: { error: "Unauthorized" }, status: :unauthorized unless current_user
   end
 
+  def authenticate_admin!
+    authenticate_user!
+    return if performed?
+
+    render json: { error: "Forbidden" }, status: :forbidden unless current_user.admin?
+  end
+
   def pagy_metadata(pagy)
     {
       current_page: pagy.page,

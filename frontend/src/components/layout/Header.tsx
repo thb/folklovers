@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { Music, User, LogOut } from 'lucide-react'
+import { Music, User, LogOut, Shield } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useAuth } from '@/lib/auth'
 
 export function Header() {
-  const { user, isAuthenticated, logout } = useAuth()
+  const { user, isAuthenticated, isAdmin, logout } = useAuth()
 
   return (
     <header className="border-b border-border bg-card">
@@ -70,9 +70,17 @@ export function Header() {
                   <p className="text-xs text-muted-foreground">{user.email}</p>
                 </div>
                 <DropdownMenuSeparator />
+                {isAdmin && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin" className="cursor-pointer">
+                      <Shield className="mr-2 h-4 w-4" />
+                      Administration
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={logout} className="text-destructive cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
-                  Se deconnecter
+                  Se déconnecter
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

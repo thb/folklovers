@@ -20,4 +20,10 @@ Rails.application.routes.draw do
   # Votes
   post "covers/:cover_id/vote", to: "votes#create"
   delete "covers/:cover_id/vote", to: "votes#destroy"
+
+  # Admin
+  namespace :admin do
+    resources :songs, only: [ :index, :show, :create, :update, :destroy ]
+    resources :covers, only: [ :index, :show, :create, :update, :destroy ]
+  end
 end
