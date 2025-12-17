@@ -15,8 +15,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SongsIndexRouteImport } from './routes/songs/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as SongsSlugRouteImport } from './routes/songs/$slug'
-import { Route as AdminSongsRouteImport } from './routes/admin/songs'
 import { Route as AdminCoversRouteImport } from './routes/admin/covers'
+import { Route as AdminSongsIndexRouteImport } from './routes/admin/songs.index'
+import { Route as AdminSongsIdRouteImport } from './routes/admin/songs.$id'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -48,14 +49,19 @@ const SongsSlugRoute = SongsSlugRouteImport.update({
   path: '/songs/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminSongsRoute = AdminSongsRouteImport.update({
-  id: '/admin/songs',
-  path: '/admin/songs',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminCoversRoute = AdminCoversRouteImport.update({
   id: '/admin/covers',
   path: '/admin/covers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSongsIndexRoute = AdminSongsIndexRouteImport.update({
+  id: '/admin/songs/',
+  path: '/admin/songs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSongsIdRoute = AdminSongsIdRouteImport.update({
+  id: '/admin/songs/$id',
+  path: '/admin/songs/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -64,20 +70,22 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/admin/covers': typeof AdminCoversRoute
-  '/admin/songs': typeof AdminSongsRoute
   '/songs/$slug': typeof SongsSlugRoute
   '/admin': typeof AdminIndexRoute
   '/songs': typeof SongsIndexRoute
+  '/admin/songs/$id': typeof AdminSongsIdRoute
+  '/admin/songs': typeof AdminSongsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/admin/covers': typeof AdminCoversRoute
-  '/admin/songs': typeof AdminSongsRoute
   '/songs/$slug': typeof SongsSlugRoute
   '/admin': typeof AdminIndexRoute
   '/songs': typeof SongsIndexRoute
+  '/admin/songs/$id': typeof AdminSongsIdRoute
+  '/admin/songs': typeof AdminSongsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -85,10 +93,11 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/admin/covers': typeof AdminCoversRoute
-  '/admin/songs': typeof AdminSongsRoute
   '/songs/$slug': typeof SongsSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/songs/': typeof SongsIndexRoute
+  '/admin/songs/$id': typeof AdminSongsIdRoute
+  '/admin/songs/': typeof AdminSongsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,30 +106,33 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/admin/covers'
-    | '/admin/songs'
     | '/songs/$slug'
     | '/admin'
     | '/songs'
+    | '/admin/songs/$id'
+    | '/admin/songs'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/register'
     | '/admin/covers'
-    | '/admin/songs'
     | '/songs/$slug'
     | '/admin'
     | '/songs'
+    | '/admin/songs/$id'
+    | '/admin/songs'
   id:
     | '__root__'
     | '/'
     | '/login'
     | '/register'
     | '/admin/covers'
-    | '/admin/songs'
     | '/songs/$slug'
     | '/admin/'
     | '/songs/'
+    | '/admin/songs/$id'
+    | '/admin/songs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -128,10 +140,11 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   AdminCoversRoute: typeof AdminCoversRoute
-  AdminSongsRoute: typeof AdminSongsRoute
   SongsSlugRoute: typeof SongsSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   SongsIndexRoute: typeof SongsIndexRoute
+  AdminSongsIdRoute: typeof AdminSongsIdRoute
+  AdminSongsIndexRoute: typeof AdminSongsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -178,18 +191,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SongsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/songs': {
-      id: '/admin/songs'
-      path: '/admin/songs'
-      fullPath: '/admin/songs'
-      preLoaderRoute: typeof AdminSongsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin/covers': {
       id: '/admin/covers'
       path: '/admin/covers'
       fullPath: '/admin/covers'
       preLoaderRoute: typeof AdminCoversRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/songs/': {
+      id: '/admin/songs/'
+      path: '/admin/songs'
+      fullPath: '/admin/songs'
+      preLoaderRoute: typeof AdminSongsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/songs/$id': {
+      id: '/admin/songs/$id'
+      path: '/admin/songs/$id'
+      fullPath: '/admin/songs/$id'
+      preLoaderRoute: typeof AdminSongsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -200,10 +220,11 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   AdminCoversRoute: AdminCoversRoute,
-  AdminSongsRoute: AdminSongsRoute,
   SongsSlugRoute: SongsSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   SongsIndexRoute: SongsIndexRoute,
+  AdminSongsIdRoute: AdminSongsIdRoute,
+  AdminSongsIndexRoute: AdminSongsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

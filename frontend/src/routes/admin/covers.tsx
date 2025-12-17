@@ -72,7 +72,7 @@ const emptyCoverForm: CoverFormData = {
 }
 
 function AdminCoversPage() {
-  const { token, isAdmin } = useAuth()
+  const { token, isAdmin, isLoading: isAuthLoading } = useAuth()
   const navigate = useNavigate()
   const { song_id: filterSongId } = Route.useSearch()
 
@@ -92,10 +92,10 @@ function AdminCoversPage() {
 
   // Redirect if not admin
   useEffect(() => {
-    if (!isAdmin) {
+    if (!isAuthLoading && !isAdmin) {
       navigate({ to: '/' })
     }
-  }, [isAdmin, navigate])
+  }, [isAdmin, isAuthLoading, navigate])
 
   // Fetch songs on mount
   useEffect(() => {
@@ -221,7 +221,7 @@ function AdminCoversPage() {
     }
   }
 
-  if (!isAdmin) {
+  if (isAuthLoading || !isAdmin) {
     return null
   }
 

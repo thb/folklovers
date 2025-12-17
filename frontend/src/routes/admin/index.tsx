@@ -10,16 +10,16 @@ export const Route = createFileRoute('/admin/')({
 })
 
 function AdminDashboard() {
-  const { token, isAdmin } = useAuth()
+  const { token, isAdmin, isLoading } = useAuth()
   const navigate = useNavigate()
   const [songsCount, setSongsCount] = useState<number | null>(null)
   const [coversCount, setCoversCount] = useState<number | null>(null)
 
   useEffect(() => {
-    if (!isAdmin) {
+    if (!isLoading && !isAdmin) {
       navigate({ to: '/' })
     }
-  }, [isAdmin, navigate])
+  }, [isAdmin, isLoading, navigate])
 
   useEffect(() => {
     if (token && isAdmin) {
@@ -41,7 +41,7 @@ function AdminDashboard() {
     }
   }
 
-  if (!isAdmin) {
+  if (isLoading || !isAdmin) {
     return null
   }
 

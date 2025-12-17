@@ -35,7 +35,7 @@ import {
 import { admin, type Song } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
 
-export const Route = createFileRoute('/admin/songs')({
+export const Route = createFileRoute('/admin/songs/')({
   component: AdminSongsPage,
 })
 
@@ -56,7 +56,7 @@ const emptySongForm: SongFormData = {
 }
 
 function AdminSongsPage() {
-  const { token, isAdmin } = useAuth()
+  const { token, isAdmin, isLoading: isAuthLoading } = useAuth()
   const navigate = useNavigate()
 
   const [songs, setSongs] = useState<Song[]>([])
@@ -72,10 +72,10 @@ function AdminSongsPage() {
 
   // Redirect if not admin
   useEffect(() => {
-    if (!isAdmin) {
+    if (!isAuthLoading && !isAdmin) {
       navigate({ to: '/' })
     }
-  }, [isAdmin, navigate])
+  }, [isAdmin, isAuthLoading, navigate])
 
   // Fetch songs on mount
   useEffect(() => {
@@ -163,7 +163,7 @@ function AdminSongsPage() {
     }
   }
 
-  if (!isAdmin) {
+  if (isAuthLoading || !isAdmin) {
     return null
   }
 
@@ -217,7 +217,15 @@ function AdminSongsPage() {
               <TableBody>
                 {songs.map((song) => (
                   <TableRow key={song.id}>
-                    <TableCell className="font-medium">{song.title}</TableCell>
+                    <TableCell className="font-medium">
+                      <Link
+                        to="/admin/songs/$id"
+                        params={{ id: song.id.toString() }}
+                        className="text-primary hover:underline"
+                      >
+                        {song.title}
+                      </Link>
+                    </TableCell>
                     <TableCell>{song.original_artist}</TableCell>
                     <TableCell>{song.year || '-'}</TableCell>
                     <TableCell>
