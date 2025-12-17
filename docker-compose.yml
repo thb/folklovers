@@ -51,6 +51,7 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_URL: https://${API_DOMAIN}
+        VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
     restart: unless-stopped
     depends_on:
       - backend
