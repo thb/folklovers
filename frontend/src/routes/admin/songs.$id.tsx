@@ -117,7 +117,7 @@ function AdminSongDetailPage() {
       })
       setError(null)
     } catch (err) {
-      setError('Erreur lors du chargement')
+      setError('Error loading')
     } finally {
       setIsLoading(false)
     }
@@ -142,7 +142,7 @@ function AdminSongDetailPage() {
       setSongSaved(true)
       setTimeout(() => setSongSaved(false), 2000)
     } catch (err) {
-      setError('Erreur lors de la sauvegarde de la chanson')
+      setError('Error saving song')
     } finally {
       setIsSavingSong(false)
     }
@@ -195,7 +195,7 @@ function AdminSongDetailPage() {
       setIsCoverDialogOpen(false)
       fetchData()
     } catch (err) {
-      setError('Erreur lors de la sauvegarde')
+      setError('Error saving')
     } finally {
       setIsSavingCover(false)
     }
@@ -210,7 +210,7 @@ function AdminSongDetailPage() {
       setDeletingCover(null)
       fetchData()
     } catch (err) {
-      setError('Erreur lors de la suppression')
+      setError('Error deleting')
     }
   }
 
@@ -222,7 +222,7 @@ function AdminSongDetailPage() {
     return (
       <div className="py-12 px-4">
         <div className="max-w-4xl mx-auto text-center text-muted-foreground">
-          Chargement...
+          Loading...
         </div>
       </div>
     )
@@ -232,7 +232,7 @@ function AdminSongDetailPage() {
     return (
       <div className="py-12 px-4">
         <div className="max-w-4xl mx-auto text-center text-muted-foreground">
-          Chanson non trouvée
+          Song not found
         </div>
       </div>
     )
@@ -255,7 +255,7 @@ function AdminSongDetailPage() {
           <Link to="/songs/$slug" params={{ slug: song.slug }}>
             <Button variant="outline" size="sm">
               <ExternalLink className="w-4 h-4 mr-2" />
-              Voir la page publique
+              View public page
             </Button>
           </Link>
         </div>
@@ -269,13 +269,13 @@ function AdminSongDetailPage() {
         {/* Song Form */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Informations de la chanson</CardTitle>
+            <CardTitle>Song information</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSongSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Titre *</Label>
+                  <Label htmlFor="title">Title *</Label>
                   <Input
                     id="title"
                     value={songFormData.title}
@@ -284,7 +284,7 @@ function AdminSongDetailPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="original_artist">Artiste original *</Label>
+                  <Label htmlFor="original_artist">Original artist *</Label>
                   <Input
                     id="original_artist"
                     value={songFormData.original_artist}
@@ -293,7 +293,7 @@ function AdminSongDetailPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="year">Année</Label>
+                  <Label htmlFor="year">Year</Label>
                   <Input
                     id="year"
                     type="number"
@@ -323,7 +323,7 @@ function AdminSongDetailPage() {
               </div>
               <div className="flex justify-end mt-4">
                 <Button type="submit" disabled={isSavingSong}>
-                  {isSavingSong ? 'Enregistrement...' : songSaved ? 'Enregistré !' : 'Enregistrer'}
+                  {isSavingSong ? 'Saving...' : songSaved ? 'Saved!' : 'Save'}
                 </Button>
               </div>
             </form>
@@ -333,18 +333,18 @@ function AdminSongDetailPage() {
         {/* Covers Section */}
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold">
-            Interprétations ({covers.length})
+            Covers ({covers.length})
           </h2>
           <Button onClick={openCreateCoverDialog}>
             <Plus className="w-4 h-4 mr-2" />
-            Ajouter
+            Add
           </Button>
         </div>
 
         {covers.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center text-muted-foreground">
-              Aucune interprétation pour cette chanson
+              No covers for this song
             </CardContent>
           </Card>
         ) : (
@@ -382,7 +382,7 @@ function AdminSongDetailPage() {
                       <div>
                         <h3 className="font-medium">{cover.artist}</h3>
                         <p className="text-sm text-muted-foreground">
-                          {cover.year || 'Année inconnue'}
+                          {cover.year || 'Unknown year'}
                           {' · '}
                           <span className={cover.votes_score >= 0 ? 'text-green-600' : 'text-red-500'}>
                             {cover.votes_score > 0 ? '+' : ''}{cover.votes_score} votes
@@ -424,18 +424,18 @@ function AdminSongDetailPage() {
           <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>
-                {editingCover ? "Modifier l'interprétation" : 'Nouvelle interprétation'}
+                {editingCover ? 'Edit cover' : 'New cover'}
               </DialogTitle>
               <DialogDescription>
                 {editingCover
-                  ? 'Modifiez les informations de cette interprétation'
-                  : 'Ajoutez une nouvelle interprétation'}
+                  ? 'Edit the cover information'
+                  : 'Add a new cover'}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleCoverSubmit}>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="cover_artist">Artiste *</Label>
+                  <Label htmlFor="cover_artist">Artist *</Label>
                   <Input
                     id="cover_artist"
                     value={coverFormData.artist}
@@ -444,7 +444,7 @@ function AdminSongDetailPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="cover_year">Année</Label>
+                  <Label htmlFor="cover_year">Year</Label>
                   <Input
                     id="cover_year"
                     type="number"
@@ -484,10 +484,10 @@ function AdminSongDetailPage() {
               </div>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setIsCoverDialogOpen(false)}>
-                  Annuler
+                  Cancel
                 </Button>
                 <Button type="submit" disabled={isSavingCover}>
-                  {isSavingCover ? 'Enregistrement...' : 'Enregistrer'}
+                  {isSavingCover ? 'Saving...' : 'Save'}
                 </Button>
               </DialogFooter>
             </form>
@@ -498,19 +498,19 @@ function AdminSongDetailPage() {
         <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Supprimer cette interprétation ?</AlertDialogTitle>
+              <AlertDialogTitle>Delete this cover?</AlertDialogTitle>
               <AlertDialogDescription>
-                Cette action est irréversible. L'interprétation de "{deletingCover?.artist}"
-                sera supprimée ainsi que tous ses votes.
+                This action cannot be undone. The cover by "{deletingCover?.artist}"
+                will be deleted along with all its votes.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Annuler</AlertDialogCancel>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDeleteCover}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
-                Supprimer
+                Delete
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

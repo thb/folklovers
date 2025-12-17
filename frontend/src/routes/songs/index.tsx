@@ -22,10 +22,10 @@ function SongsPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            Toutes les chansons
+            All songs
           </h1>
           <p className="text-muted-foreground">
-            Explorez notre collection de {pagination.total_count} chansons folk classiques
+            Explore our collection of {pagination.total_count} classic folk songs
           </p>
         </div>
 
@@ -34,7 +34,7 @@ function SongsPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Rechercher une chanson ou un artiste..."
+            placeholder="Search for a song or artist..."
             className="pl-10"
           />
         </div>
@@ -49,7 +49,7 @@ function SongsPage() {
         {/* Pagination info */}
         {pagination.total_pages > 1 && (
           <div className="mt-8 text-center text-sm text-muted-foreground">
-            Page {pagination.current_page} sur {pagination.total_pages}
+            Page {pagination.current_page} of {pagination.total_pages}
           </div>
         )}
       </div>

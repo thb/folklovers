@@ -39,14 +39,14 @@ export function Header() {
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             activeProps={{ className: 'text-sm font-medium text-foreground' }}
           >
-            Accueil
+            Home
           </Link>
           <Link
             to="/songs"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             activeProps={{ className: 'text-sm font-medium text-foreground' }}
           >
-            Chansons
+            Songs
           </Link>
         </nav>
 
@@ -80,7 +80,7 @@ export function Header() {
                 )}
                 <DropdownMenuItem onClick={logout} className="text-destructive cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
-                  Se déconnecter
+                  Sign out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -88,12 +88,12 @@ export function Header() {
             <div className="flex items-center gap-2">
               <Link to="/login">
                 <Button variant="ghost" size="sm">
-                  Connexion
+                  Sign in
                 </Button>
               </Link>
               <Link to="/register">
                 <Button size="sm">
-                  S'inscrire
+                  Sign up
                 </Button>
               </Link>
             </div>

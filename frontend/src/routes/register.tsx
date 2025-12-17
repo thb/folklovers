@@ -33,9 +33,9 @@ function RegisterPage() {
     } catch (err) {
       if (err instanceof ApiError) {
         const data = err.data as { errors?: string[] }
-        setError(data.errors?.join(', ') || 'Une erreur est survenue')
+        setError(data.errors?.join(', ') || 'An error occurred')
       } else {
-        setError('Une erreur est survenue')
+        setError('An error occurred')
       }
     } finally {
       setIsLoading(false)
@@ -49,9 +49,9 @@ function RegisterPage() {
           <div className="w-12 h-12 rounded-full bg-primary mx-auto mb-4 flex items-center justify-center">
             <Music className="w-6 h-6 text-primary-foreground" />
           </div>
-          <CardTitle className="text-2xl">Creer un compte</CardTitle>
+          <CardTitle className="text-2xl">Create account</CardTitle>
           <CardDescription>
-            Rejoignez la communaute des amateurs de folk
+            Join the folk music community
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -68,7 +68,7 @@ function RegisterPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">ou</span>
+              <span className="bg-card px-2 text-muted-foreground">or</span>
             </div>
           </div>
 
@@ -80,7 +80,7 @@ function RegisterPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="vous@exemple.com"
+                placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -89,7 +89,7 @@ function RegisterPage() {
 
             <div className="space-y-2">
               <label htmlFor="username" className="text-sm font-medium">
-                Nom d'utilisateur
+                Username
               </label>
               <Input
                 id="username"
@@ -105,7 +105,7 @@ function RegisterPage() {
 
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">
-                Mot de passe
+                Password
               </label>
               <Input
                 id="password"
@@ -117,20 +117,20 @@ function RegisterPage() {
                 required
               />
               <p className="text-xs text-muted-foreground">
-                Minimum 8 caracteres
+                Minimum 8 characters
               </p>
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              S'inscrire
+              Sign up
             </Button>
           </form>
 
           <div className="mt-6 text-center text-sm text-muted-foreground">
-            Deja un compte ?{' '}
+            Already have an account?{' '}
             <Link to="/login" className="text-primary hover:underline">
-              Se connecter
+              Sign in
             </Link>
           </div>
         </CardContent>

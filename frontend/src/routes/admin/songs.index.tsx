@@ -92,7 +92,7 @@ function AdminSongsPage() {
       setSongs(data.songs)
       setError(null)
     } catch (err) {
-      setError('Erreur lors du chargement des chansons')
+      setError('Error loading songs')
     } finally {
       setIsLoading(false)
     }
@@ -144,7 +144,7 @@ function AdminSongsPage() {
       setIsDialogOpen(false)
       fetchSongs()
     } catch (err) {
-      setError('Erreur lors de la sauvegarde')
+      setError('Error saving')
     } finally {
       setIsSaving(false)
     }
@@ -159,7 +159,7 @@ function AdminSongsPage() {
       setDeletingSong(null)
       fetchSongs()
     } catch (err) {
-      setError('Erreur lors de la suppression')
+      setError('Error deleting')
     }
   }
 
@@ -179,15 +179,15 @@ function AdminSongsPage() {
           </Link>
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-foreground">
-              Chansons
+              Songs
             </h1>
             <p className="text-muted-foreground">
-              Gérez la collection de chansons
+              Manage the songs collection
             </p>
           </div>
           <Button onClick={openCreateDialog}>
             <Plus className="w-4 h-4 mr-2" />
-            Nouvelle chanson
+            New song
           </Button>
         </div>
 
@@ -200,16 +200,16 @@ function AdminSongsPage() {
         {/* Table */}
         {isLoading ? (
           <div className="text-center py-12 text-muted-foreground">
-            Chargement...
+            Loading...
           </div>
         ) : (
           <div className="border rounded-lg">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Titre</TableHead>
-                  <TableHead>Artiste original</TableHead>
-                  <TableHead>Année</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Original artist</TableHead>
+                  <TableHead>Year</TableHead>
                   <TableHead>Covers</TableHead>
                   <TableHead className="w-[100px]">Actions</TableHead>
                 </TableRow>
@@ -261,7 +261,7 @@ function AdminSongsPage() {
                 {songs.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                      Aucune chanson
+                      No songs
                     </TableCell>
                   </TableRow>
                 )}
@@ -275,18 +275,18 @@ function AdminSongsPage() {
           <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>
-                {editingSong ? 'Modifier la chanson' : 'Nouvelle chanson'}
+                {editingSong ? 'Edit song' : 'New song'}
               </DialogTitle>
               <DialogDescription>
                 {editingSong
-                  ? 'Modifiez les informations de la chanson'
-                  : 'Ajoutez une nouvelle chanson à la collection'}
+                  ? 'Edit the song information'
+                  : 'Add a new song to the collection'}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit}>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Titre *</Label>
+                  <Label htmlFor="title">Title *</Label>
                   <Input
                     id="title"
                     value={formData.title}
@@ -295,7 +295,7 @@ function AdminSongsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="original_artist">Artiste original *</Label>
+                  <Label htmlFor="original_artist">Original artist *</Label>
                   <Input
                     id="original_artist"
                     value={formData.original_artist}
@@ -304,7 +304,7 @@ function AdminSongsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="year">Année</Label>
+                  <Label htmlFor="year">Year</Label>
                   <Input
                     id="year"
                     type="number"
@@ -334,10 +334,10 @@ function AdminSongsPage() {
               </div>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  Annuler
+                  Cancel
                 </Button>
                 <Button type="submit" disabled={isSaving}>
-                  {isSaving ? 'Enregistrement...' : 'Enregistrer'}
+                  {isSaving ? 'Saving...' : 'Save'}
                 </Button>
               </DialogFooter>
             </form>
@@ -348,16 +348,16 @@ function AdminSongsPage() {
         <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Supprimer cette chanson ?</AlertDialogTitle>
+              <AlertDialogTitle>Delete this song?</AlertDialogTitle>
               <AlertDialogDescription>
-                Cette action est irréversible. La chanson "{deletingSong?.title}" et toutes ses
-                interprétations seront supprimées.
+                This action cannot be undone. The song "{deletingSong?.title}" and all its
+                covers will be deleted.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Annuler</AlertDialogCancel>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                Supprimer
+                Delete
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

@@ -117,7 +117,7 @@ function AdminCoversPage() {
       const songsData = await admin.songs.list(token, { per_page: 100 })
       setSongs(songsData.songs)
     } catch (err) {
-      setError('Erreur lors du chargement des chansons')
+      setError('Error loading songs')
     }
   }
 
@@ -132,7 +132,7 @@ function AdminCoversPage() {
       setCovers(data.covers)
       setError(null)
     } catch (err) {
-      setError('Erreur lors du chargement des covers')
+      setError('Error loading covers')
     } finally {
       setIsLoading(false)
     }
@@ -202,7 +202,7 @@ function AdminCoversPage() {
       setIsDialogOpen(false)
       fetchCovers()
     } catch (err) {
-      setError('Erreur lors de la sauvegarde')
+      setError('Error saving')
     } finally {
       setIsSaving(false)
     }
@@ -217,7 +217,7 @@ function AdminCoversPage() {
       setDeletingCover(null)
       fetchCovers()
     } catch (err) {
-      setError('Erreur lors de la suppression')
+      setError('Error deleting')
     }
   }
 
@@ -237,15 +237,15 @@ function AdminCoversPage() {
           </Link>
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-foreground">
-              Interprétations
+              Covers
             </h1>
             <p className="text-muted-foreground">
-              Gérez les covers et reprises
+              Manage covers and interpretations
             </p>
           </div>
           <Button onClick={openCreateDialog}>
             <Plus className="w-4 h-4 mr-2" />
-            Nouvelle interprétation
+            New cover
           </Button>
         </div>
 
@@ -253,17 +253,17 @@ function AdminCoversPage() {
         <div className="flex items-center gap-4 mb-6">
           <div className="flex items-center gap-2">
             <Label htmlFor="song-filter" className="text-sm text-muted-foreground">
-              Filtrer par chanson :
+              Filter by song:
             </Label>
             <Select
               value={filterSongId?.toString() || 'all'}
               onValueChange={handleFilterChange}
             >
               <SelectTrigger className="w-[300px]">
-                <SelectValue placeholder="Toutes les chansons" />
+                <SelectValue placeholder="All songs" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Toutes les chansons</SelectItem>
+                <SelectItem value="all">All songs</SelectItem>
                 {songs.map((song) => (
                   <SelectItem key={song.id} value={song.id.toString()}>
                     {song.title} - {song.original_artist}
@@ -279,7 +279,7 @@ function AdminCoversPage() {
           <div className="flex items-center gap-3 mb-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
             <div className="flex-1">
               <p className="text-sm text-muted-foreground">
-                Interprétations de
+                Covers of
               </p>
               <p className="font-semibold text-foreground">
                 {selectedSong.title} - {selectedSong.original_artist}
@@ -291,11 +291,11 @@ function AdminCoversPage() {
               className="text-sm text-primary hover:underline flex items-center gap-1"
             >
               <ExternalLink className="w-3.5 h-3.5" />
-              Voir la page publique
+              View public page
             </Link>
             <Button variant="ghost" size="sm" onClick={clearFilter}>
               <X className="w-4 h-4 mr-1" />
-              Effacer le filtre
+              Clear filter
             </Button>
           </div>
         )}
@@ -309,16 +309,16 @@ function AdminCoversPage() {
         {/* Table */}
         {isLoading ? (
           <div className="text-center py-12 text-muted-foreground">
-            Chargement...
+            Loading...
           </div>
         ) : (
           <div className="border rounded-lg">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Artiste</TableHead>
-                  {!filterSongId && <TableHead>Chanson</TableHead>}
-                  <TableHead>Année</TableHead>
+                  <TableHead>Artist</TableHead>
+                  {!filterSongId && <TableHead>Song</TableHead>}
+                  <TableHead>Year</TableHead>
                   <TableHead>Score</TableHead>
                   <TableHead className="w-[100px]">Actions</TableHead>
                 </TableRow>
@@ -368,7 +368,7 @@ function AdminCoversPage() {
                 {covers.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={filterSongId ? 4 : 5} className="text-center py-8 text-muted-foreground">
-                      Aucune interprétation
+                      No covers
                     </TableCell>
                   </TableRow>
                 )}
@@ -382,25 +382,25 @@ function AdminCoversPage() {
           <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>
-                {editingCover ? 'Modifier l\'interprétation' : 'Nouvelle interprétation'}
+                {editingCover ? 'Edit cover' : 'New cover'}
               </DialogTitle>
               <DialogDescription>
                 {editingCover
-                  ? 'Modifiez les informations de cette interprétation'
-                  : 'Ajoutez une nouvelle interprétation'}
+                  ? 'Edit the cover information'
+                  : 'Add a new cover'}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit}>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="song_id">Chanson *</Label>
+                  <Label htmlFor="song_id">Song *</Label>
                   <Select
                     value={formData.song_id}
                     onValueChange={(value) => setFormData({ ...formData, song_id: value })}
                     disabled={!!editingCover}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Sélectionnez une chanson" />
+                      <SelectValue placeholder="Select a song" />
                     </SelectTrigger>
                     <SelectContent>
                       {songs.map((song) => (
@@ -412,7 +412,7 @@ function AdminCoversPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="artist">Artiste *</Label>
+                  <Label htmlFor="artist">Artist *</Label>
                   <Input
                     id="artist"
                     value={formData.artist}
@@ -421,7 +421,7 @@ function AdminCoversPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="year">Année</Label>
+                  <Label htmlFor="year">Year</Label>
                   <Input
                     id="year"
                     type="number"
@@ -452,10 +452,10 @@ function AdminCoversPage() {
               </div>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  Annuler
+                  Cancel
                 </Button>
                 <Button type="submit" disabled={isSaving}>
-                  {isSaving ? 'Enregistrement...' : 'Enregistrer'}
+                  {isSaving ? 'Saving...' : 'Save'}
                 </Button>
               </DialogFooter>
             </form>
@@ -466,16 +466,16 @@ function AdminCoversPage() {
         <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Supprimer cette interprétation ?</AlertDialogTitle>
+              <AlertDialogTitle>Delete this cover?</AlertDialogTitle>
               <AlertDialogDescription>
-                Cette action est irréversible. L'interprétation de "{deletingCover?.artist}"
-                sera supprimée ainsi que tous ses votes.
+                This action cannot be undone. The cover by "{deletingCover?.artist}"
+                will be deleted along with all its votes.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Annuler</AlertDialogCancel>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                Supprimer
+                Delete
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

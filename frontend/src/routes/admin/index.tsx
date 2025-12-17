@@ -53,7 +53,7 @@ function AdminDashboard() {
             Administration
           </h1>
           <p className="text-muted-foreground">
-            Gérez les chansons et les interprétations
+            Manage songs and covers
           </p>
         </div>
 
@@ -69,14 +69,14 @@ function AdminDashboard() {
                     <span className="text-3xl font-bold text-primary">{songsCount}</span>
                   )}
                 </div>
-                <CardTitle className="mt-4">Chansons</CardTitle>
+                <CardTitle className="mt-4">Songs</CardTitle>
                 <CardDescription>
-                  Ajouter, modifier ou supprimer des chansons
+                  Add, edit or delete songs
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Gérez la collection de chansons folk originales
+                  Manage the original folk songs collection
                 </p>
               </CardContent>
             </Card>
@@ -93,14 +93,14 @@ function AdminDashboard() {
                     <span className="text-3xl font-bold text-primary">{coversCount}</span>
                   )}
                 </div>
-                <CardTitle className="mt-4">Interprétations</CardTitle>
+                <CardTitle className="mt-4">Covers</CardTitle>
                 <CardDescription>
-                  Ajouter, modifier ou supprimer des covers
+                  Add, edit or delete covers
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Gérez les différentes versions et reprises
+                  Manage the different versions and interpretations
                 </p>
               </CardContent>
             </Card>

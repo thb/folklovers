@@ -84,7 +84,7 @@ function SongPage() {
         {song.youtube_url && (
           <div className="mb-12">
             <h2 className="text-lg font-semibold text-foreground mb-4">
-              Version originale
+              Original version
             </h2>
             <YouTubeEmbed url={song.youtube_url} title={`${song.title} - ${song.original_artist}`} />
             {song.description && (
@@ -99,7 +99,7 @@ function SongPage() {
         <div>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-foreground">
-              Reprises ({coversList.length})
+              Covers ({coversList.length})
             </h2>
           </div>
 
@@ -117,7 +117,7 @@ function SongPage() {
           {coversList.length === 0 && (
             <div className="text-center py-12 text-muted-foreground">
               <Play className="w-12 h-12 mx-auto mb-4 opacity-30" />
-              <p>Aucune reprise pour cette chanson.</p>
+              <p>No covers for this song yet.</p>
             </div>
           )}
         </div>
@@ -202,7 +202,7 @@ function CoverItem({
                   {cover.submitted_by && (
                     <span className="flex items-center gap-1">
                       <User className="w-3.5 h-3.5" />
-                      Ajoute par {cover.submitted_by.username}
+                      Added by {cover.submitted_by.username}
                     </span>
                   )}
                 </div>
@@ -227,7 +227,7 @@ function CoverItem({
               className="inline-flex items-center gap-1.5 mt-4 text-sm text-primary hover:underline"
             >
               <ExternalLink className="w-3.5 h-3.5" />
-              Voir sur YouTube
+              Watch on YouTube
             </a>
           </div>
         </div>

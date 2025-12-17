@@ -31,9 +31,9 @@ function LoginPage() {
       navigate({ to: '/' })
     } catch (err) {
       if (err instanceof ApiError) {
-        setError('Email ou mot de passe incorrect')
+        setError('Invalid email or password')
       } else {
-        setError('Une erreur est survenue')
+        setError('An error occurred')
       }
     } finally {
       setIsLoading(false)
@@ -47,9 +47,9 @@ function LoginPage() {
           <div className="w-12 h-12 rounded-full bg-primary mx-auto mb-4 flex items-center justify-center">
             <Music className="w-6 h-6 text-primary-foreground" />
           </div>
-          <CardTitle className="text-2xl">Connexion</CardTitle>
+          <CardTitle className="text-2xl">Sign in</CardTitle>
           <CardDescription>
-            Connectez-vous pour voter sur vos reprises preferees
+            Sign in to vote for your favorite covers
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -66,7 +66,7 @@ function LoginPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">ou</span>
+              <span className="bg-card px-2 text-muted-foreground">or</span>
             </div>
           </div>
 
@@ -79,7 +79,7 @@ function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="vous@exemple.com"
+                placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -88,7 +88,7 @@ function LoginPage() {
 
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">
-                Mot de passe
+                Password
               </label>
               <Input
                 id="password"
@@ -102,14 +102,14 @@ function LoginPage() {
 
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Se connecter
+              Sign in
             </Button>
           </form>
 
           <div className="mt-6 text-center text-sm text-muted-foreground">
-            Pas encore de compte ?{' '}
+            Don't have an account?{' '}
             <Link to="/register" className="text-primary hover:underline">
-              S'inscrire
+              Sign up
             </Link>
           </div>
         </CardContent>

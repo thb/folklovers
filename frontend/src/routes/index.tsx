@@ -53,15 +53,15 @@ function HomePage() {
 
           {/* Description */}
           <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-            Decouvrez les plus belles reprises de chansons folk.
-            Votez pour vos interpretations preferees et partagez votre passion pour la musique folk.
+            Discover the best folk song covers.
+            Vote for your favorite interpretations and share your passion for folk music.
           </p>
 
           {/* CTA */}
           <div className="flex items-center justify-center gap-4">
             <Link to="/songs">
               <Button size="lg" className="gap-2">
-                Explorer les chansons
+                Explore songs
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
@@ -80,15 +80,15 @@ function HomePage() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-2xl font-bold text-foreground">
-                Chansons populaires
+                Popular songs
               </h2>
               <p className="text-muted-foreground mt-1">
-                Les classiques du folk les plus apprecies
+                The most beloved folk classics
               </p>
             </div>
             <Link to="/songs">
               <Button variant="outline" className="gap-2">
-                Voir toutes
+                View all
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
@@ -108,10 +108,10 @@ function HomePage() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-2xl font-bold text-foreground">
-                Meilleures reprises
+                Top covers
               </h2>
               <p className="text-muted-foreground mt-1">
-                Les interpretations les mieux notees par la communaute
+                The highest-rated interpretations by the community
               </p>
             </div>
           </div>
