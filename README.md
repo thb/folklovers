@@ -1,91 +1,91 @@
-# Folklovers 🎸
+# Folklovers
 
-Site communautaire de classement des meilleures interprétations de chansons folk.
+Community site for ranking the best folk song covers.
 
 ## Vision
 
-Folklovers est une plateforme où les passionnés de musique folk peuvent découvrir, partager et voter pour les meilleures interprétations de chansons folk classiques et contemporaines.
+Folklovers is a platform where folk music enthusiasts can discover, share, and vote for the best covers of classic and contemporary folk songs.
 
-### Inspiration Design
+### Design Inspiration
 
-Le design s'inspire de l'atmosphère vintage du **Gaslight Cafe** à Greenwich Village, New York, dans les années 60 — l'époque où Bob Dylan, Dave Van Ronk et d'autres légendes folk ont façonné le son d'une génération. Pensez à l'ambiance du film *Inside Llewyn Davis* des frères Coen : chaleureux, authentique, un peu usé par le temps.
+The design draws inspiration from the vintage atmosphere of the **Gaslight Cafe** in Greenwich Village, New York, during the 1960s — the era when Bob Dylan, Dave Van Ronk, and other folk legends shaped the sound of a generation. Think of the ambiance from the Coen Brothers' film *Inside Llewyn Davis*: warm, authentic, slightly worn by time.
 
-**Éléments visuels clés :**
-- Palette de couleurs chaudes : sépia, brun, crème, ocre
-- Typographies rétro évoquant les affiches de concerts des années 60
-- Textures rappelant le bois, le papier vieilli, les pochettes de vinyles
-- Illustrations ou icônes style woodcut/linogravure
+**Key visual elements:**
+- Warm color palette: sepia, brown, cream, ochre
+- Retro typography evoking 1960s concert posters
+- Textures reminiscent of wood, aged paper, vinyl sleeves
+- Woodcut/linocut-style illustrations and icons
 
-## Fonctionnalités
+## Features
 
-### Utilisateurs
-- Inscription / Connexion
-- Voter (+1 / -1) sur les interprétations
-- Commenter les interprétations
-- Suggérer de nouvelles chansons
-- Suggérer de nouvelles interprétations
+### Users
+- Sign up / Login
+- Vote (+1 / -1) on covers
+- Comment on covers
+- Suggest new songs
+- Suggest new covers
 
-### Page d'accueil
-- **Top chansons** : les chansons avec le plus de votes positifs
-- **Top interprétations** : les interprétations les plus votées tous titres confondus
-- Navigation vers les catégories/époques
+### Homepage
+- **Top songs**: songs with the most positive votes
+- **Top covers**: highest-rated covers across all songs
+- Navigation by category/era
 
-### Page Chanson
-1. **Section originale** : vidéo YouTube de la chanson originale (ou version de référence)
-2. **Liste des interprétations** : classées par score de votes (style Stack Overflow)
-   - Chaque interprétation affiche :
-     - Vidéo YouTube embed
-     - Texte explicatif : "Pourquoi cette interprétation ?"
-     - Boutons de vote +1 / -1
-     - Score total
-     - Nombre de commentaires
-3. **Section commentaires** pour chaque interprétation
+### Song Page
+1. **Original section**: YouTube video of the original song (or reference version)
+2. **Covers list**: ranked by vote score (Stack Overflow style)
+   - Each cover displays:
+     - Embedded YouTube video
+     - Description: "Why this cover?"
+     - Vote buttons +1 / -1
+     - Total score
+     - Comment count
+3. **Comments section** for each cover
 
-### UX Spécificités
-- Inspiration Stack Overflow pour le système de vote et le classement
-- Mise en valeur des vidéos YouTube (player visible, pas juste un lien)
-- Espace pour les textes explicatifs accompagnant chaque interprétation
-- Interface responsive privilégiant la lisibilité sur mobile
+### UX Specifics
+- Stack Overflow-inspired voting and ranking system
+- Prominent YouTube videos (visible player, not just a link)
+- Space for descriptions accompanying each cover
+- Responsive interface prioritizing mobile readability
 
-## Stack Technique
+## Tech Stack
 
 ### Backend — Ruby on Rails (API mode)
 
-**Base**
+**Core**
 - PostgreSQL
-- API RESTful JSON
+- RESTful JSON API
 
-**Authentification**
+**Authentication**
 - JWT (JSON Web Tokens)
 - Email / Password
 - Google OAuth 2.0
 
-**Gems principales**
+**Main Gems**
 | Gem | Usage |
 |-----|-------|
-| `jwt` | Génération et validation des tokens |
-| `omniauth-google-oauth2` | Connexion via Google |
-| `bcrypt` | Hash des mots de passe |
-| `pagy` | Pagination performante |
-| `has_scope` | Filtrage des requêtes via query params |
-| `blueprinter` | Sérialisation JSON des modèles |
+| `jwt` | Token generation and validation |
+| `omniauth-google-oauth2` | Google login |
+| `bcrypt` | Password hashing |
+| `pagy` | High-performance pagination |
+| `has_scope` | Query filtering via query params |
+| `blueprinter` | JSON serialization of models |
 
 ### Frontend — TanStack Start
 
 **Core**
 - TanStack Start (React + SSR)
 - TanStack Router
-- Server Actions pour les mutations
+- Server Actions for mutations
 
 **UI**
-- shadcn/ui (composants accessibles et customisables)
-- Tailwind CSS avec thème vintage custom
+- shadcn/ui (accessible and customizable components)
+- Tailwind CSS with custom vintage theme
 
-### Intégrations
-- **YouTube Data API** : métadonnées des vidéos (titre, thumbnail, durée)
-- **YouTube IFrame API** : embed des players
+### Integrations
+- **YouTube Data API**: video metadata (title, thumbnail, duration)
+- **YouTube IFrame API**: embedded players
 
-## Modèle de Données (simplifié)
+## Data Model (simplified)
 
 ```
 User
@@ -98,40 +98,40 @@ User
 Song
 ├── id
 ├── title
-├── artist (artiste original)
+├── original_artist
 ├── year
-├── youtube_url (version originale/référence)
+├── youtube_url (original/reference version)
 ├── description
-├── votes_count (cached)
+├── covers_count (cached)
 └── created_at
 
-Interpretation
+Cover
 ├── id
 ├── song_id (FK)
 ├── artist
 ├── youtube_url
-├── description ("Pourquoi cette interprétation")
+├── description ("Why this cover")
 ├── submitted_by_user_id (FK)
-├── votes_score (cached, somme des +1/-1)
+├── votes_score (cached, sum of +1/-1)
 └── created_at
 
 Vote
 ├── id
 ├── user_id (FK)
-├── votable_type (Song ou Interpretation)
+├── votable_type (Song or Cover)
 ├── votable_id
-├── value (+1 ou -1)
+├── value (+1 or -1)
 └── created_at
 
 Comment
 ├── id
 ├── user_id (FK)
-├── interpretation_id (FK)
+├── cover_id (FK)
 ├── content
 └── created_at
 ```
 
-## Structure du Projet
+## Project Structure
 
 ```
 folklovers/
@@ -146,15 +146,16 @@ folklovers/
 │   │   ├── components/
 │   │   └── ...
 │   └── ...
+├── docker-compose.yml
 └── README.md
 ```
 
-## Développement
+## Development
 
-### Prérequis
-- Ruby 3.2+
-- Node.js 20+
-- PostgreSQL 15+
+### Prerequisites
+- Ruby 3.3+
+- Node.js 22+
+- PostgreSQL 16+
 
 ### Installation
 
@@ -169,33 +170,146 @@ cd frontend
 npm install
 ```
 
-### Lancer le projet
+### Run the project
 
 ```bash
-# Terminal 1 - Backend
-cd backend
-rails server -p 3001
-
-# Terminal 2 - Frontend
-cd frontend
-npm run dev
+# From root directory
+foreman start -f Procfile.dev
 ```
 
-## Pages Principales
+Backend runs on port 7000, frontend on port 7001.
+
+## Main Pages
 
 | Route | Description |
 |-------|-------------|
-| `/` | Page d'accueil avec top chansons et top interprétations |
-| `/songs/:id` | Page d'une chanson avec ses interprétations |
-| `/songs/:id/interpretations/new` | Suggérer une nouvelle interprétation |
-| `/songs/new` | Suggérer une nouvelle chanson |
-| `/login` | Connexion |
-| `/register` | Inscription |
-| `/profile` | Profil utilisateur |
+| `/` | Homepage with top songs and top covers |
+| `/songs` | All songs listing |
+| `/songs/:slug` | Song page with its covers |
+| `/login` | Login |
+| `/register` | Sign up |
 
-## Contribution
+## Deployment
 
-Les suggestions de chansons et d'interprétations soumises par les utilisateurs passent par une modération avant publication.
+The project is containerized with Docker and uses Traefik as reverse proxy.
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        BROWSER                              │
+│  fetch → https://api.folklovers.com (VITE_API_URL)         │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                     TRAEFIK (proxy)                         │
+│              SSL termination + routing                      │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                   FRONTEND (Node SSR)                       │
+│  loader() → http://backend:3000 (API_URL_INTERNAL)         │
+│  (internal Docker network, no public round-trip)            │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                      BACKEND (Rails)                        │
+│                        port 3000                            │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                      POSTGRESQL                             │
+│                        port 5432                            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Benefits:**
+- SSR loaders run server-side via internal Docker network (fast)
+- Client requests go through the public URL with HTTPS
+- No external network latency for SSR
+
+### Prerequisites on the server
+
+- Docker and Docker Compose
+- Traefik running with an external network named `proxy`
+- DNS configured for your domains
+
+### Environment Variables
+
+Copy `.env.example` to `.env` and configure:
+
+```bash
+# Domains
+API_DOMAIN=api.folklovers.example.com
+FRONTEND_DOMAIN=folklovers.example.com
+
+# PostgreSQL
+POSTGRES_USER=folklovers
+POSTGRES_PASSWORD=<secure_password>
+POSTGRES_DB=folklovers_production
+
+# Rails secrets (generate with: openssl rand -hex 64)
+SECRET_KEY_BASE=<generated_secret>
+JWT_SECRET_KEY=<generated_secret>
+
+# Google OAuth (optional)
+GOOGLE_CLIENT_ID=<your_client_id>
+GOOGLE_CLIENT_SECRET=<your_client_secret>
+```
+
+### Initial Deployment
+
+```bash
+# Clone the repository
+cd /home/deploy/docker
+git clone git@github.com:your-user/folklovers.git
+cd folklovers
+
+# Configure environment
+cp .env.example .env
+vim .env  # Set your values
+
+# Build and start containers
+docker compose up -d --build
+
+# Run migrations and seed data
+docker compose exec backend bundle exec rails db:migrate
+docker compose exec backend bundle exec rails db:seed
+```
+
+### CI/CD with GitHub Actions
+
+The project includes GitHub Actions workflows for automated deployment.
+
+**Required GitHub Secrets:**
+
+| Secret | Description |
+|--------|-------------|
+| `SERVER_HOST` | Server IP or domain |
+| `SERVER_USER` | SSH user (e.g., `deploy`) |
+| `SERVER_SSH_KEY` | Private SSH key |
+
+**Setup SSH key for deployment:**
+
+```bash
+# Generate a dedicated deploy key
+ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/folklovers_deploy
+
+# Copy public key to server
+ssh-copy-id -i ~/.ssh/folklovers_deploy.pub deploy@your-server
+
+# Add private key content to GitHub secret SERVER_SSH_KEY
+cat ~/.ssh/folklovers_deploy
+```
+
+**Deployment flow:**
+```
+Push to main → CI (tests) → Deploy via SSH → docker compose build → up -d → migrations
+```
+
+## Contributing
+
+Song and cover suggestions submitted by users go through moderation before publication.
 
 ---
 
