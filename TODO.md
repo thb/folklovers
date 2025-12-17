@@ -4,7 +4,7 @@
 - [x] Configurer Google OAuth
 
 ## Bugs
-- [ ] Fix votes +1/-1 : le state du vote utilisateur n'est pas bien géré
+- [x] Fix votes +1/-1 : le state du vote utilisateur n'est pas bien géré
 
 ## Design
 - [ ] Créer un logo dans le style vintage 60s avec Nano Banana
