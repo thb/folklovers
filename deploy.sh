@@ -17,12 +17,14 @@ echo "=== Building containers ==="
 docker compose build
 
 echo ""
-echo "=== Starting containers ==="
-docker compose up -d
+echo "=== Rolling restart (zero-downtime) ==="
+# Restart backend first, wait for health check
+docker compose up -d --no-deps --wait backend
+echo "Backend is healthy"
 
-echo ""
-echo "=== Waiting for services to be ready ==="
-sleep 10
+# Then restart frontend
+docker compose up -d --no-deps --wait frontend
+echo "Frontend is healthy"
 
 echo ""
 echo "=== Running migrations ==="
