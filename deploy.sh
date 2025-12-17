@@ -14,7 +14,7 @@ git reset --hard origin/main
 
 echo ""
 echo "=== Building containers ==="
-docker compose build --no-cache
+docker compose build
 
 echo ""
 echo "=== Starting containers ==="
