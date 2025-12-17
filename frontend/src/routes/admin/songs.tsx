@@ -220,7 +220,15 @@ function AdminSongsPage() {
                     <TableCell className="font-medium">{song.title}</TableCell>
                     <TableCell>{song.original_artist}</TableCell>
                     <TableCell>{song.year || '-'}</TableCell>
-                    <TableCell>{song.covers_count}</TableCell>
+                    <TableCell>
+                      <Link
+                        to="/admin/covers"
+                        search={{ song_id: song.id }}
+                        className="text-primary hover:underline"
+                      >
+                        {song.covers_count}
+                      </Link>
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
                         <Button

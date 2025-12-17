@@ -1,15 +1,50 @@
-import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { useState, useEffect } from 'react'
 import { Music, Disc } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { admin } from '@/lib/api'
+import { useAuth } from '@/lib/auth'
 
 export const Route = createFileRoute('/admin/')({
   component: AdminDashboard,
-  beforeLoad: ({ context }) => {
-    // This will be checked client-side, server redirect not possible without SSR auth
-  },
 })
 
 function AdminDashboard() {
+  const { token, isAdmin } = useAuth()
+  const navigate = useNavigate()
+  const [songsCount, setSongsCount] = useState<number | null>(null)
+  const [coversCount, setCoversCount] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (!isAdmin) {
+      navigate({ to: '/' })
+    }
+  }, [isAdmin, navigate])
+
+  useEffect(() => {
+    if (token && isAdmin) {
+      fetchCounts()
+    }
+  }, [token, isAdmin])
+
+  async function fetchCounts() {
+    if (!token) return
+    try {
+      const [songsData, coversData] = await Promise.all([
+        admin.songs.list(token, { per_page: 1 }),
+        admin.covers.list(token, { per_page: 1 }),
+      ])
+      setSongsCount(songsData.pagination.total_count)
+      setCoversCount(coversData.pagination.total_count)
+    } catch (err) {
+      // Ignore errors for counts
+    }
+  }
+
+  if (!isAdmin) {
+    return null
+  }
+
   return (
     <div className="py-12 px-4">
       <div className="max-w-4xl mx-auto">
@@ -26,10 +61,15 @@ function AdminDashboard() {
           <Link to="/admin/songs">
             <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full">
               <CardHeader>
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                  <Music className="w-6 h-6 text-primary" />
+                <div className="flex items-start justify-between">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Music className="w-6 h-6 text-primary" />
+                  </div>
+                  {songsCount !== null && (
+                    <span className="text-3xl font-bold text-primary">{songsCount}</span>
+                  )}
                 </div>
-                <CardTitle>Chansons</CardTitle>
+                <CardTitle className="mt-4">Chansons</CardTitle>
                 <CardDescription>
                   Ajouter, modifier ou supprimer des chansons
                 </CardDescription>
@@ -45,10 +85,15 @@ function AdminDashboard() {
           <Link to="/admin/covers">
             <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full">
               <CardHeader>
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                  <Disc className="w-6 h-6 text-primary" />
+                <div className="flex items-start justify-between">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Disc className="w-6 h-6 text-primary" />
+                  </div>
+                  {coversCount !== null && (
+                    <span className="text-3xl font-bold text-primary">{coversCount}</span>
+                  )}
                 </div>
-                <CardTitle>Interprétations</CardTitle>
+                <CardTitle className="mt-4">Interprétations</CardTitle>
                 <CardDescription>
                   Ajouter, modifier ou supprimer des covers
                 </CardDescription>

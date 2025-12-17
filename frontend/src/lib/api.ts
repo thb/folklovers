@@ -198,10 +198,11 @@ export const admin = {
   },
 
   covers: {
-    list: (token: string, params?: { page?: number; per_page?: number }) => {
+    list: (token: string, params?: { page?: number; per_page?: number; song_id?: number }) => {
       const searchParams = new URLSearchParams()
       if (params?.page) searchParams.set('page', params.page.toString())
       if (params?.per_page) searchParams.set('per_page', params.per_page.toString())
+      if (params?.song_id) searchParams.set('song_id', params.song_id.toString())
       const query = searchParams.toString()
       return request<{ covers: AdminCover[]; pagination: Pagination }>(
         `/admin/covers${query ? `?${query}` : ''}`,

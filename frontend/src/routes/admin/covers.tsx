@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, ArrowLeft } from 'lucide-react'
+import { Plus, Pencil, Trash2, ArrowLeft, X, ExternalLink } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -42,8 +42,17 @@ import {
 import { admin, type AdminCover, type Song } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
 
+type SearchParams = {
+  song_id?: number
+}
+
 export const Route = createFileRoute('/admin/covers')({
   component: AdminCoversPage,
+  validateSearch: (search: Record<string, unknown>): SearchParams => {
+    return {
+      song_id: search.song_id ? Number(search.song_id) : undefined,
+    }
+  },
 })
 
 type CoverFormData = {
@@ -65,6 +74,7 @@ const emptyCoverForm: CoverFormData = {
 function AdminCoversPage() {
   const { token, isAdmin } = useAuth()
   const navigate = useNavigate()
+  const { song_id: filterSongId } = Route.useSearch()
 
   const [covers, setCovers] = useState<AdminCover[]>([])
   const [songs, setSongs] = useState<Song[]>([])
@@ -78,6 +88,8 @@ function AdminCoversPage() {
   const [formData, setFormData] = useState<CoverFormData>(emptyCoverForm)
   const [isSaving, setIsSaving] = useState(false)
 
+  const selectedSong = songs.find(s => s.id === filterSongId)
+
   // Redirect if not admin
   useEffect(() => {
     if (!isAdmin) {
@@ -85,44 +97,65 @@ function AdminCoversPage() {
     }
   }, [isAdmin, navigate])
 
-  // Fetch data on mount
+  // Fetch songs on mount
   useEffect(() => {
     if (token && isAdmin) {
-      fetchData()
+      fetchSongs()
     }
   }, [token, isAdmin])
 
-  async function fetchData() {
+  // Fetch covers when filter changes
+  useEffect(() => {
+    if (token && isAdmin) {
+      fetchCovers()
+    }
+  }, [token, isAdmin, filterSongId])
+
+  async function fetchSongs() {
     if (!token) return
-    setIsLoading(true)
     try {
-      const [coversData, songsData] = await Promise.all([
-        admin.covers.list(token, { per_page: 100 }),
-        admin.songs.list(token, { per_page: 100 }),
-      ])
-      setCovers(coversData.covers)
+      const songsData = await admin.songs.list(token, { per_page: 100 })
       setSongs(songsData.songs)
-      setError(null)
     } catch (err) {
-      setError('Erreur lors du chargement des données')
-    } finally {
-      setIsLoading(false)
+      setError('Erreur lors du chargement des chansons')
     }
   }
 
   async function fetchCovers() {
     if (!token) return
+    setIsLoading(true)
     try {
-      const data = await admin.covers.list(token, { per_page: 100 })
+      const data = await admin.covers.list(token, {
+        per_page: 100,
+        song_id: filterSongId,
+      })
       setCovers(data.covers)
+      setError(null)
     } catch (err) {
       setError('Erreur lors du chargement des covers')
+    } finally {
+      setIsLoading(false)
     }
+  }
+
+  function handleFilterChange(value: string) {
+    if (value === 'all') {
+      navigate({ to: '/admin/covers', search: {} })
+    } else {
+      navigate({ to: '/admin/covers', search: { song_id: Number(value) } })
+    }
+  }
+
+  function clearFilter() {
+    navigate({ to: '/admin/covers', search: {} })
   }
 
   function openCreateDialog() {
     setEditingCover(null)
-    setFormData(emptyCoverForm)
+    setFormData({
+      ...emptyCoverForm,
+      song_id: filterSongId ? filterSongId.toString() : '',
+    })
     setIsDialogOpen(true)
   }
 
@@ -196,7 +229,7 @@ function AdminCoversPage() {
     <div className="py-12 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 mb-6">
           <Link to="/admin">
             <Button variant="ghost" size="icon">
               <ArrowLeft className="w-4 h-4" />
@@ -216,6 +249,57 @@ function AdminCoversPage() {
           </Button>
         </div>
 
+        {/* Filter bar */}
+        <div className="flex items-center gap-4 mb-6">
+          <div className="flex items-center gap-2">
+            <Label htmlFor="song-filter" className="text-sm text-muted-foreground">
+              Filtrer par chanson :
+            </Label>
+            <Select
+              value={filterSongId?.toString() || 'all'}
+              onValueChange={handleFilterChange}
+            >
+              <SelectTrigger className="w-[300px]">
+                <SelectValue placeholder="Toutes les chansons" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Toutes les chansons</SelectItem>
+                {songs.map((song) => (
+                  <SelectItem key={song.id} value={song.id.toString()}>
+                    {song.title} - {song.original_artist}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Active filter banner */}
+        {selectedSong && (
+          <div className="flex items-center gap-3 mb-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+            <div className="flex-1">
+              <p className="text-sm text-muted-foreground">
+                Interprétations de
+              </p>
+              <p className="font-semibold text-foreground">
+                {selectedSong.title} - {selectedSong.original_artist}
+              </p>
+            </div>
+            <Link
+              to="/songs/$slug"
+              params={{ slug: selectedSong.slug }}
+              className="text-sm text-primary hover:underline flex items-center gap-1"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              Voir la page publique
+            </Link>
+            <Button variant="ghost" size="sm" onClick={clearFilter}>
+              <X className="w-4 h-4 mr-1" />
+              Effacer le filtre
+            </Button>
+          </div>
+        )}
+
         {error && (
           <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
             {error}
@@ -233,7 +317,7 @@ function AdminCoversPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Artiste</TableHead>
-                  <TableHead>Chanson</TableHead>
+                  {!filterSongId && <TableHead>Chanson</TableHead>}
                   <TableHead>Année</TableHead>
                   <TableHead>Score</TableHead>
                   <TableHead className="w-[100px]">Actions</TableHead>
@@ -243,15 +327,17 @@ function AdminCoversPage() {
                 {covers.map((cover) => (
                   <TableRow key={cover.id}>
                     <TableCell className="font-medium">{cover.artist}</TableCell>
-                    <TableCell>
-                      <Link
-                        to="/songs/$slug"
-                        params={{ slug: cover.song.slug }}
-                        className="text-primary hover:underline"
-                      >
-                        {cover.song.title}
-                      </Link>
-                    </TableCell>
+                    {!filterSongId && (
+                      <TableCell>
+                        <Link
+                          to="/admin/covers"
+                          search={{ song_id: cover.song.id }}
+                          className="text-primary hover:underline"
+                        >
+                          {cover.song.title}
+                        </Link>
+                      </TableCell>
+                    )}
                     <TableCell>{cover.year || '-'}</TableCell>
                     <TableCell>
                       <span className={cover.votes_score >= 0 ? 'text-green-600' : 'text-red-500'}>
@@ -281,7 +367,7 @@ function AdminCoversPage() {
                 ))}
                 {covers.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={filterSongId ? 4 : 5} className="text-center py-8 text-muted-foreground">
                       Aucune interprétation
                     </TableCell>
                   </TableRow>
