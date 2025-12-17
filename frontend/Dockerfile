@@ -21,20 +21,19 @@ FROM node:22-slim AS runner
 
 WORKDIR /app
 
-# Create non-root user
-RUN useradd -m -u 1000 nodejs
-USER nodejs
+# Use existing node user (UID 1000)
+USER node
 
 # Copy built application
-COPY --from=builder --chown=nodejs:nodejs /app/.output ./.output
-COPY --from=builder --chown=nodejs:nodejs /app/package.json ./
+COPY --from=builder --chown=node:node /app/.output ./.output
+COPY --from=builder --chown=node:node /app/package.json ./
 
 # Expose port
 EXPOSE 3000
 
-# Health check
+# Health check (using node instead of curl)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3000/ || exit 1
+    CMD node -e "fetch('http://localhost:3000/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
 
 # Start server
 CMD ["node", ".output/server/index.mjs"]
