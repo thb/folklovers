@@ -33,7 +33,6 @@ services:
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       FRONTEND_URL: https://${FRONTEND_DOMAIN}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.folklovers-api.rule=Host(`${API_DOMAIN}`)"

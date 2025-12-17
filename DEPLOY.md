@@ -249,10 +249,89 @@ POSTGRES_DB=folklovers_production
 SECRET_KEY_BASE=<generated_secret>
 JWT_SECRET_KEY=<generated_secret>
 
-# Google OAuth (optional)
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
+# Google OAuth
+GOOGLE_CLIENT_ID=<your_client_id>.apps.googleusercontent.com
 ```
+
+## Google OAuth Configuration
+
+### 1. Create Google OAuth Credentials
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Navigate to **APIs & Services > Credentials**
+4. Click **Create Credentials > OAuth client ID**
+5. Select **Web application**
+6. Configure:
+   - **Name**: Folklovers (or your app name)
+   - **Authorized JavaScript origins**:
+     - `http://localhost:7000` (development)
+     - `https://thefolklovers.com` (production)
+   - **Authorized redirect URIs**:
+     - `http://localhost:7000` (development)
+     - `https://thefolklovers.com` (production)
+7. Copy the **Client ID**
+
+### 2. Environment Configuration
+
+Only `GOOGLE_CLIENT_ID` is required. The Client Secret is not needed for our implementation (we use Google Identity Services with JWT verification).
+
+**Local development** (`frontend/.env`):
+```bash
+VITE_GOOGLE_CLIENT_ID=<your_client_id>.apps.googleusercontent.com
+```
+
+**Production** (`.env` on server):
+```bash
+GOOGLE_CLIENT_ID=<your_client_id>.apps.googleusercontent.com
+```
+
+The `docker-compose.yml` automatically:
+- Passes `GOOGLE_CLIENT_ID` to the backend (runtime)
+- Passes `GOOGLE_CLIENT_ID` as `VITE_GOOGLE_CLIENT_ID` to the frontend (build time)
+
+### 3. How It Works
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        BROWSER                                  │
+│  1. User clicks "Sign in with Google"                          │
+│  2. Google popup → user authenticates                          │
+│  3. Google returns JWT (ID token) to frontend                  │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼ POST /auth/google { credential: JWT }
+┌─────────────────────────────────────────────────────────────────┐
+│                      BACKEND (Rails)                            │
+│  4. GoogleAuth.verify(token) decodes JWT locally               │
+│  5. Validates: issuer, audience, expiration, email_verified    │
+│  6. Creates or links user account                              │
+│  7. Returns app JWT token                                       │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Why no Client Secret?**
+
+We use the **implicit flow** with Google Identity Services:
+- Google returns an ID token (JWT) directly to the client
+- The backend verifies the JWT by decoding it and checking claims
+- No server-side token exchange is needed
+
+The Client Secret would only be required for:
+- Authorization code flow (server-side OAuth)
+- Accessing Google APIs (Calendar, Drive, etc.)
+
+### 4. Account Linking
+
+When a user signs in with Google:
+1. If a user exists with the same `google_id` → log them in
+2. If a user exists with the same `email` → link the Google account and log them in
+3. Otherwise → create a new user
+
+This means users can:
+- Create an account with email/password, then later link Google
+- Sign up directly with Google
+- Use either method to log in once linked
 
 ## Troubleshooting
 
