@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Play, Calendar, User, ExternalLink } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { VotingButtons } from '@/components/songs/VotingButtons'
-import { songs } from '@/lib/api'
+import { songs, covers as coversApi } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
 import type { Cover } from '@/lib/api'
 
@@ -40,8 +40,17 @@ function YouTubeEmbed({ url, title }: { url: string; title: string }) {
 
 function SongPage() {
   const song = Route.useLoaderData()
-  const { token } = useAuth()
+  const { token, isAuthenticated, isLoading: authLoading } = useAuth()
   const [coversList, setCoversList] = useState(song.covers)
+
+  // Refetch covers with user token to get user_vote
+  useEffect(() => {
+    if (!authLoading && isAuthenticated && token) {
+      coversApi.list(song.slug, undefined, token).then(({ covers }) => {
+        setCoversList(covers)
+      }).catch(console.error)
+    }
+  }, [authLoading, isAuthenticated, token, song.slug])
 
   const handleVoteChange = (coverId: number, updatedCover: Cover) => {
     setCoversList((prev) =>
