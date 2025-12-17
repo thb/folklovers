@@ -263,7 +263,7 @@ GOOGLE_CLIENT_ID=<your_client_id>.apps.googleusercontent.com
 4. Click **Create Credentials > OAuth client ID**
 5. Select **Web application**
 6. Configure:
-   - **Name**: Folklovers (or your app name)
+   - **Name**: Folk Lovers (or your app name)
    - **Authorized JavaScript origins**:
      - `http://localhost:7000` (development)
      - `https://thefolklovers.com` (production)

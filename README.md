@@ -1,10 +1,10 @@
-# Folklovers
+# Folk Lovers
 
 Community site for ranking the best folk song covers.
 
 ## Vision
 
-Folklovers is a platform where folk music enthusiasts can discover, share, and vote for the best covers of classic and contemporary folk songs.
+Folk Lovers is a platform where folk music enthusiasts can discover, share, and vote for the best covers of classic and contemporary folk songs.
 
 ### Design Inspiration
 

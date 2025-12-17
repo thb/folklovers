@@ -43,7 +43,7 @@ function HomePage() {
 
           {/* Title */}
           <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-4">
-            Folklovers
+            Folk Lovers
           </h1>
 
           {/* Tagline */}

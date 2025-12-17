@@ -19,7 +19,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'Folklovers - The Best Folk Song Covers',
+        title: 'Folk Lovers - The Best Folk Song Covers',
       },
       {
         name: 'description',

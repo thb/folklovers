@@ -11,7 +11,7 @@ export function Footer() {
               <Music className="w-4 h-4 text-primary" />
             </div>
             <div>
-              <p className="font-semibold text-foreground">Folklovers</p>
+              <p className="font-semibold text-foreground">Folk Lovers</p>
               <p className="text-xs text-muted-foreground font-mono">
                 Celebrating folk music since 1961
               </p>

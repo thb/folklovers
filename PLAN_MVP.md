@@ -1,4 +1,4 @@
-# Plan de Développement MVP — Folklovers
+# Plan de Développement MVP — Folk Lovers
 
 ## Objectif MVP
 

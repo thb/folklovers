@@ -1,4 +1,4 @@
-# Seeds for Folklovers
+# Seeds for Folk Lovers
 # Real folk songs and covers
 
 puts "Seeding database..."
