@@ -37,7 +37,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.folklovers-api.rule=Host(`${API_DOMAIN}`)"
-      - "traefik.http.routers.folklovers-api.entrypoints=websecure"
+      - "traefik.http.routers.folklovers-api.entrypoints=https"
       - "traefik.http.routers.folklovers-api.tls.certresolver=letsencrypt"
       - "traefik.http.services.folklovers-api.loadbalancer.server.port=3000"
     networks:
@@ -61,7 +61,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.folklovers-web.rule=Host(`${FRONTEND_DOMAIN}`)"
-      - "traefik.http.routers.folklovers-web.entrypoints=websecure"
+      - "traefik.http.routers.folklovers-web.entrypoints=https"
       - "traefik.http.routers.folklovers-web.tls.certresolver=letsencrypt"
       - "traefik.http.services.folklovers-web.loadbalancer.server.port=3000"
     networks:
