@@ -17,18 +17,19 @@ echo "=== Building containers ==="
 docker compose build
 
 echo ""
-echo "=== Rolling restart (zero-downtime) ==="
-# Restart backend first, wait for health check
+echo "=== Restarting backend ==="
 docker compose up -d --no-deps --wait backend
 echo "Backend is healthy"
 
-# Then restart frontend
-docker compose up -d --no-deps --wait frontend
-echo "Frontend is healthy"
-
 echo ""
 echo "=== Running migrations ==="
-docker compose exec -T backend bundle exec rails db:migrate || echo "Migration failed or no migrations to run"
+docker compose exec -T backend bundle exec rails db:migrate
+echo "Migrations completed"
+
+echo ""
+echo "=== Restarting frontend ==="
+docker compose up -d --no-deps --wait frontend
+echo "Frontend is healthy"
 
 echo ""
 echo "=== Container status ==="

@@ -1,0 +1,8 @@
+#!/bin/bash
+# Exécute une commande rails sur le serveur de production
+# Usage: ./bin/prod users:make_admin[email@example.com]
+
+SERVER="deploy@rdmpr-one"
+APP_PATH="~/docker/folklovers"
+
+ssh "$SERVER" "cd $APP_PATH && docker compose exec backend bin/rails $@"
