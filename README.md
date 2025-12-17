@@ -189,50 +189,7 @@ Backend runs on port 7000, frontend on port 7001.
 | `/login` | Login |
 | `/register` | Sign up |
 
-## Deployment
-
-The project is containerized with Docker and uses Traefik as reverse proxy.
-
-### Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        BROWSER                              │
-│  fetch → https://api.folklovers.com (VITE_API_URL)         │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                     TRAEFIK (proxy)                         │
-│              SSL termination + routing                      │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                   FRONTEND (Node SSR)                       │
-│  loader() → http://backend:3000 (API_URL_INTERNAL)         │
-│  (internal Docker network, no public round-trip)            │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                      BACKEND (Rails)                        │
-│                        port 3000                            │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                      POSTGRESQL                             │
-│                        port 5432                            │
-└─────────────────────────────────────────────────────────────┘
-```
-
-**Benefits:**
-- SSR loaders run server-side via internal Docker network (fast)
-- Client requests go through the public URL with HTTPS
-- No external network latency for SSR
-
-### Prerequisites on the server
-
-- Docker and Docker Compose
-- Traefik running with an external network named `proxy`
-- DNS configured for your domains
+## Configuration
 
 ### Environment Variables
 
@@ -240,12 +197,12 @@ Copy `.env.example` to `.env` and configure:
 
 ```bash
 # Domains
-API_DOMAIN=api.folklovers.example.com
-FRONTEND_DOMAIN=folklovers.example.com
+API_DOMAIN=api.thefolklovers.com
+FRONTEND_DOMAIN=thefolklovers.com
 
 # PostgreSQL
 POSTGRES_USER=folklovers
-POSTGRES_PASSWORD=<secure_password>
+POSTGRES_PASSWORD=<generate with: openssl rand -hex 16>
 POSTGRES_DB=folklovers_production
 
 # Rails secrets (generate with: openssl rand -hex 64)
@@ -253,59 +210,19 @@ SECRET_KEY_BASE=<generated_secret>
 JWT_SECRET_KEY=<generated_secret>
 
 # Google OAuth (optional)
-GOOGLE_CLIENT_ID=<your_client_id>
-GOOGLE_CLIENT_SECRET=<your_client_secret>
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
 ```
 
-### Initial Deployment
+## Deployment
 
-```bash
-# Clone the repository
-cd /home/deploy/docker
-git clone git@github.com:your-user/folklovers.git
-cd folklovers
+The project is containerized with Docker and uses Traefik as reverse proxy.
 
-# Configure environment
-cp .env.example .env
-vim .env  # Set your values
-
-# Build and start containers
-docker compose up -d --build
-
-# Run migrations and seed data
-docker compose exec backend bundle exec rails db:migrate
-docker compose exec backend bundle exec rails db:seed
-```
-
-### CI/CD with GitHub Actions
-
-The project includes GitHub Actions workflows for automated deployment.
-
-**Required GitHub Secrets:**
-
-| Secret | Description |
-|--------|-------------|
-| `SERVER_HOST` | Server IP or domain |
-| `SERVER_USER` | SSH user (e.g., `deploy`) |
-| `SERVER_SSH_KEY` | Private SSH key |
-
-**Setup SSH key for deployment:**
-
-```bash
-# Generate a dedicated deploy key
-ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/folklovers_deploy
-
-# Copy public key to server
-ssh-copy-id -i ~/.ssh/folklovers_deploy.pub deploy@your-server
-
-# Add private key content to GitHub secret SERVER_SSH_KEY
-cat ~/.ssh/folklovers_deploy
-```
-
-**Deployment flow:**
-```
-Push to main → CI (tests) → Deploy via SSH → docker compose build → up -d → migrations
-```
+See **[DEPLOY.md](DEPLOY.md)** for the complete deployment guide, including:
+- Architecture overview
+- CI/CD pipeline with GitHub Actions
+- Server setup instructions
+- Troubleshooting
 
 ## Contributing
 
