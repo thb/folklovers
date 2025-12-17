@@ -13,9 +13,10 @@ RUN apt-get update -qq && \
 # Set working directory
 WORKDIR /app
 
-# Install gems
+# Install gems (with cache)
 COPY Gemfile Gemfile.lock ./
-RUN bundle config set --local deployment 'true' && \
+RUN --mount=type=cache,target=/root/.bundle/cache \
+    bundle config set --local deployment 'true' && \
     bundle config set --local without 'development test' && \
     bundle install --jobs 4 --retry 3
 
