@@ -1,0 +1,23 @@
+Rails.application.routes.draw do
+  # Health check
+  get "up" => "rails/health#show", as: :rails_health_check
+
+  # Auth
+  post "auth/register", to: "auth#register"
+  post "auth/login", to: "auth#login"
+  post "auth/google", to: "auth#google"
+  get "auth/me", to: "auth#me"
+
+  # Songs
+  get "songs/top", to: "songs#top"
+  get "songs", to: "songs#index"
+  get "songs/:slug", to: "songs#show"
+
+  # Covers
+  get "covers/top", to: "covers#top"
+  get "songs/:song_slug/covers", to: "covers#index"
+
+  # Votes
+  post "covers/:cover_id/vote", to: "votes#create"
+  delete "covers/:cover_id/vote", to: "votes#destroy"
+end

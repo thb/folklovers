@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Times They Are A-Changin' — Folklovers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Courier+Prime&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #F5F0E6;
+      --cream-dark: #E8E0D0;
+      --sepia: #D4C4A8;
+      --brown-light: #8B7355;
+      --brown: #5D4E37;
+      --brown-dark: #3D3225;
+      --ochre: #C4913B;
+      --ochre-dark: #A67B2C;
+      --rust: #8B4513;
+      --ink: #2C2416;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Source Serif 4', Georgia, serif;
+      background-color: var(--cream);
+      color: var(--ink);
+      line-height: 1.6;
+      background-image:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    }
+
+    /* Header */
+    header {
+      background: var(--brown-dark);
+      border-bottom: 3px solid var(--ochre);
+      padding: 1rem 0;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--cream);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+    }
+
+    .logo span {
+      color: var(--ochre);
+    }
+
+    nav {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    nav a {
+      color: var(--sepia);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--ochre);
+    }
+
+    .btn-login {
+      background: var(--ochre);
+      color: var(--brown-dark);
+      padding: 0.5rem 1.25rem;
+      border-radius: 2px;
+      font-weight: 600;
+    }
+
+    .btn-login:hover {
+      background: var(--ochre-dark);
+      color: var(--cream);
+    }
+
+    /* Main Content */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      font-size: 0.85rem;
+      color: var(--brown-light);
+      margin-bottom: 1.5rem;
+    }
+
+    .breadcrumb a {
+      color: var(--brown);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    /* Song Header */
+    .song-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--sepia);
+    }
+
+    .song-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--brown-dark);
+      margin-bottom: 0.5rem;
+      line-height: 1.2;
+    }
+
+    .song-artist {
+      font-size: 1.25rem;
+      color: var(--brown);
+      font-style: italic;
+    }
+
+    .song-artist a {
+      color: var(--brown);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--brown-light);
+    }
+
+    .song-meta {
+      margin-top: 1rem;
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--brown-light);
+    }
+
+    .song-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Original Version Section */
+    .original-section {
+      background: var(--cream-dark);
+      border: 1px solid var(--sepia);
+      border-radius: 4px;
+      padding: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .section-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--brown-light);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--sepia);
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      background: var(--brown-dark);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .video-container iframe,
+    .video-placeholder {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .video-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--sepia);
+      font-size: 3rem;
+    }
+
+    .video-placeholder span {
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    .original-description {
+      margin-top: 1rem;
+      font-style: italic;
+      color: var(--brown);
+      line-height: 1.7;
+    }
+
+    /* Interpretations Section */
+    .interpretations-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .interpretations-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--brown-dark);
+    }
+
+    .interpretations-count {
+      font-size: 0.9rem;
+      color: var(--brown-light);
+    }
+
+    .sort-options {
+      display: flex;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .sort-options button {
+      background: none;
+      border: 1px solid var(--sepia);
+      padding: 0.4rem 0.8rem;
+      border-radius: 2px;
+      color: var(--brown);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .sort-options button:hover {
+      background: var(--cream-dark);
+    }
+
+    .sort-options button.active {
+      background: var(--brown);
+      color: var(--cream);
+      border-color: var(--brown);
+    }
+
+    /* Interpretation Card */
+    .interpretation {
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 1.25rem;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--sepia);
+    }
+
+    .interpretation:last-child {
+      border-bottom: none;
+    }
+
+    /* Voting */
+    .voting {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .vote-btn {
+      background: none;
+      border: 1px solid var(--sepia);
+      width: 36px;
+      height: 36px;
+      border-radius: 2px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--brown-light);
+      transition: all 0.2s;
+      font-size: 1.25rem;
+    }
+
+    .vote-btn:hover {
+      background: var(--cream-dark);
+      border-color: var(--brown-light);
+      color: var(--brown);
+    }
+
+    .vote-btn.upvote:hover,
+    .vote-btn.upvote.active {
+      background: var(--ochre);
+      border-color: var(--ochre);
+      color: white;
+    }
+
+    .vote-btn.downvote:hover,
+    .vote-btn.downvote.active {
+      background: var(--rust);
+      border-color: var(--rust);
+      color: white;
+    }
+
+    .vote-score {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--brown-dark);
+      padding: 0.25rem 0;
+    }
+
+    .vote-score.positive {
+      color: var(--ochre-dark);
+    }
+
+    .vote-score.negative {
+      color: var(--rust);
+    }
+
+    /* Interpretation Content */
+    .interpretation-content {
+      min-width: 0;
+    }
+
+    .interpretation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .interpretation-artist {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--brown-dark);
+    }
+
+    .interpretation-artist a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px dotted var(--brown-light);
+    }
+
+    .interpretation-year {
+      font-size: 0.9rem;
+      color: var(--brown-light);
+      font-style: italic;
+    }
+
+    .rank-badge {
+      background: var(--ochre);
+      color: white;
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 2px;
+      font-weight: 600;
+    }
+
+    .rank-badge.gold {
+      background: linear-gradient(135deg, #C4913B, #E5C076);
+    }
+
+    .rank-badge.silver {
+      background: linear-gradient(135deg, #8B8B8B, #C0C0C0);
+    }
+
+    .rank-badge.bronze {
+      background: linear-gradient(135deg, #8B4513, #CD7F32);
+    }
+
+    .interpretation-video {
+      margin-bottom: 1rem;
+    }
+
+    .interpretation-video .video-container {
+      padding-bottom: 40%;
+    }
+
+    .interpretation-description {
+      background: var(--cream-dark);
+      border-left: 3px solid var(--ochre);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      font-style: italic;
+      color: var(--brown);
+      line-height: 1.7;
+    }
+
+    .interpretation-description .author {
+      display: block;
+      margin-top: 0.75rem;
+      font-style: normal;
+      font-size: 0.85rem;
+      color: var(--brown-light);
+    }
+
+    .interpretation-footer {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--brown-light);
+    }
+
+    .interpretation-footer a {
+      color: var(--brown);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: color 0.2s;
+    }
+
+    .interpretation-footer a:hover {
+      color: var(--ochre-dark);
+    }
+
+    /* Comments Preview */
+    .comments-preview {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px dashed var(--sepia);
+    }
+
+    .comment {
+      padding: 0.75rem 0;
+      font-size: 0.9rem;
+    }
+
+    .comment-author {
+      font-weight: 600;
+      color: var(--brown);
+    }
+
+    .comment-date {
+      color: var(--brown-light);
+      font-size: 0.8rem;
+    }
+
+    .comment-text {
+      margin-top: 0.25rem;
+      color: var(--brown);
+    }
+
+    .show-more-comments {
+      color: var(--ochre-dark);
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+
+    .show-more-comments:hover {
+      text-decoration: underline;
+    }
+
+    /* Add Interpretation CTA */
+    .add-interpretation {
+      margin-top: 2rem;
+      padding: 2rem;
+      background: var(--cream-dark);
+      border: 2px dashed var(--sepia);
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .add-interpretation p {
+      color: var(--brown);
+      margin-bottom: 1rem;
+      font-style: italic;
+    }
+
+    .btn-add {
+      display: inline-block;
+      background: var(--ochre);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      text-decoration: none;
+      border-radius: 2px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .btn-add:hover {
+      background: var(--ochre-dark);
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 4rem;
+      padding: 2rem;
+      background: var(--brown-dark);
+      color: var(--sepia);
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: var(--ochre);
+      text-decoration: none;
+    }
+
+    /* Icons (simple SVG) */
+    .icon {
+      width: 1em;
+      height: 1em;
+      vertical-align: middle;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .song-title {
+        font-size: 1.75rem;
+      }
+
+      .interpretation {
+        grid-template-columns: 50px 1fr;
+        gap: 1rem;
+      }
+
+      .interpretation-video .video-container {
+        padding-bottom: 56.25%;
+      }
+
+      .song-meta {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <a href="/" class="logo">Folk<span>lovers</span></a>
+      <nav>
+        <a href="/songs">Chansons</a>
+        <a href="/artists">Artistes</a>
+        <a href="/about">À propos</a>
+        <a href="/login" class="btn-login">Connexion</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="/">Accueil</a> › <a href="/songs">Chansons</a> › The Times They Are A-Changin'
+    </div>
+
+    <!-- Song Header -->
+    <div class="song-header">
+      <h1 class="song-title">The Times They Are A-Changin'</h1>
+      <p class="song-artist">par <a href="/artists/bob-dylan">Bob Dylan</a></p>
+      <div class="song-meta">
+        <span>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          1964
+        </span>
+        <span>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18V5l12-2v13"></path>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="16" r="3"></circle>
+          </svg>
+          12 interprétations
+        </span>
+        <span>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+          </svg>
+          847 votes
+        </span>
+      </div>
+    </div>
+
+    <!-- Original Version -->
+    <section class="original-section">
+      <div class="section-label">Version Originale</div>
+      <div class="video-container">
+        <div class="video-placeholder">
+          ▶
+          <span>Bob Dylan — The Times They Are A-Changin' (1964)</span>
+        </div>
+      </div>
+      <p class="original-description">
+        Écrite en septembre-octobre 1963, cette chanson est devenue un hymne du mouvement des droits civiques
+        et de la contre-culture américaine. Dylan l'a délibérément écrite comme un "anthem of change"
+        inspiré par les ballades irlandaises et écossaises.
+      </p>
+    </section>
+
+    <!-- Interpretations -->
+    <section class="interpretations-section">
+      <div class="interpretations-header">
+        <div>
+          <h2 class="interpretations-title">Interprétations</h2>
+          <span class="interpretations-count">12 versions classées par la communauté</span>
+        </div>
+        <div class="sort-options">
+          <button class="active">Top</button>
+          <button>Récent</button>
+        </div>
+      </div>
+
+      <!-- Interpretation #1 -->
+      <article class="interpretation">
+        <div class="voting">
+          <button class="vote-btn upvote" title="Voter pour">▲</button>
+          <span class="vote-score positive">+247</span>
+          <button class="vote-btn downvote" title="Voter contre">▼</button>
+        </div>
+        <div class="interpretation-content">
+          <div class="interpretation-header">
+            <div>
+              <span class="interpretation-artist"><a href="/artists/nina-simone">Nina Simone</a></span>
+              <span class="interpretation-year">— 1969</span>
+            </div>
+            <span class="rank-badge gold">#1</span>
+          </div>
+          <div class="interpretation-video">
+            <div class="video-container">
+              <div class="video-placeholder">
+                ▶
+                <span>Nina Simone — Live at Montreux</span>
+              </div>
+            </div>
+          </div>
+          <div class="interpretation-description">
+            "Nina transforme cette chanson folk en un cri de rage et d'espoir.
+            Sa version au piano est plus lente, plus intense, presque menaçante.
+            Elle ne chante pas le changement, elle l'exige."
+            <span class="author">— proposé par @folkfan42</span>
+          </div>
+          <div class="interpretation-footer">
+            <a href="#comments-1">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              23 commentaires
+            </a>
+            <a href="#">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+              </svg>
+              Partager
+            </a>
+          </div>
+          <div class="comments-preview">
+            <div class="comment">
+              <span class="comment-author">@vinylcollector</span>
+              <span class="comment-date">· il y a 3 jours</span>
+              <p class="comment-text">Cette version m'a fait redécouvrir la chanson. Impossible de revenir à l'original après ça.</p>
+            </div>
+            <div class="show-more-comments">Voir les 23 commentaires →</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Interpretation #2 -->
+      <article class="interpretation">
+        <div class="voting">
+          <button class="vote-btn upvote active" title="Voter pour">▲</button>
+          <span class="vote-score positive">+186</span>
+          <button class="vote-btn downvote" title="Voter contre">▼</button>
+        </div>
+        <div class="interpretation-content">
+          <div class="interpretation-header">
+            <div>
+              <span class="interpretation-artist"><a href="/artists/eddie-vedder">Eddie Vedder</a></span>
+              <span class="interpretation-year">— 2007</span>
+            </div>
+            <span class="rank-badge silver">#2</span>
+          </div>
+          <div class="interpretation-video">
+            <div class="video-container">
+              <div class="video-placeholder">
+                ▶
+                <span>Eddie Vedder — Water on the Road</span>
+              </div>
+            </div>
+          </div>
+          <div class="interpretation-description">
+            "Eddie ramène la chanson à ses racines folk tout en y insufflant l'énergie
+            du rock. Version dépouillée, voix rauque, juste une guitare acoustique.
+            Parfait pour les fans de Pearl Jam qui veulent découvrir Dylan."
+            <span class="author">— proposé par @seattlesound</span>
+          </div>
+          <div class="interpretation-footer">
+            <a href="#comments-2">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              15 commentaires
+            </a>
+            <a href="#">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+              </svg>
+              Partager
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Interpretation #3 -->
+      <article class="interpretation">
+        <div class="voting">
+          <button class="vote-btn upvote" title="Voter pour">▲</button>
+          <span class="vote-score positive">+134</span>
+          <button class="vote-btn downvote" title="Voter contre">▼</button>
+        </div>
+        <div class="interpretation-content">
+          <div class="interpretation-header">
+            <div>
+              <span class="interpretation-artist"><a href="/artists/simon-garfunkel">Simon & Garfunkel</a></span>
+              <span class="interpretation-year">— 1965</span>
+            </div>
+            <span class="rank-badge bronze">#3</span>
+          </div>
+          <div class="interpretation-video">
+            <div class="video-container">
+              <div class="video-placeholder">
+                ▶
+                <span>Simon & Garfunkel — Wednesday Morning, 3 A.M.</span>
+              </div>
+            </div>
+          </div>
+          <div class="interpretation-description">
+            "Les harmonies vocales de Paul et Art adoucissent le message sans l'affaiblir.
+            Une version plus accessible qui a introduit beaucoup de gens à Dylan
+            avant même qu'ils ne connaissent l'original."
+            <span class="author">— proposé par @harmony_hunter</span>
+          </div>
+          <div class="interpretation-footer">
+            <a href="#comments-3">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              8 commentaires
+            </a>
+            <a href="#">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+              </svg>
+              Partager
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Interpretation #4 -->
+      <article class="interpretation">
+        <div class="voting">
+          <button class="vote-btn upvote" title="Voter pour">▲</button>
+          <span class="vote-score">+67</span>
+          <button class="vote-btn downvote" title="Voter contre">▼</button>
+        </div>
+        <div class="interpretation-content">
+          <div class="interpretation-header">
+            <div>
+              <span class="interpretation-artist"><a href="/artists/the-byrds">The Byrds</a></span>
+              <span class="interpretation-year">— 1965</span>
+            </div>
+            <span class="rank-badge">#4</span>
+          </div>
+          <div class="interpretation-video">
+            <div class="video-container">
+              <div class="video-placeholder">
+                ▶
+                <span>The Byrds — Turn! Turn! Turn!</span>
+              </div>
+            </div>
+          </div>
+          <div class="interpretation-description">
+            "Le son jingle-jangle de la Rickenbacker 12 cordes transforme cette ballade
+            folk en quelque chose de complètement différent. Les Byrds ont inventé
+            le folk-rock avec des reprises comme celle-ci."
+            <span class="author">— proposé par @jinglejangler</span>
+          </div>
+          <div class="interpretation-footer">
+            <a href="#comments-4">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              5 commentaires
+            </a>
+            <a href="#">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+              </svg>
+              Partager
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Add Interpretation CTA -->
+      <div class="add-interpretation">
+        <p>Vous connaissez une interprétation qui manque à cette liste ?</p>
+        <a href="/songs/times-they-are-a-changin/interpretations/new" class="btn-add">
+          + Proposer une interprétation
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>
+      Folklovers — fait avec ♪ par des passionnés de folk<br>
+      <a href="/about">À propos</a> · <a href="/contact">Contact</a> · <a href="/terms">CGU</a>
+    </p>
+  </footer>
+</body>
+</html>

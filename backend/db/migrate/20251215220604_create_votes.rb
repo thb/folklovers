@@ -1,0 +1,12 @@
+class CreateVotes < ActiveRecord::Migration[8.0]
+  def change
+    create_table :votes do |t|
+      t.references :user, null: false, foreign_key: true
+      t.references :interpretation, null: false, foreign_key: true
+      t.integer :value, null: false
+
+      t.timestamps
+    end
+    add_index :votes, [:user_id, :interpretation_id], unique: true
+  end
+end

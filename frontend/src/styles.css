@@ -1,0 +1,217 @@
+/* Vintage Fonts - must be first */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&family=Special+Elite&display=swap');
+
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+body {
+  @apply m-0;
+  font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+code, .font-mono {
+  font-family: 'Special Elite', 'Courier New', monospace;
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Custom vintage colors */
+  --color-vintage-cream: var(--vintage-cream);
+  --color-vintage-brown: var(--vintage-brown);
+  --color-vintage-gold: var(--vintage-gold);
+  --color-vintage-sepia: var(--vintage-sepia);
+  --color-vintage-paper: var(--vintage-paper);
+}
+
+/* Vintage Folk Theme - Light Mode (Gaslight Cafe inspired) */
+:root {
+  --radius: 0.375rem;
+
+  /* Warm cream/paper background */
+  --background: oklch(0.97 0.01 85);
+  --foreground: oklch(0.25 0.02 50);
+
+  /* Card - slightly warmer */
+  --card: oklch(0.98 0.01 80);
+  --card-foreground: oklch(0.25 0.02 50);
+
+  /* Popover */
+  --popover: oklch(0.99 0.005 85);
+  --popover-foreground: oklch(0.25 0.02 50);
+
+  /* Primary - Deep vintage brown */
+  --primary: oklch(0.35 0.05 50);
+  --primary-foreground: oklch(0.97 0.01 85);
+
+  /* Secondary - Muted sepia */
+  --secondary: oklch(0.90 0.02 70);
+  --secondary-foreground: oklch(0.30 0.03 50);
+
+  /* Muted - Faded paper */
+  --muted: oklch(0.92 0.015 75);
+  --muted-foreground: oklch(0.50 0.02 50);
+
+  /* Accent - Vintage gold */
+  --accent: oklch(0.75 0.12 75);
+  --accent-foreground: oklch(0.25 0.02 50);
+
+  /* Destructive */
+  --destructive: oklch(0.55 0.2 25);
+
+  /* Borders - Warm brown tint */
+  --border: oklch(0.85 0.02 60);
+  --input: oklch(0.88 0.02 65);
+  --ring: oklch(0.55 0.08 60);
+
+  /* Charts - Vintage palette */
+  --chart-1: oklch(0.55 0.12 45);
+  --chart-2: oklch(0.65 0.10 75);
+  --chart-3: oklch(0.45 0.08 180);
+  --chart-4: oklch(0.70 0.15 50);
+  --chart-5: oklch(0.50 0.06 30);
+
+  /* Sidebar */
+  --sidebar: oklch(0.95 0.015 80);
+  --sidebar-foreground: oklch(0.25 0.02 50);
+  --sidebar-primary: oklch(0.35 0.05 50);
+  --sidebar-primary-foreground: oklch(0.97 0.01 85);
+  --sidebar-accent: oklch(0.90 0.02 70);
+  --sidebar-accent-foreground: oklch(0.30 0.03 50);
+  --sidebar-border: oklch(0.85 0.02 60);
+  --sidebar-ring: oklch(0.55 0.08 60);
+
+  /* Custom vintage colors */
+  --vintage-cream: oklch(0.97 0.01 85);
+  --vintage-brown: oklch(0.35 0.05 50);
+  --vintage-gold: oklch(0.75 0.12 75);
+  --vintage-sepia: oklch(0.60 0.08 55);
+  --vintage-paper: oklch(0.94 0.02 80);
+}
+
+/* Dark mode - Smoky coffeehouse */
+.dark {
+  --background: oklch(0.18 0.02 50);
+  --foreground: oklch(0.92 0.01 80);
+
+  --card: oklch(0.22 0.02 50);
+  --card-foreground: oklch(0.92 0.01 80);
+
+  --popover: oklch(0.20 0.02 50);
+  --popover-foreground: oklch(0.92 0.01 80);
+
+  --primary: oklch(0.85 0.08 75);
+  --primary-foreground: oklch(0.18 0.02 50);
+
+  --secondary: oklch(0.28 0.02 50);
+  --secondary-foreground: oklch(0.88 0.01 80);
+
+  --muted: oklch(0.25 0.02 50);
+  --muted-foreground: oklch(0.65 0.02 70);
+
+  --accent: oklch(0.65 0.10 70);
+  --accent-foreground: oklch(0.15 0.02 50);
+
+  --destructive: oklch(0.60 0.2 25);
+
+  --border: oklch(0.30 0.02 55);
+  --input: oklch(0.28 0.02 55);
+  --ring: oklch(0.60 0.08 70);
+
+  --chart-1: oklch(0.65 0.12 70);
+  --chart-2: oklch(0.60 0.08 45);
+  --chart-3: oklch(0.55 0.06 180);
+  --chart-4: oklch(0.70 0.10 50);
+  --chart-5: oklch(0.50 0.08 30);
+
+  --sidebar: oklch(0.20 0.02 50);
+  --sidebar-foreground: oklch(0.92 0.01 80);
+  --sidebar-primary: oklch(0.85 0.08 75);
+  --sidebar-primary-foreground: oklch(0.18 0.02 50);
+  --sidebar-accent: oklch(0.28 0.02 50);
+  --sidebar-accent-foreground: oklch(0.88 0.01 80);
+  --sidebar-border: oklch(0.30 0.02 55);
+  --sidebar-ring: oklch(0.60 0.08 70);
+
+  --vintage-cream: oklch(0.92 0.01 80);
+  --vintage-brown: oklch(0.75 0.06 60);
+  --vintage-gold: oklch(0.65 0.10 70);
+  --vintage-sepia: oklch(0.55 0.06 55);
+  --vintage-paper: oklch(0.22 0.02 50);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Vintage button style enhancements */
+.btn-vintage {
+  @apply font-serif tracking-wide;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Paper texture effect for cards */
+.paper-texture {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-blend-mode: overlay;
+}
+
+/* Vintage link style */
+a:not([class]) {
+  @apply text-vintage-brown underline decoration-vintage-gold/50 underline-offset-2 hover:decoration-vintage-gold transition-colors;
+}
+
+.dark a:not([class]) {
+  @apply text-vintage-gold hover:text-vintage-cream;
+}
