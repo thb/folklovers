@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ThumbsUp, ThumbsDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/auth'
@@ -15,6 +15,12 @@ export function VotingButtons({ cover, onVoteChange }: VotingButtonsProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [currentVote, setCurrentVote] = useState<1 | -1 | null>(cover.user_vote)
   const [score, setScore] = useState(cover.votes_score)
+
+  // Sync state when cover prop changes (e.g., after refetch with token)
+  useEffect(() => {
+    setCurrentVote(cover.user_vote)
+    setScore(cover.votes_score)
+  }, [cover.user_vote, cover.votes_score])
 
   const handleVote = async (value: 1 | -1) => {
     if (!isAuthenticated || !token) {
