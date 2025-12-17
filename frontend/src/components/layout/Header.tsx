@@ -24,7 +24,7 @@ export function Header() {
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              Folklovers
+              Folk Lovers
             </h1>
             <p className="text-xs text-muted-foreground -mt-1 font-mono">
               Since 1961

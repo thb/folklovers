@@ -1,7 +1,7 @@
 # TODO
 
 ## Authentication
-- [ ] Configurer Google OAuth
+- [x] Configurer Google OAuth
 
 ## Bugs
 - [ ] Fix votes +1/-1 : le state du vote utilisateur n'est pas bien géré
