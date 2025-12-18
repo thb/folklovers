@@ -1,6 +1,6 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, ArrowLeft } from 'lucide-react'
+import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -56,8 +56,7 @@ const emptySongForm: SongFormData = {
 }
 
 function AdminSongsPage() {
-  const { token, isAdmin, isLoading: isAuthLoading } = useAuth()
-  const navigate = useNavigate()
+  const { token, isAdmin } = useAuth()
 
   const [songs, setSongs] = useState<Song[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -70,14 +69,6 @@ function AdminSongsPage() {
   const [formData, setFormData] = useState<SongFormData>(emptySongForm)
   const [isSaving, setIsSaving] = useState(false)
 
-  // Redirect if not admin
-  useEffect(() => {
-    if (!isAuthLoading && !isAdmin) {
-      navigate({ to: '/' })
-    }
-  }, [isAdmin, isAuthLoading, navigate])
-
-  // Fetch songs on mount
   useEffect(() => {
     if (token && isAdmin) {
       fetchSongs()
@@ -163,21 +154,12 @@ function AdminSongsPage() {
     }
   }
 
-  if (isAuthLoading || !isAdmin) {
-    return null
-  }
-
   return (
     <div className="py-12 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Link to="/admin">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </Link>
-          <div className="flex-1">
+        <div className="flex items-center justify-between mb-8">
+          <div>
             <h1 className="text-3xl font-bold text-foreground">
               Songs
             </h1>

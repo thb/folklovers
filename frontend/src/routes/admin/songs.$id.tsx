@@ -1,6 +1,6 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { ArrowLeft, Plus, Pencil, Trash2, ExternalLink, Play } from 'lucide-react'
+import { Plus, Pencil, Trash2, ExternalLink, Play } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -55,8 +55,7 @@ const emptyCoverForm: CoverFormData = {
 }
 
 function AdminSongDetailPage() {
-  const { token, isAdmin, isLoading: isAuthLoading } = useAuth()
-  const navigate = useNavigate()
+  const { token, isAdmin } = useAuth()
   const { id } = Route.useParams()
   const songId = parseInt(id)
 
@@ -85,12 +84,6 @@ function AdminSongDetailPage() {
   // Delete dialog state
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [deletingCover, setDeletingCover] = useState<AdminCover | null>(null)
-
-  useEffect(() => {
-    if (!isAuthLoading && !isAdmin) {
-      navigate({ to: '/' })
-    }
-  }, [isAdmin, isAuthLoading, navigate])
 
   useEffect(() => {
     if (token && isAdmin) {
@@ -214,10 +207,6 @@ function AdminSongDetailPage() {
     }
   }
 
-  if (isAuthLoading || !isAdmin) {
-    return null
-  }
-
   if (isLoading) {
     return (
       <div className="py-12 px-4">
@@ -242,13 +231,8 @@ function AdminSongDetailPage() {
     <div className="py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Link to="/admin/songs">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </Link>
-          <div className="flex-1">
+        <div className="flex items-center justify-between mb-8">
+          <div>
             <h1 className="text-3xl font-bold text-foreground">{song.title}</h1>
             <p className="text-muted-foreground">{song.original_artist}</p>
           </div>

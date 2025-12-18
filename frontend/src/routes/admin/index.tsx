@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { Music, Disc, Users } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -10,17 +10,10 @@ export const Route = createFileRoute('/admin/')({
 })
 
 function AdminDashboard() {
-  const { token, isAdmin, isLoading } = useAuth()
-  const navigate = useNavigate()
+  const { token, isAdmin } = useAuth()
   const [songsCount, setSongsCount] = useState<number | null>(null)
   const [coversCount, setCoversCount] = useState<number | null>(null)
   const [usersCount, setUsersCount] = useState<number | null>(null)
-
-  useEffect(() => {
-    if (!isLoading && !isAdmin) {
-      navigate({ to: '/' })
-    }
-  }, [isAdmin, isLoading, navigate])
 
   useEffect(() => {
     if (token && isAdmin) {
@@ -42,10 +35,6 @@ function AdminDashboard() {
     } catch (err) {
       // Ignore errors for counts
     }
-  }
-
-  if (isLoading || !isAdmin) {
-    return null
   }
 
   return (

@@ -1,6 +1,6 @@
-import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { ArrowLeft, ChevronLeft, ChevronRight, User, Vote, Disc } from 'lucide-react'
+import { ChevronLeft, ChevronRight, User, Vote, Disc } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -24,8 +24,7 @@ export const Route = createFileRoute('/admin/users')({
 })
 
 function AdminUsersPage() {
-  const { token, isAdmin, isLoading: isAuthLoading } = useAuth()
-  const navigate = useNavigate()
+  const { token, isAdmin } = useAuth()
 
   const [users, setUsers] = useState<AdminUser[]>([])
   const [pagination, setPagination] = useState({ current_page: 1, total_pages: 1, total_count: 0 })
@@ -34,12 +33,6 @@ function AdminUsersPage() {
 
   const [selectedUser, setSelectedUser] = useState<{ user: UserType; contributions: UserContributions } | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-
-  useEffect(() => {
-    if (!isAuthLoading && !isAdmin) {
-      navigate({ to: '/' })
-    }
-  }, [isAdmin, isAuthLoading, navigate])
 
   useEffect(() => {
     if (token && isAdmin) {
@@ -83,27 +76,15 @@ function AdminUsersPage() {
     })
   }
 
-  if (isAuthLoading || !isAdmin) {
-    return null
-  }
-
   return (
     <div className="py-12 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <Link to="/admin" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Back to admin
-          </Link>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">Users</h1>
-              <p className="text-muted-foreground">
-                {pagination.total_count} registered users
-              </p>
-            </div>
-          </div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Users</h1>
+          <p className="text-muted-foreground">
+            {pagination.total_count} registered users
+          </p>
         </div>
 
         {/* Error */}
