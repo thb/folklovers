@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Music, Disc } from 'lucide-react'
+import { Music, Disc, Users } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { admin } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
@@ -14,6 +14,7 @@ function AdminDashboard() {
   const navigate = useNavigate()
   const [songsCount, setSongsCount] = useState<number | null>(null)
   const [coversCount, setCoversCount] = useState<number | null>(null)
+  const [usersCount, setUsersCount] = useState<number | null>(null)
 
   useEffect(() => {
     if (!isLoading && !isAdmin) {
@@ -30,12 +31,14 @@ function AdminDashboard() {
   async function fetchCounts() {
     if (!token) return
     try {
-      const [songsData, coversData] = await Promise.all([
+      const [songsData, coversData, usersData] = await Promise.all([
         admin.songs.list(token, { per_page: 1 }),
         admin.covers.list(token, { per_page: 1 }),
+        admin.users.list(token, { per_page: 1 }),
       ])
       setSongsCount(songsData.pagination.total_count)
       setCoversCount(coversData.pagination.total_count)
+      setUsersCount(usersData.pagination.total_count)
     } catch (err) {
       // Ignore errors for counts
     }
@@ -57,7 +60,7 @@ function AdminDashboard() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Link to="/admin/songs">
             <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full">
               <CardHeader>
@@ -101,6 +104,30 @@ function AdminDashboard() {
               <CardContent>
                 <p className="text-sm text-muted-foreground">
                   Manage the different versions and interpretations
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to="/admin/users">
+            <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Users className="w-6 h-6 text-primary" />
+                  </div>
+                  {usersCount !== null && (
+                    <span className="text-3xl font-bold text-primary">{usersCount}</span>
+                  )}
+                </div>
+                <CardTitle className="mt-4">Users</CardTitle>
+                <CardDescription>
+                  View user contributions
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  See registered users and their activity
                 </p>
               </CardContent>
             </Card>

@@ -62,10 +62,10 @@ module YouTubeAPI
 end
 
 namespace :youtube do
-  desc "Search YouTube for a song/cover and show top results"
-  task search: :environment do
-    api_key = ENV["YOUTUBE_API_KEY"] || raise("Set YOUTUBE_API_KEY")
-    query = ENV["Q"] || raise("Set Q='search query'")
+  desc "Search YouTube: bin/rails 'youtube:search[query here]'"
+  task :search, [:query] => :environment do |_t, args|
+    api_key = ENV["YOUTUBE_API_KEY"] || raise("Set YOUTUBE_API_KEY in .env")
+    query = args[:query] || raise("Usage: bin/rails 'youtube:search[query here]'")
 
     puts "Searching YouTube for: #{query}\n\n"
     results = YouTubeAPI.search(query, api_key)
@@ -114,10 +114,10 @@ namespace :youtube do
     end
   end
 
-  desc "Auto-fix a specific song: SONG_ID=1"
-  task fix_song: :environment do
-    api_key = ENV["YOUTUBE_API_KEY"] || raise("Set YOUTUBE_API_KEY")
-    song = Song.find(ENV["SONG_ID"] || raise("Set SONG_ID"))
+  desc "Auto-fix a specific song: bin/rails 'youtube:fix_song[ID]'"
+  task :fix_song, [:song_id] => :environment do |_t, args|
+    api_key = ENV["YOUTUBE_API_KEY"] || raise("Set YOUTUBE_API_KEY in .env")
+    song = Song.find(args[:song_id] || raise("Usage: bin/rails 'youtube:fix_song[ID]'"))
 
     query = "#{song.title} #{song.original_artist} official"
     puts "Searching: #{query}"
@@ -137,10 +137,10 @@ namespace :youtube do
     end
   end
 
-  desc "Auto-fix a specific cover: COVER_ID=1"
-  task fix_cover: :environment do
-    api_key = ENV["YOUTUBE_API_KEY"] || raise("Set YOUTUBE_API_KEY")
-    cover = Cover.find(ENV["COVER_ID"] || raise("Set COVER_ID"))
+  desc "Auto-fix a specific cover: bin/rails 'youtube:fix_cover[ID]'"
+  task :fix_cover, [:cover_id] => :environment do |_t, args|
+    api_key = ENV["YOUTUBE_API_KEY"] || raise("Set YOUTUBE_API_KEY in .env")
+    cover = Cover.find(args[:cover_id] || raise("Usage: bin/rails 'youtube:fix_cover[ID]'"))
 
     query = "#{cover.artist} #{cover.song.title} cover"
     puts "Searching: #{query}"

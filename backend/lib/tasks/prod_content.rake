@@ -64,34 +64,36 @@ module ProdApi
     response = http.request(request)
     JSON.parse(response.body)
   end
+
+  def self.credentials
+    email = ENV["ADMIN_EMAIL"] || raise("Set ADMIN_EMAIL in .env")
+    password = ENV["ADMIN_PASSWORD"] || raise("Set ADMIN_PASSWORD in .env")
+    [email, password]
+  end
+
+  def self.api_url
+    ENV["API_URL"] || "https://api.thefolklovers.com"
+  end
 end
 
 namespace :prod do
-  desc "Populate production with songs and covers from JSON (stdin or FILE env)"
-  task :populate do
-    api_url = ENV["API_URL"] || "https://api.thefolklovers.com"
-    email = ENV["ADMIN_EMAIL"] || raise("Set ADMIN_EMAIL env var")
-    password = ENV["ADMIN_PASSWORD"] || raise("Set ADMIN_PASSWORD env var")
+  desc "Populate production from JSON file: bin/rails 'prod:populate[path/to/file.json]'"
+  task :populate, [:file] => :environment do |_t, args|
+    file_path = args[:file] || raise("Usage: bin/rails 'prod:populate[path/to/file.json]'")
+    raise "File not found: #{file_path}" unless File.exist?(file_path)
 
-    # Read JSON input
-    json_input = if ENV["FILE"]
-      File.read(ENV["FILE"])
-    else
-      STDIN.read
-    end
-    data = JSON.parse(json_input)
+    api_url = ProdApi.api_url
+    email, password = ProdApi.credentials
+    data = JSON.parse(File.read(file_path))
 
-    # Login
     puts "Logging in to #{api_url}..."
     token = ProdApi.login(api_url, email, password)
     raise "Login failed" unless token
     puts "Authenticated!"
 
-    # Create songs and covers
     data["songs"]&.each do |song_data|
       covers_data = song_data.delete("covers") || []
 
-      # Create song
       puts "Creating song: #{song_data["title"]}..."
       song = ProdApi.post("#{api_url}/admin/songs", song_data, token)
 
@@ -99,7 +101,6 @@ namespace :prod do
         song_id = song["song"]["id"]
         puts "  Created song ##{song_id}"
 
-        # Create covers
         covers_data.each do |cover_data|
           cover_data["song_id"] = song_id
           puts "  Creating cover: #{cover_data["artist"]}..."
@@ -118,26 +119,26 @@ namespace :prod do
     puts "\nDone!"
   end
 
-  desc "Update a song's YouTube URL in production: SONG_ID=1 URL=https://..."
-  task :update_song do
-    api_url = ENV["API_URL"] || "https://api.thefolklovers.com"
-    email = ENV["ADMIN_EMAIL"] || raise("Set ADMIN_EMAIL")
-    password = ENV["ADMIN_PASSWORD"] || raise("Set ADMIN_PASSWORD")
-    song_id = ENV["SONG_ID"] || raise("Set SONG_ID")
-    url = ENV["URL"] || raise("Set URL")
+  desc "Update song YouTube URL: bin/rails 'prod:update_song[ID,URL]'"
+  task :update_song, [:song_id, :url] => :environment do |_t, args|
+    song_id = args[:song_id] || raise("Usage: bin/rails 'prod:update_song[ID,URL]'")
+    url = args[:url] || raise("Usage: bin/rails 'prod:update_song[ID,URL]'")
+
+    api_url = ProdApi.api_url
+    email, password = ProdApi.credentials
 
     token = ProdApi.login(api_url, email, password)
     result = ProdApi.patch("#{api_url}/admin/songs/#{song_id}", { youtube_url: url }, token)
     puts result["song"] ? "Updated: #{result["song"]["title"]}" : "Error: #{result}"
   end
 
-  desc "Update a cover's YouTube URL in production: COVER_ID=1 URL=https://..."
-  task :update_cover do
-    api_url = ENV["API_URL"] || "https://api.thefolklovers.com"
-    email = ENV["ADMIN_EMAIL"] || raise("Set ADMIN_EMAIL")
-    password = ENV["ADMIN_PASSWORD"] || raise("Set ADMIN_PASSWORD")
-    cover_id = ENV["COVER_ID"] || raise("Set COVER_ID")
-    url = ENV["URL"] || raise("Set URL")
+  desc "Update cover YouTube URL: bin/rails 'prod:update_cover[ID,URL]'"
+  task :update_cover, [:cover_id, :url] => :environment do |_t, args|
+    cover_id = args[:cover_id] || raise("Usage: bin/rails 'prod:update_cover[ID,URL]'")
+    url = args[:url] || raise("Usage: bin/rails 'prod:update_cover[ID,URL]'")
+
+    api_url = ProdApi.api_url
+    email, password = ProdApi.credentials
 
     token = ProdApi.login(api_url, email, password)
     result = ProdApi.patch("#{api_url}/admin/covers/#{cover_id}", { youtube_url: url }, token)
@@ -145,12 +146,43 @@ namespace :prod do
   end
 
   desc "List songs from production"
-  task :list do
-    api_url = ENV["API_URL"] || "https://api.thefolklovers.com"
-    data = ProdApi.get("#{api_url}/songs")
+  task list: :environment do
+    api_url = ProdApi.api_url
+    data = ProdApi.get("#{api_url}/songs?per_page=100")
 
     data["songs"].each do |song|
-      puts "#{song["title"]} (#{song["original_artist"]}, #{song["year"]}) - #{song["covers_count"]} covers"
+      puts "#{song["id"]}: #{song["title"]} (#{song["original_artist"]}) - #{song["covers_count"]} covers"
+    end
+  end
+
+  desc "Check production videos"
+  task check: :environment do
+    api_key = ENV["YOUTUBE_API_KEY"] || raise("Set YOUTUBE_API_KEY in .env")
+    api_url = ProdApi.api_url
+
+    require_relative "youtube.rake"
+
+    songs_data = ProdApi.get("#{api_url}/songs?per_page=100")
+
+    puts "=== Checking Songs ==="
+    songs_data["songs"].each do |song|
+      video_id = YouTubeAPI.extract_video_id(song["youtube_url"])
+      exists = video_id && YouTubeAPI.video_exists?(video_id, api_key)
+      status = exists ? "✓" : "✗"
+      puts "#{status} #{song["title"]} (#{song["original_artist"]})"
+      puts "   #{song["youtube_url"]}" unless exists
+    end
+
+    puts "\n=== Checking Covers ==="
+    songs_data["songs"].each do |song|
+      song_data = ProdApi.get("#{api_url}/songs/#{song["slug"]}")
+      song_data["song"]["covers"]&.each do |cover|
+        video_id = YouTubeAPI.extract_video_id(cover["youtube_url"])
+        exists = video_id && YouTubeAPI.video_exists?(video_id, api_key)
+        status = exists ? "✓" : "✗"
+        puts "#{status} #{cover["artist"]} - #{song["title"]}"
+        puts "   #{cover["youtube_url"]}" unless exists
+      end
     end
   end
 end

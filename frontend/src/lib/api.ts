@@ -222,6 +222,44 @@ export const admin = {
     delete: (token: string, id: number) =>
       request<void>(`/admin/covers/${id}`, { method: 'DELETE', token }),
   },
+
+  users: {
+    list: (token: string, params?: { page?: number; per_page?: number }) => {
+      const searchParams = new URLSearchParams()
+      if (params?.page) searchParams.set('page', params.page.toString())
+      if (params?.per_page) searchParams.set('per_page', params.per_page.toString())
+      const query = searchParams.toString()
+      return request<{ users: AdminUser[]; pagination: Pagination }>(
+        `/admin/users${query ? `?${query}` : ''}`,
+        { token }
+      )
+    },
+
+    get: (token: string, id: number) =>
+      request<{ user: User; contributions: UserContributions }>(`/admin/users/${id}`, { token }),
+  },
+}
+
+export type AdminUser = {
+  id: number
+  username: string
+  email: string
+  role: 'user' | 'admin'
+  avatar_url: string | null
+  created_at: string
+  covers_count: number
+  votes_count: number
+}
+
+export type UserContributions = {
+  covers_submitted: {
+    id: number
+    artist: string
+    song_title: string
+    song_slug: string
+    created_at: string
+  }[]
+  votes_count: number
 }
 
 export type AdminCover = Cover & {
