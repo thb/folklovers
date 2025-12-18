@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { useAuth } from '@/lib/auth'
 import { useNavigate } from '@tanstack/react-router'
 
@@ -38,10 +38,32 @@ type Props = {
 }
 
 export function GoogleSignInButton({ onError }: Props) {
+  const containerRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLDivElement>(null)
   const { loginWithGoogle } = useAuth()
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
+  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false)
+
+  const renderButton = useCallback(() => {
+    if (!window.google || !buttonRef.current || !containerRef.current) return
+
+    // Clear previous button
+    buttonRef.current.innerHTML = ''
+
+    // Calculate width based on container, max 400px
+    const containerWidth = containerRef.current.offsetWidth
+    const buttonWidth = Math.min(containerWidth, 400)
+
+    window.google.accounts.id.renderButton(buttonRef.current, {
+      theme: 'outline',
+      size: 'large',
+      width: buttonWidth,
+      text: 'continue_with',
+      shape: 'rectangular',
+      locale: 'fr',
+    })
+  }, [])
 
   useEffect(() => {
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
@@ -55,19 +77,12 @@ export function GoogleSignInButton({ onError }: Props) {
     script.async = true
     script.defer = true
     script.onload = () => {
-      if (window.google && buttonRef.current) {
+      if (window.google) {
         window.google.accounts.id.initialize({
           client_id: clientId,
           callback: handleCredentialResponse,
         })
-        window.google.accounts.id.renderButton(buttonRef.current, {
-          theme: 'outline',
-          size: 'large',
-          width: 400,
-          text: 'continue_with',
-          shape: 'rectangular',
-          locale: 'fr',
-        })
+        setIsGoogleLoaded(true)
       }
     }
     document.body.appendChild(script)
@@ -76,6 +91,18 @@ export function GoogleSignInButton({ onError }: Props) {
       document.body.removeChild(script)
     }
   }, [])
+
+  // Render button when Google is loaded and on resize
+  useEffect(() => {
+    if (!isGoogleLoaded) return
+
+    renderButton()
+
+    const handleResize = () => renderButton()
+    window.addEventListener('resize', handleResize)
+
+    return () => window.removeEventListener('resize', handleResize)
+  }, [isGoogleLoaded, renderButton])
 
   const handleCredentialResponse = async (response: GoogleCredentialResponse) => {
     setIsLoading(true)
@@ -90,7 +117,7 @@ export function GoogleSignInButton({ onError }: Props) {
   }
 
   return (
-    <div className="w-full">
+    <div ref={containerRef} className="w-full">
       <div
         ref={buttonRef}
         className={`flex justify-center ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}

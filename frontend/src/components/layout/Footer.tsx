@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { Music } from 'lucide-react'
 
 export function Footer() {
@@ -33,6 +34,10 @@ export function Footer() {
         <div className="mt-6 pt-6 border-t border-border/50 text-center">
           <p className="text-xs text-muted-foreground">
             Made with love for folk music enthusiasts
+            <span className="mx-2">·</span>
+            <Link to="/changelog" className="hover:text-foreground transition-colors">
+              Changelog
+            </Link>
           </p>
         </div>
       </div>
