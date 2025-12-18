@@ -1,10 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { Play, Calendar, User, ExternalLink } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { VotingButtons } from '@/components/songs/VotingButtons'
-import { songs, covers as coversApi } from '@/lib/api'
+import { songs, covers as coversApi, ApiError } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
 import type { Cover } from '@/lib/api'
 
@@ -38,10 +41,30 @@ function YouTubeEmbed({ url, title }: { url: string; title: string }) {
   )
 }
 
+type CoverFormData = {
+  artist: string
+  year: string
+  youtube_url: string
+  description: string
+}
+
+const emptyForm: CoverFormData = {
+  artist: '',
+  year: '',
+  youtube_url: '',
+  description: '',
+}
+
 function SongPage() {
   const song = Route.useLoaderData()
   const { token, isAuthenticated, isLoading: authLoading } = useAuth()
   const [coversList, setCoversList] = useState(song.covers)
+
+  // Submit cover form state
+  const [formData, setFormData] = useState<CoverFormData>(emptyForm)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [submitSuccess, setSubmitSuccess] = useState(false)
 
   // Refetch covers with user token to get user_vote
   useEffect(() => {
@@ -56,6 +79,41 @@ function SongPage() {
     setCoversList((prev) =>
       prev.map((c) => (c.id === coverId ? { ...c, ...updatedCover } : c))
     )
+  }
+
+  const handleSubmitCover = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!token) return
+
+    setIsSubmitting(true)
+    setSubmitError(null)
+    setSubmitSuccess(false)
+
+    try {
+      const { cover } = await coversApi.create(
+        song.slug,
+        {
+          artist: formData.artist,
+          year: formData.year ? parseInt(formData.year) : undefined,
+          youtube_url: formData.youtube_url,
+          description: formData.description || undefined,
+        },
+        token
+      )
+      setCoversList((prev) => [...prev, cover])
+      setFormData(emptyForm)
+      setSubmitSuccess(true)
+      setTimeout(() => setSubmitSuccess(false), 3000)
+    } catch (err) {
+      if (err instanceof ApiError) {
+        const data = err.data as { errors?: string[] }
+        setSubmitError(data.errors?.join(', ') || 'Failed to submit cover')
+      } else {
+        setSubmitError('Failed to submit cover')
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -97,7 +155,7 @@ function SongPage() {
 
         {/* Covers */}
         <div>
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-6">
             <h2 className="text-2xl font-bold text-foreground">
               Covers ({coversList.length})
             </h2>
@@ -117,8 +175,101 @@ function SongPage() {
           {coversList.length === 0 && (
             <div className="text-center py-12 text-muted-foreground">
               <Play className="w-12 h-12 mx-auto mb-4 opacity-30" />
-              <p>No covers for this song yet.</p>
+              <p>No covers for this song yet. Be the first to submit one!</p>
             </div>
+          )}
+        </div>
+
+        {/* Submit Cover Form */}
+        <div className="mt-12 pt-8 border-t">
+          <h2 className="text-2xl font-bold text-foreground mb-6">
+            Submit a cover
+          </h2>
+
+          {isAuthenticated ? (
+            <Card>
+              <CardContent className="pt-6">
+                {submitSuccess && (
+                  <div className="mb-4 p-3 bg-green-500/10 text-green-600 text-sm rounded-lg">
+                    Cover submitted successfully!
+                  </div>
+                )}
+
+                {submitError && (
+                  <div className="mb-4 p-3 bg-destructive/10 text-destructive text-sm rounded-lg">
+                    {submitError}
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmitCover} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="artist">Artist *</Label>
+                      <Input
+                        id="artist"
+                        value={formData.artist}
+                        onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
+                        placeholder="e.g. Johnny Cash"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="year">Year</Label>
+                      <Input
+                        id="year"
+                        type="number"
+                        value={formData.year}
+                        onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+                        placeholder="e.g. 2003"
+                        min="1900"
+                        max={new Date().getFullYear()}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="youtube_url">YouTube URL *</Label>
+                    <Input
+                      id="youtube_url"
+                      type="url"
+                      value={formData.youtube_url}
+                      onChange={(e) => setFormData({ ...formData, youtube_url: e.target.value })}
+                      placeholder="https://www.youtube.com/watch?v=..."
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      placeholder="Why is this cover special? What makes it unique?"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting ? 'Submitting...' : 'Submit cover'}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="py-8 text-center">
+                <p className="text-muted-foreground mb-4">
+                  Sign in to submit a cover version of this song.
+                </p>
+                <Link to="/login">
+                  <Button>Sign in</Button>
+                </Link>
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>

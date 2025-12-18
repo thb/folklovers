@@ -50,6 +50,73 @@ RSpec.describe "Covers", type: :request do
     end
   end
 
+  describe "POST /songs/:song_slug/covers" do
+    let(:song) { create(:song) }
+    let(:user) { create(:user) }
+    let(:valid_params) do
+      {
+        artist: "Johnny Cash",
+        youtube_url: "https://www.youtube.com/watch?v=abc123",
+        year: 2003,
+        description: "A great cover"
+      }
+    end
+
+    context "without authentication" do
+      it "returns unauthorized" do
+        post "/songs/#{song.slug}/covers", params: valid_params
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context "with authentication" do
+      it "creates a cover" do
+        expect {
+          post "/songs/#{song.slug}/covers", params: valid_params, headers: auth_headers(user)
+        }.to change(Cover, :count).by(1)
+
+        expect(response).to have_http_status(:created)
+      end
+
+      it "associates the cover with the current user" do
+        post "/songs/#{song.slug}/covers", params: valid_params, headers: auth_headers(user)
+
+        cover = Cover.last
+        expect(cover.submitted_by).to eq(user)
+      end
+
+      it "associates the cover with the song" do
+        post "/songs/#{song.slug}/covers", params: valid_params, headers: auth_headers(user)
+
+        cover = Cover.last
+        expect(cover.song).to eq(song)
+      end
+
+      it "returns the created cover" do
+        post "/songs/#{song.slug}/covers", params: valid_params, headers: auth_headers(user)
+
+        expect(json_response[:cover][:artist]).to eq("Johnny Cash")
+        expect(json_response[:cover][:youtube_url]).to eq("https://www.youtube.com/watch?v=abc123")
+        expect(json_response[:cover][:year]).to eq(2003)
+        expect(json_response[:cover][:submitted_by][:username]).to eq(user.username)
+      end
+
+      it "returns errors for invalid params" do
+        post "/songs/#{song.slug}/covers", params: { artist: "" }, headers: auth_headers(user)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(json_response[:errors]).to include("Artist can't be blank")
+        expect(json_response[:errors]).to include("Youtube url can't be blank")
+      end
+
+      it "returns 404 for non-existent song" do
+        post "/songs/non-existent/covers", params: valid_params, headers: auth_headers(user)
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
   describe "GET /covers/top" do
     before do
       @song1 = create(:song)

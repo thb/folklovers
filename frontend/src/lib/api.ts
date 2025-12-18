@@ -99,6 +99,13 @@ export const covers = {
 
   top: (limit?: number) =>
     request<{ covers: CoverWithSong[] }>(`/covers/top${limit ? `?limit=${limit}` : ''}`),
+
+  create: (songSlug: string, data: { artist: string; year?: number; youtube_url: string; description?: string }, token: string) =>
+    request<{ cover: Cover }>(`/songs/${songSlug}/covers`, {
+      method: 'POST',
+      body: data,
+      token,
+    }),
 }
 
 // Votes API
