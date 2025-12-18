@@ -2,8 +2,15 @@ require "rails_helper"
 
 RSpec.describe Song, type: :model do
   describe "validations" do
+    subject { build(:song) }
+
     it { should validate_presence_of(:title) }
     it { should validate_presence_of(:original_artist) }
+    it { should validate_presence_of(:year) }
+    it { should validate_presence_of(:youtube_url) }
+    it { should validate_presence_of(:description) }
+
+    it_behaves_like "youtube_validatable"
 
     # slug is auto-generated, so we test uniqueness differently
     it "enforces slug uniqueness at database level" do

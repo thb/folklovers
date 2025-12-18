@@ -9,6 +9,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { VotingButtons } from '@/components/songs/VotingButtons'
 import { songs, covers as coversApi, ApiError } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
+import { cn } from '@/lib/utils'
+import { parseFieldErrors } from '@/lib/form-utils'
 import type { Cover } from '@/lib/api'
 
 export const Route = createFileRoute('/songs/$slug')({
@@ -48,11 +50,31 @@ type CoverFormData = {
   description: string
 }
 
+type CoverFieldErrors = {
+  artist?: string
+  year?: string
+  youtube_url?: string
+  description?: string
+  base?: string
+}
+
 const emptyForm: CoverFormData = {
   artist: '',
   year: '',
   youtube_url: '',
   description: '',
+}
+
+const COVER_FIELD_MATCHERS = {
+  artist: ['artist'],
+  year: ['year'],
+  youtube_url: ['youtube', 'url'],
+  description: ['description'],
+  base: [],
+}
+
+function parseCoverErrors(errors: string[]): CoverFieldErrors {
+  return parseFieldErrors<CoverFieldErrors>(errors, COVER_FIELD_MATCHERS)
 }
 
 function SongPage() {
@@ -63,7 +85,7 @@ function SongPage() {
   // Submit cover form state
   const [formData, setFormData] = useState<CoverFormData>(emptyForm)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<CoverFieldErrors>({})
   const [submitSuccess, setSubmitSuccess] = useState(false)
 
   // Refetch covers with user token to get user_vote
@@ -86,7 +108,7 @@ function SongPage() {
     if (!token) return
 
     setIsSubmitting(true)
-    setSubmitError(null)
+    setFieldErrors({})
     setSubmitSuccess(false)
 
     try {
@@ -106,15 +128,23 @@ function SongPage() {
       setTimeout(() => setSubmitSuccess(false), 3000)
     } catch (err) {
       if (err instanceof ApiError) {
-        const data = err.data as { errors?: string[] }
-        setSubmitError(data.errors?.join(', ') || 'Failed to submit cover')
+        const data = err.data as { errors?: string[]; error?: string }
+        if (data.errors) {
+          setFieldErrors(parseCoverErrors(data.errors))
+        } else if (data.error) {
+          setFieldErrors({ base: data.error })
+        } else {
+          setFieldErrors({ base: 'Failed to submit cover. Please try again.' })
+        }
       } else {
-        setSubmitError('Failed to submit cover')
+        setFieldErrors({ base: 'Network error. Please check your connection.' })
       }
     } finally {
       setIsSubmitting(false)
     }
   }
+
+  const hasErrors = Object.keys(fieldErrors).length > 0
 
   return (
     <div className="py-12 px-4">
@@ -195,60 +225,102 @@ function SongPage() {
                   </div>
                 )}
 
-                {submitError && (
+                {fieldErrors.base && (
                   <div className="mb-4 p-3 bg-destructive/10 text-destructive text-sm rounded-lg">
-                    {submitError}
+                    {fieldErrors.base}
+                  </div>
+                )}
+
+                {hasErrors && !fieldErrors.base && (
+                  <div className="mb-4 p-3 bg-destructive/10 text-destructive text-sm rounded-lg">
+                    Please fix the errors below.
                   </div>
                 )}
 
                 <form onSubmit={handleSubmitCover} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="artist">Artist *</Label>
+                      <Label htmlFor="artist" className={cn(fieldErrors.artist && "text-destructive")}>
+                        Artist *
+                      </Label>
                       <Input
                         id="artist"
                         value={formData.artist}
-                        onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, artist: e.target.value })
+                          if (fieldErrors.artist) setFieldErrors({ ...fieldErrors, artist: undefined })
+                        }}
                         placeholder="e.g. Johnny Cash"
+                        className={cn(fieldErrors.artist && "border-destructive focus-visible:ring-destructive")}
                         required
                       />
+                      {fieldErrors.artist && (
+                        <p className="text-sm text-destructive">{fieldErrors.artist}</p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="year">Year</Label>
+                      <Label htmlFor="year" className={cn(fieldErrors.year && "text-destructive")}>
+                        Year
+                      </Label>
                       <Input
                         id="year"
                         type="number"
                         value={formData.year}
-                        onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, year: e.target.value })
+                          if (fieldErrors.year) setFieldErrors({ ...fieldErrors, year: undefined })
+                        }}
                         placeholder="e.g. 2003"
                         min="1900"
                         max={new Date().getFullYear()}
+                        className={cn(fieldErrors.year && "border-destructive focus-visible:ring-destructive")}
                       />
+                      {fieldErrors.year && (
+                        <p className="text-sm text-destructive">{fieldErrors.year}</p>
+                      )}
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="youtube_url">YouTube URL *</Label>
+                    <Label htmlFor="youtube_url" className={cn(fieldErrors.youtube_url && "text-destructive")}>
+                      YouTube URL *
+                    </Label>
                     <Input
                       id="youtube_url"
                       type="url"
                       value={formData.youtube_url}
-                      onChange={(e) => setFormData({ ...formData, youtube_url: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, youtube_url: e.target.value })
+                        if (fieldErrors.youtube_url) setFieldErrors({ ...fieldErrors, youtube_url: undefined })
+                      }}
                       placeholder="https://www.youtube.com/watch?v=..."
+                      className={cn(fieldErrors.youtube_url && "border-destructive focus-visible:ring-destructive")}
                       required
                     />
+                    {fieldErrors.youtube_url && (
+                      <p className="text-sm text-destructive">{fieldErrors.youtube_url}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="description">Description</Label>
+                    <Label htmlFor="description" className={cn(fieldErrors.description && "text-destructive")}>
+                      Description
+                    </Label>
                     <Textarea
                       id="description"
                       value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, description: e.target.value })
+                        if (fieldErrors.description) setFieldErrors({ ...fieldErrors, description: undefined })
+                      }}
                       placeholder="Why is this cover special? What makes it unique?"
                       rows={3}
+                      className={cn(fieldErrors.description && "border-destructive focus-visible:ring-destructive")}
                     />
+                    {fieldErrors.description && (
+                      <p className="text-sm text-destructive">{fieldErrors.description}</p>
+                    )}
                   </div>
 
                   <div className="flex justify-end">

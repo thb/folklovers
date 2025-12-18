@@ -2,8 +2,12 @@ require "rails_helper"
 
 RSpec.describe Cover, type: :model do
   describe "validations" do
+    subject { build(:cover) }
+
     it { should validate_presence_of(:artist) }
     it { should validate_presence_of(:youtube_url) }
+
+    it_behaves_like "youtube_validatable"
   end
 
   describe "associations" do

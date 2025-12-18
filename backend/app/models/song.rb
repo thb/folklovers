@@ -1,8 +1,14 @@
 class Song < ApplicationRecord
+  include YoutubeValidatable
+
   has_many :covers, -> { order(votes_score: :desc) }, dependent: :destroy
+  belongs_to :submitted_by, class_name: "User", optional: true
 
   validates :title, presence: true
   validates :original_artist, presence: true
+  validates :year, presence: true
+  validates :youtube_url, presence: true
+  validates :description, presence: true
   validates :slug, presence: true, uniqueness: true
 
   before_validation :generate_slug, on: :create
