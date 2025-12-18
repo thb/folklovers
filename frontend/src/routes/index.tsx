@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Link } from '@tanstack/react-router'
-import { Music, ArrowRight } from 'lucide-react'
+import { Music, ArrowRight, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SongCard } from '@/components/songs/SongCard'
 import { CoverCard } from '@/components/songs/CoverCard'
@@ -63,6 +63,12 @@ function HomePage() {
               <Button size="lg" className="gap-2">
                 Explore songs
                 <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+            <Link to="/songs/new">
+              <Button size="lg" variant="outline" className="gap-2">
+                <Plus className="w-4 h-4" />
+                Suggest a song
               </Button>
             </Link>
           </div>

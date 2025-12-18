@@ -69,6 +69,65 @@ RSpec.describe "Songs", type: :request do
     end
   end
 
+  describe "POST /songs" do
+    let(:user) { create(:user) }
+    let(:valid_params) do
+      {
+        title: "Blowin' in the Wind",
+        original_artist: "Bob Dylan",
+        year: 1963,
+        youtube_url: "https://www.youtube.com/watch?v=abc123",
+        description: "A classic folk song"
+      }
+    end
+
+    context "without authentication" do
+      it "returns unauthorized" do
+        post "/songs", params: valid_params
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context "with authentication" do
+      it "creates a song" do
+        expect {
+          post "/songs", params: valid_params, headers: auth_headers(user)
+        }.to change(Song, :count).by(1)
+
+        expect(response).to have_http_status(:created)
+      end
+
+      it "associates the song with the current user" do
+        post "/songs", params: valid_params, headers: auth_headers(user)
+
+        song = Song.last
+        expect(song.submitted_by).to eq(user)
+      end
+
+      it "returns the created song with slug" do
+        post "/songs", params: valid_params, headers: auth_headers(user)
+
+        expect(json_response[:song][:title]).to eq("Blowin' in the Wind")
+        expect(json_response[:song][:original_artist]).to eq("Bob Dylan")
+        expect(json_response[:song][:slug]).to be_present
+      end
+
+      it "generates a unique slug" do
+        post "/songs", params: valid_params, headers: auth_headers(user)
+        song = Song.last
+        expect(song.slug).to eq("blowin-in-the-wind-bob-dylan")
+      end
+
+      it "returns errors for invalid params" do
+        post "/songs", params: { title: "" }, headers: auth_headers(user)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(json_response[:errors]).to include("Title can't be blank")
+        expect(json_response[:errors]).to include("Original artist can't be blank")
+      end
+    end
+  end
+
   describe "GET /songs/:slug" do
     let!(:song) { create(:song, :with_covers) }
 

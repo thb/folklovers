@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_17_164952) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_18_182439) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,7 +40,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_17_164952) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "covers_count", default: 0, null: false
+    t.bigint "submitted_by_id"
     t.index ["slug"], name: "index_songs_on_slug", unique: true
+    t.index ["submitted_by_id"], name: "index_songs_on_submitted_by_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -70,6 +72,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_17_164952) do
 
   add_foreign_key "covers", "songs"
   add_foreign_key "covers", "users", column: "submitted_by_id"
+  add_foreign_key "songs", "users", column: "submitted_by_id"
   add_foreign_key "votes", "covers"
   add_foreign_key "votes", "users"
 end

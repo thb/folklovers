@@ -83,6 +83,13 @@ export const songs = {
 
   get: (slug: string, token?: string | null) =>
     request<{ song: SongWithCovers }>(`/songs/${slug}`, { token: token || undefined }),
+
+  create: (data: { title: string; original_artist: string; year?: number; youtube_url?: string; description?: string }, token: string) =>
+    request<{ song: Song }>('/songs', {
+      method: 'POST',
+      body: data,
+      token,
+    }),
 }
 
 // Covers API

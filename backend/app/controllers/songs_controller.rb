@@ -1,4 +1,5 @@
 class SongsController < ApplicationController
+  before_action :authenticate_user!, only: [ :create ]
   has_scope :by_artist
   has_scope :search
 
@@ -29,5 +30,22 @@ class SongsController < ApplicationController
                 .limit(params[:limit] || 6)
 
     render json: { songs: SongBlueprint.render_as_hash(songs) }
+  end
+
+  def create
+    song = Song.new(song_params)
+    song.submitted_by = current_user
+
+    if song.save
+      render json: { song: SongBlueprint.render_as_hash(song) }, status: :created
+    else
+      render json: { errors: song.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def song_params
+    params.permit(:title, :original_artist, :year, :youtube_url, :description)
   end
 end

@@ -1,5 +1,5 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
+import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
+import { Search, ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -71,16 +71,24 @@ function SongsPage() {
     <div className="py-12 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            All songs
-          </h1>
-          <p className="text-muted-foreground">
-            {search
-              ? `${pagination.total_count} results for "${search}"`
-              : `Explore our collection of ${pagination.total_count} classic folk songs`
-            }
-          </p>
+        <div className="flex items-start justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              All songs
+            </h1>
+            <p className="text-muted-foreground">
+              {search
+                ? `${pagination.total_count} results for "${search}"`
+                : `Explore our collection of ${pagination.total_count} classic folk songs`
+              }
+            </p>
+          </div>
+          <Link to="/songs/new">
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              Add a song
+            </Button>
+          </Link>
         </div>
 
         {/* Search */}
