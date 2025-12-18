@@ -21,6 +21,7 @@
 - DRY: shared `YoutubeValidatable` concern for backend validation
 - DRY: shared `form-utils.ts` for frontend error parsing
 - Comprehensive tests for YouTube URL validation (shared examples)
+- Auth dialog when voting: unauthenticated users see login/register dialog, vote executes after login
 
 ### Changed
 - Translated entire site from French to English (UI and seed data)
