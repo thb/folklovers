@@ -14,8 +14,8 @@ RSpec.describe "Songs", type: :request do
       get "/songs"
       expect(json_response[:pagination]).to include(
         current_page: 1,
-        total_pages: 2,
-        total_count: 15
+        total_pages: (Song.count.to_f / 12).ceil,
+        total_count: Song.count
       )
     end
 

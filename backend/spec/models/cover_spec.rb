@@ -21,13 +21,13 @@ RSpec.describe Cover, type: :model do
 
       context "sorted by score (default)" do
         it "orders by votes_score desc" do
-          expect(Cover.sorted_by("score")).to eq([old_popular, mid_score, new_unpopular])
+          expect(song.covers.sorted_by("score")).to eq([old_popular, mid_score, new_unpopular])
         end
       end
 
       context "sorted by recent" do
         it "orders by created_at desc" do
-          expect(Cover.sorted_by("recent")).to eq([new_unpopular, mid_score, old_popular])
+          expect(song.covers.sorted_by("recent")).to eq([new_unpopular, mid_score, old_popular])
         end
       end
     end
