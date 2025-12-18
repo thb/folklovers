@@ -35,9 +35,10 @@ type GoogleCredentialResponse = {
 
 type Props = {
   onError?: (error: string) => void
+  onSuccess?: () => void
 }
 
-export function GoogleSignInButton({ onError }: Props) {
+export function GoogleSignInButton({ onError, onSuccess }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLDivElement>(null)
   const { loginWithGoogle } = useAuth()
@@ -108,7 +109,11 @@ export function GoogleSignInButton({ onError }: Props) {
     setIsLoading(true)
     try {
       await loginWithGoogle(response.credential)
-      navigate({ to: '/' })
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        navigate({ to: '/' })
+      }
     } catch (err) {
       onError?.('Erreur lors de la connexion avec Google')
     } finally {
