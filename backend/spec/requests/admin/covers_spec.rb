@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe "Admin::Covers", type: :request do
   let(:admin) { create(:user, role: :admin) }
   let(:user) { create(:user) }
-  let(:song) { create(:song) }
+  let(:song) { create(:song, with_original: false) }
   let(:cover) { create(:cover, song: song) }
 
   def auth_headers(user)

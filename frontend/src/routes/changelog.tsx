@@ -21,6 +21,37 @@ type ChangelogEntry = {
 
 const changelog: ChangelogEntry[] = [
   {
+    date: '2025-12-19',
+    changes: [
+      {
+        type: 'added',
+        items: [
+          'Persistent audio player bar (plays across page navigation, like France Inter)',
+          'Play queue with add-to-queue functionality on covers',
+          'Original version now displayed as first "cover" with distinctive amber badge',
+          'Custom 404 page with vinyl record illustration',
+          'Custom 500 error page with scratched record theme',
+          'Changelog page (/changelog)',
+        ],
+      },
+      {
+        type: 'changed',
+        items: [
+          'Unified data model: original song version is now a cover with original flag',
+          'Song detail page renamed "Covers" section to "Versions"',
+          'Thumbnails now served directly from API instead of client-side extraction',
+        ],
+      },
+      {
+        type: 'improved',
+        items: [
+          'Cover cards now show play/pause state and queue controls on hover',
+          'Original versions always appear first, regardless of vote count',
+        ],
+      },
+    ],
+  },
+  {
     date: '2025-12-18',
     changes: [
       {

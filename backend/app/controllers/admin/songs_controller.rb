@@ -18,11 +18,23 @@ module Admin
     def create
       song = Song.new(song_params)
 
-      if song.save
-        render json: { song: SongBlueprint.render_as_hash(song) }, status: :created
-      else
-        render json: { errors: song.errors.full_messages }, status: :unprocessable_entity
+      Song.transaction do
+        if song.save
+          # Create the original cover
+          song.covers.create!(
+            artist: song.original_artist,
+            year: song.year,
+            youtube_url: params[:youtube_url],
+            description: params[:description],
+            original: true
+          )
+          render json: { song: SongBlueprint.render_as_hash(song) }, status: :created
+        else
+          render json: { errors: song.errors.full_messages }, status: :unprocessable_entity
+        end
       end
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
     end
 
     def update
@@ -44,7 +56,7 @@ module Admin
     private
 
     def song_params
-      params.permit(:title, :original_artist, :year, :youtube_url, :description)
+      params.permit(:title, :original_artist, :year)
     end
   end
 end

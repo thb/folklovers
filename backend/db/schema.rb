@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_18_182439) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_19_133711) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -25,6 +25,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_18_182439) do
     t.integer "votes_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "original", default: false, null: false
+    t.index ["song_id", "original"], name: "index_covers_on_song_id_unique_original", unique: true, where: "(original = true)"
     t.index ["song_id", "votes_score"], name: "index_covers_on_song_id_and_votes_score"
     t.index ["song_id"], name: "index_covers_on_song_id"
     t.index ["submitted_by_id"], name: "index_covers_on_submitted_by_id"
@@ -34,8 +36,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_18_182439) do
     t.string "title", null: false
     t.string "original_artist", null: false
     t.integer "year"
-    t.string "youtube_url"
-    t.text "description"
     t.string "slug", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

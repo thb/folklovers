@@ -145,6 +145,28 @@ namespace :prod do
     puts result["cover"] ? "Updated: #{result["cover"]["artist"]}" : "Error: #{result}"
   end
 
+  desc "Add cover to existing song: bin/rails 'prod:add_cover[SONG_ID,ARTIST,YEAR,URL,DESCRIPTION]'"
+  task :add_cover, [:song_id, :artist, :year, :url, :description] => :environment do |_t, args|
+    song_id = args[:song_id] || raise("Usage: bin/rails 'prod:add_cover[SONG_ID,ARTIST,YEAR,URL,DESCRIPTION]'")
+    artist = args[:artist] || raise("Artist required")
+    year = args[:year]&.to_i
+    url = args[:url] || raise("URL required")
+    description = args[:description] || ""
+
+    api_url = ProdApi.api_url
+    email, password = ProdApi.credentials
+
+    token = ProdApi.login(api_url, email, password)
+    result = ProdApi.post("#{api_url}/admin/covers", {
+      song_id: song_id,
+      artist: artist,
+      year: year,
+      youtube_url: url,
+      description: description
+    }, token)
+    puts result["cover"] ? "Created cover ##{result["cover"]["id"]}: #{artist}" : "Error: #{result}"
+  end
+
   desc "List songs from production"
   task list: :environment do
     api_url = ProdApi.api_url

@@ -5,7 +5,9 @@ import { Home, RefreshCw } from 'lucide-react'
 
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { Player } from '@/components/player/Player'
 import { AuthProvider } from '@/lib/auth'
+import { PlayerProvider } from '@/lib/player-context'
 import { Button } from '@/components/ui/button'
 
 import appCss from '../styles.css?url'
@@ -71,11 +73,14 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="min-h-screen flex flex-col">
         <AuthProvider>
-          <Header />
-          <main className="flex-1">
-            {children}
-          </main>
-          <Footer />
+          <PlayerProvider>
+            <Header />
+            <main className="flex-1 pb-20">
+              {children}
+            </main>
+            <Footer />
+            <Player />
+          </PlayerProvider>
         </AuthProvider>
         {import.meta.env.DEV && (
           <TanStackDevtools

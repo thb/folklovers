@@ -2,7 +2,8 @@ require "rails_helper"
 
 RSpec.describe "Covers", type: :request do
   describe "GET /songs/:song_slug/covers" do
-    let!(:song) { create(:song) }
+    let!(:song) { create(:song, with_original: false) }
+    let!(:original) { create(:cover, song: song, original: true, votes_score: 0, created_at: 2.weeks.ago) }
     let!(:covers) do
       [
         create(:cover, song: song, votes_score: 100, created_at: 1.week.ago),
@@ -11,23 +12,24 @@ RSpec.describe "Covers", type: :request do
       ]
     end
 
-    it "returns covers for a song" do
+    it "returns covers for a song including original" do
       get "/songs/#{song.slug}/covers"
       expect(response).to have_http_status(:ok)
-      expect(json_response[:covers].length).to eq(3)
+      expect(json_response[:covers].length).to eq(4) # 1 original + 3 covers
     end
 
-    it "returns covers sorted by score by default" do
+    it "returns original first, then sorted by score" do
       get "/songs/#{song.slug}/covers"
       scores = json_response[:covers].map { |i| i[:votes_score] }
-      expect(scores).to eq([200, 100, 50])
+      expect(scores).to eq([0, 200, 100, 50]) # original first with 0 score
+      expect(json_response[:covers].first[:original]).to be true
     end
 
-    it "supports sorting by recent" do
+    it "supports sorting by recent with original first" do
       get "/songs/#{song.slug}/covers", params: { sorted_by: "recent" }
-      # Most recent first: 1.day.ago, 3.days.ago, 1.week.ago
+      # Original first, then most recent: 1.day.ago, 3.days.ago, 1.week.ago
       ids = json_response[:covers].map { |i| i[:id] }
-      expect(ids).to eq([covers[1].id, covers[2].id, covers[0].id])
+      expect(ids).to eq([original.id, covers[1].id, covers[2].id, covers[0].id])
     end
 
     it "returns 404 for non-existent song" do
@@ -51,7 +53,7 @@ RSpec.describe "Covers", type: :request do
   end
 
   describe "POST /songs/:song_slug/covers" do
-    let(:song) { create(:song) }
+    let(:song) { create(:song, with_original: false) }
     let(:user) { create(:user) }
     let(:valid_params) do
       {

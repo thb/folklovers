@@ -2,14 +2,13 @@ import { Link } from '@tanstack/react-router'
 import { Music, Users } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import type { Song } from '@/lib/api'
-import { getYouTubeThumbnail } from '@/lib/utils'
 
 type SongCardProps = {
   song: Song
 }
 
 export function SongCard({ song }: SongCardProps) {
-  const thumbnail = getYouTubeThumbnail(song.youtube_url, 'medium')
+  const thumbnail = song.thumbnail_url
 
   return (
     <Link to="/songs/$slug" params={{ slug: song.slug }}>

@@ -7,13 +7,15 @@ class Cover < ApplicationRecord
 
   validates :artist, presence: true
   validates :youtube_url, presence: true
+  validate :only_one_original_per_song, if: :original?
 
+  scope :original_first, -> { order(original: :desc) }
   scope :sorted_by, ->(sort) {
     case sort
     when "recent"
-      reorder(created_at: :desc)
+      reorder(original: :desc, created_at: :desc)
     else
-      reorder(votes_score: :desc, created_at: :desc)
+      reorder(original: :desc, votes_score: :desc, created_at: :desc)
     end
   }
 
@@ -26,5 +28,13 @@ class Cover < ApplicationRecord
       votes_score: votes.sum(:value),
       votes_count: votes.count
     )
+  end
+
+  private
+
+  def only_one_original_per_song
+    if song && song.covers.where(original: true).where.not(id: id).exists?
+      errors.add(:original, "cover already exists for this song")
+    end
   end
 end

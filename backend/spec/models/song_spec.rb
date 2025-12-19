@@ -7,10 +7,6 @@ RSpec.describe Song, type: :model do
     it { should validate_presence_of(:title) }
     it { should validate_presence_of(:original_artist) }
     it { should validate_presence_of(:year) }
-    it { should validate_presence_of(:youtube_url) }
-    it { should validate_presence_of(:description) }
-
-    it_behaves_like "youtube_validatable"
 
     # slug is auto-generated, so we test uniqueness differently
     it "enforces slug uniqueness at database level" do
@@ -22,6 +18,7 @@ RSpec.describe Song, type: :model do
 
   describe "associations" do
     it { should have_many(:covers).dependent(:destroy) }
+    it { should have_one(:original_cover).class_name("Cover") }
   end
 
   describe "slug generation" do
@@ -77,13 +74,25 @@ RSpec.describe Song, type: :model do
   end
 
   describe "covers ordering" do
-    it "orders covers by votes_score desc by default" do
-      song = create(:song)
+    it "orders original cover first, then by votes_score desc" do
+      song = create(:song, with_original: false)
       low_score = create(:cover, song: song, votes_score: 10)
       high_score = create(:cover, song: song, votes_score: 100)
-      mid_score = create(:cover, song: song, votes_score: 50)
+      original = create(:cover, song: song, votes_score: 5, original: true)
 
-      expect(song.covers).to eq([high_score, mid_score, low_score])
+      expect(song.covers.reload).to eq([original, high_score, low_score])
+    end
+  end
+
+  describe "#thumbnail_url" do
+    it "returns thumbnail from original cover" do
+      song = create(:song, original_youtube_url: "https://www.youtube.com/watch?v=abc123test")
+      expect(song.thumbnail_url).to eq("https://img.youtube.com/vi/abc123test/mqdefault.jpg")
+    end
+
+    it "returns nil if no original cover" do
+      song = create(:song, with_original: false)
+      expect(song.thumbnail_url).to be_nil
     end
   end
 end

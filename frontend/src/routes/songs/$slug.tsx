@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Play, Calendar, User, ExternalLink } from 'lucide-react'
+import { Play, Pause, Calendar, User, ExternalLink, ListPlus, Star } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { VotingButtons } from '@/components/songs/VotingButtons'
 import { songs, covers as coversApi, ApiError } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
+import { usePlayer, extractYouTubeId } from '@/lib/player-context'
 import { cn } from '@/lib/utils'
 import { parseFieldErrors } from '@/lib/form-utils'
 import type { Cover } from '@/lib/api'
@@ -21,13 +23,8 @@ export const Route = createFileRoute('/songs/$slug')({
   },
 })
 
-function extractYoutubeId(url: string): string | null {
-  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/)
-  return match ? match[1] : null
-}
-
 function YouTubeEmbed({ url, title }: { url: string; title: string }) {
-  const videoId = extractYoutubeId(url)
+  const videoId = extractYouTubeId(url)
   if (!videoId) return null
 
   return (
@@ -168,38 +165,29 @@ function SongPage() {
           </div>
         </div>
 
-        {/* Original Version */}
-        {song.youtube_url && (
-          <div className="mb-12">
-            <h2 className="text-lg font-semibold text-foreground mb-4">
-              Original version
-            </h2>
-            <YouTubeEmbed url={song.youtube_url} title={`${song.title} - ${song.original_artist}`} />
-            {song.description && (
-              <p className="mt-4 text-muted-foreground leading-relaxed">
-                {song.description}
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* Covers */}
+        {/* Covers (including original) */}
         <div>
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-foreground">
-              Covers ({coversList.length})
+              Versions ({coversList.length})
             </h2>
           </div>
 
           <div className="space-y-6">
-            {coversList.map((cover, index) => (
-              <CoverItem
-                key={cover.id}
-                cover={cover}
-                rank={index + 1}
-                onVoteChange={(updatedCover) => handleVoteChange(cover.id, updatedCover)}
-              />
-            ))}
+            {coversList.map((cover, index) => {
+              // Calculate rank for non-original covers only
+              const nonOriginalIndex = coversList.slice(0, index).filter(c => !c.original).length
+              return (
+                <CoverItem
+                  key={cover.id}
+                  cover={cover}
+                  rank={nonOriginalIndex + 1}
+                  songSlug={song.slug}
+                  songTitle={song.title}
+                  onVoteChange={(updatedCover) => handleVoteChange(cover.id, updatedCover)}
+                />
+              )
+            })}
           </div>
 
           {coversList.length === 0 && (
@@ -352,69 +340,128 @@ function SongPage() {
 function CoverItem({
   cover,
   rank,
+  songSlug,
+  songTitle,
   onVoteChange,
 }: {
   cover: Cover
   rank: number
+  songSlug: string
+  songTitle: string
   onVoteChange: (cover: Cover) => void
 }) {
-  const [isExpanded, setIsExpanded] = useState(false)
-  const videoId = extractYoutubeId(cover.youtube_url)
+  const { play, addToQueue, currentTrack, isPlaying, toggle } = usePlayer()
+  const videoId = extractYouTubeId(cover.youtube_url)
   const thumbnailUrl = videoId
     ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`
     : null
 
+  const isCurrentTrack = currentTrack?.id === cover.id
+  const isThisPlaying = isCurrentTrack && isPlaying
+
+  const handlePlay = () => {
+    if (isCurrentTrack) {
+      toggle()
+    } else if (videoId) {
+      play({
+        id: cover.id,
+        title: songTitle,
+        artist: cover.artist,
+        songSlug,
+        youtubeId: videoId,
+        thumbnailUrl: thumbnailUrl || '',
+      })
+    }
+  }
+
+  const handleAddToQueue = () => {
+    if (videoId) {
+      addToQueue({
+        id: cover.id,
+        title: songTitle,
+        artist: cover.artist,
+        songSlug,
+        youtubeId: videoId,
+        thumbnailUrl: thumbnailUrl || '',
+      })
+    }
+  }
+
   return (
-    <Card className="overflow-hidden">
+    <Card className={cn(
+      "overflow-hidden",
+      isCurrentTrack && "ring-2 ring-primary",
+      cover.original && "border-amber-500/50 bg-amber-500/5"
+    )}>
       <CardContent className="p-0">
         <div className="flex flex-col md:flex-row">
-          {/* Thumbnail / Video */}
+          {/* Thumbnail */}
           <div className="md:w-96 flex-shrink-0">
-            {isExpanded ? (
-              <div className="aspect-video">
-                <iframe
-                  src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
-                  title={`${cover.artist} cover`}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full"
+            <button
+              onClick={handlePlay}
+              className="relative w-full aspect-video bg-muted group"
+            >
+              {thumbnailUrl && (
+                <img
+                  src={thumbnailUrl}
+                  alt={`${cover.artist} ${cover.original ? 'original' : 'cover'}`}
+                  width={320}
+                  height={180}
+                  loading="lazy"
+                  className="w-full h-full object-cover"
                 />
-              </div>
-            ) : (
-              <button
-                onClick={() => setIsExpanded(true)}
-                className="relative w-full aspect-video bg-muted group"
-              >
-                {thumbnailUrl && (
-                  <img
-                    src={thumbnailUrl}
-                    alt={`${cover.artist} cover`}
-                    width={320}
-                    height={180}
-                    loading="lazy"
-                    className="w-full h-full object-cover"
-                  />
-                )}
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center">
+              )}
+              <div className={cn(
+                "absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity",
+                isCurrentTrack ? "opacity-60" : "opacity-0 group-hover:opacity-100"
+              )}>
+                <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center">
+                  {isThisPlaying ? (
+                    <Pause className="w-8 h-8 text-primary" fill="currentColor" />
+                  ) : (
                     <Play className="w-8 h-8 text-primary ml-1" fill="currentColor" />
-                  </div>
+                  )}
                 </div>
-                {/* Rank badge */}
+              </div>
+              {/* Badge: Original or Rank */}
+              {cover.original ? (
+                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-amber-500 text-white flex items-center gap-1.5 font-semibold text-xs">
+                  <Star className="w-3.5 h-3.5" fill="currentColor" />
+                  Original
+                </div>
+              ) : (
                 <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">
                   {rank}
                 </div>
+              )}
+              {/* Add to queue button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleAddToQueue()
+                }}
+                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                title="Add to queue"
+              >
+                <ListPlus className="w-4 h-4 text-white" />
               </button>
-            )}
+            </button>
           </div>
 
           {/* Info */}
           <div className="flex-1 p-5">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
-                <h3 className="text-xl font-semibold text-foreground">
-                  {cover.artist}
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xl font-semibold text-foreground">
+                    {cover.artist}
+                  </h3>
+                  {cover.original && (
+                    <Badge variant="secondary" className="bg-amber-500/20 text-amber-700 border-amber-500/30">
+                      Original
+                    </Badge>
+                  )}
+                </div>
                 <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
                   {cover.year && (
                     <span className="flex items-center gap-1">

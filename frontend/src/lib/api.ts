@@ -146,8 +146,7 @@ export type Song = {
   title: string
   original_artist: string
   year: number | null
-  youtube_url: string | null
-  description: string | null
+  thumbnail_url: string | null
   slug: string
   covers_count: number
   created_at: string
@@ -163,6 +162,7 @@ export type Cover = {
   year: number | null
   youtube_url: string
   description: string | null
+  original: boolean
   votes_score: number
   votes_count: number
   user_vote: 1 | -1 | null

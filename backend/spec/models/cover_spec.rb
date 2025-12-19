@@ -8,6 +8,23 @@ RSpec.describe Cover, type: :model do
     it { should validate_presence_of(:youtube_url) }
 
     it_behaves_like "youtube_validatable"
+
+    describe "original uniqueness" do
+      let(:song) { create(:song, with_original: false) }
+
+      it "allows only one original cover per song" do
+        create(:cover, song: song, original: true)
+        duplicate = build(:cover, song: song, original: true)
+        expect(duplicate).not_to be_valid
+        expect(duplicate.errors[:original]).to include("cover already exists for this song")
+      end
+
+      it "allows multiple non-original covers" do
+        create(:cover, song: song, original: false)
+        another = build(:cover, song: song, original: false)
+        expect(another).to be_valid
+      end
+    end
   end
 
   describe "associations" do
@@ -18,21 +35,33 @@ RSpec.describe Cover, type: :model do
 
   describe "scopes" do
     describe ".sorted_by" do
-      let(:song) { create(:song) }
+      let(:song) { create(:song, with_original: false) }
+      let!(:original) { create(:cover, song: song, votes_score: 5, original: true, created_at: 2.weeks.ago) }
       let!(:old_popular) { create(:cover, song: song, votes_score: 100, created_at: 1.week.ago) }
       let!(:new_unpopular) { create(:cover, song: song, votes_score: 10, created_at: 1.day.ago) }
       let!(:mid_score) { create(:cover, song: song, votes_score: 50, created_at: 3.days.ago) }
 
       context "sorted by score (default)" do
-        it "orders by votes_score desc" do
-          expect(song.covers.sorted_by("score")).to eq([old_popular, mid_score, new_unpopular])
+        it "orders original first, then by votes_score desc" do
+          expect(song.covers.sorted_by("score")).to eq([original, old_popular, mid_score, new_unpopular])
         end
       end
 
       context "sorted by recent" do
-        it "orders by created_at desc" do
-          expect(song.covers.sorted_by("recent")).to eq([new_unpopular, mid_score, old_popular])
+        it "orders original first, then by created_at desc" do
+          expect(song.covers.sorted_by("recent")).to eq([original, new_unpopular, mid_score, old_popular])
         end
+      end
+    end
+
+    describe ".original_first" do
+      let(:song) { create(:song, with_original: false) }
+      let!(:cover1) { create(:cover, song: song, original: false) }
+      let!(:original) { create(:cover, song: song, original: true) }
+      let!(:cover2) { create(:cover, song: song, original: false) }
+
+      it "orders original cover first" do
+        expect(song.covers.original_first.first).to eq(original)
       end
     end
   end

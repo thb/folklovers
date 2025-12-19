@@ -1,7 +1,7 @@
 class CoverBlueprint < Blueprinter::Base
   identifier :id
 
-  fields :artist, :year, :youtube_url, :description, :votes_score, :votes_count, :created_at
+  fields :artist, :year, :youtube_url, :description, :original, :votes_score, :votes_count, :created_at
 
   field :submitted_by do |cover|
     cover.submitted_by ? UserBlueprint.render_as_hash(cover.submitted_by) : nil

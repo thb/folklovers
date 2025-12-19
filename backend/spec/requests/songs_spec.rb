@@ -89,12 +89,16 @@ RSpec.describe "Songs", type: :request do
     end
 
     context "with authentication" do
-      it "creates a song" do
+      it "creates a song with original cover" do
         expect {
           post "/songs", params: valid_params, headers: auth_headers(user)
-        }.to change(Song, :count).by(1)
+        }.to change(Song, :count).by(1).and change(Cover, :count).by(1)
 
         expect(response).to have_http_status(:created)
+        song = Song.last
+        expect(song.original_cover).to be_present
+        expect(song.original_cover.youtube_url).to eq(valid_params[:youtube_url])
+        expect(song.original_cover.original).to be true
       end
 
       it "associates the song with the current user" do
@@ -131,12 +135,18 @@ RSpec.describe "Songs", type: :request do
   describe "GET /songs/:slug" do
     let!(:song) { create(:song, :with_covers) }
 
-    it "returns song with covers" do
+    it "returns song with covers including original" do
       get "/songs/#{song.slug}"
       expect(response).to have_http_status(:ok)
       expect(json_response[:song][:slug]).to eq(song.slug)
       expect(json_response[:song][:covers]).to be_present
-      expect(json_response[:song][:covers].length).to eq(3)
+      expect(json_response[:song][:covers].length).to eq(4) # 1 original + 3 covers
+    end
+
+    it "returns original cover first" do
+      get "/songs/#{song.slug}"
+      first_cover = json_response[:song][:covers].first
+      expect(first_cover[:original]).to be true
     end
 
     it "returns 404 for non-existent song" do

@@ -1,14 +1,11 @@
 class Song < ApplicationRecord
-  include YoutubeValidatable
-
-  has_many :covers, -> { order(votes_score: :desc) }, dependent: :destroy
+  has_many :covers, -> { order(original: :desc, votes_score: :desc) }, dependent: :destroy
+  has_one :original_cover, -> { where(original: true) }, class_name: "Cover"
   belongs_to :submitted_by, class_name: "User", optional: true
 
   validates :title, presence: true
   validates :original_artist, presence: true
   validates :year, presence: true
-  validates :youtube_url, presence: true
-  validates :description, presence: true
   validates :slug, presence: true, uniqueness: true
 
   before_validation :generate_slug, on: :create
@@ -20,7 +17,16 @@ class Song < ApplicationRecord
     slug
   end
 
+  def thumbnail_url
+    original_cover&.youtube_url&.then { |url| extract_youtube_thumbnail(url) }
+  end
+
   private
+
+  def extract_youtube_thumbnail(url)
+    match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/)
+    match ? "https://img.youtube.com/vi/#{match[1]}/mqdefault.jpg" : nil
+  end
 
   def generate_slug
     return if slug.present?

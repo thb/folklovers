@@ -6,6 +6,7 @@ FactoryBot.define do
     youtube_url { "https://www.youtube.com/watch?v=#{Faker::Alphanumeric.alphanumeric(number: 11)}" }
     description { Faker::Lorem.paragraph(sentence_count: 2) }
     submitted_by { nil }
+    original { false }
     votes_score { 0 }
     votes_count { 0 }
 
