@@ -202,6 +202,38 @@ namespace :prod do
     end
   end
 
+  desc "Create article in production from local article: bin/rails 'prod:create_article[LOCAL_ID]'"
+  task :create_article, [:local_id] => :environment do |_t, args|
+    local_id = args[:local_id] || raise("Usage: bin/rails 'prod:create_article[LOCAL_ID]'")
+
+    article = Article.find(local_id)
+    api_url = ProdApi.api_url
+    email, password = ProdApi.credentials
+
+    puts "Logging in to #{api_url}..."
+    token = ProdApi.login(api_url, email, password)
+    raise "Login failed" unless token
+
+    puts "Creating article: #{article.title}..."
+    result = ProdApi.post("#{api_url}/admin/articles", {
+      title: article.title,
+      content: article.content,
+      excerpt: article.excerpt,
+      cover_image_url: article.cover_image_url,
+      cover_image_credit: article.cover_image_credit,
+      published_at: article.published_at&.iso8601,
+      tag_names: article.tags.pluck(:name)
+    }, token)
+
+    if result["article"]
+      puts "Created article ##{result["article"]["id"]}: #{result["article"]["title"]}"
+      puts "Slug: #{result["article"]["slug"]}"
+      puts "Published: #{result["article"]["is_published"]}"
+    else
+      puts "Error: #{result}"
+    end
+  end
+
   desc "Check production videos"
   task check: :environment do
     api_key = ENV["YOUTUBE_API_KEY"] || raise("Set YOUTUBE_API_KEY in .env")
