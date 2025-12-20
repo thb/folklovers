@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Link } from '@tanstack/react-router'
-import { Music, ArrowRight, Plus } from 'lucide-react'
+import { Guitar, ArrowRight, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SongCard } from '@/components/songs/SongCard'
 import { CoverCard } from '@/components/songs/CoverCard'
@@ -38,7 +38,7 @@ function HomePage() {
         <div className="relative max-w-4xl mx-auto text-center">
           {/* Logo */}
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary mb-6">
-            <Music className="w-10 h-10 text-primary-foreground" />
+            <Guitar className="w-10 h-10 text-primary-foreground" />
           </div>
 
           {/* Title */}

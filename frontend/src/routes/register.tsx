@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Music, Loader2 } from 'lucide-react'
+import { Guitar, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -47,7 +47,7 @@ function RegisterPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="w-12 h-12 rounded-full bg-primary mx-auto mb-4 flex items-center justify-center">
-            <Music className="w-6 h-6 text-primary-foreground" />
+            <Guitar className="w-6 h-6 text-primary-foreground" />
           </div>
           <CardTitle className="text-2xl">Create account</CardTitle>
           <CardDescription>

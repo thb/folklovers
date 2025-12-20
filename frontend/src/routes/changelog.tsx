@@ -47,6 +47,7 @@ const changelog: ChangelogEntry[] = [
         items: [
           'Cover cards now show play/pause state and queue controls on hover',
           'Original versions always appear first, regardless of vote count',
+          'Faster deployments: images built in CI, server just pulls (~30s vs ~5min)',
         ],
       },
     ],

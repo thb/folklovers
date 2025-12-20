@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Music, LogOut, Shield, Plus, Menu } from 'lucide-react'
+import { Guitar, LogOut, Shield, Plus, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -29,7 +29,7 @@ export function Header() {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 group">
           <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-            <Music className="w-5 h-5 text-primary-foreground" />
+            <Guitar className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
