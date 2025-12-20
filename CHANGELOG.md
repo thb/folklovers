@@ -3,11 +3,19 @@
 ## 2025-12-20
 
 ### Added
+- Blog feature with full article management
+  - Articles with markdown content, draft/published status, cover images, and tags
+  - Admin article editor with live markdown preview toggle
+  - Public blog pages at /blog with tag filtering and pagination
+  - First article: "What is Folk Music?"
+- Cover image credit field on articles (displays as figcaption)
 - Mobile responsive menu (hamburger) in header with navigation, auth links, and user profile
 - YouTube thumbnails on song cards in /songs listing
 - Auth dialog when voting: unauthenticated users see sign-in dialog, vote executes automatically after login
+- Tailwind Typography plugin for proper prose styling
 
 ### Improved
+- Article page typography: proper heading hierarchy, spacing, and reading width
 - Google Sign-In button now responsive (adapts to container width, max 400px)
 - Utility functions `getYouTubeVideoId()` and `getYouTubeThumbnail()` for thumbnail URLs
 
