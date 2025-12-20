@@ -12,6 +12,17 @@ class Song < ApplicationRecord
 
   scope :by_artist, ->(artist) { where("original_artist ILIKE ?", "%#{artist}%") }
   scope :search, ->(query) { where("title ILIKE :q OR original_artist ILIKE :q", q: "%#{query}%") }
+  scope :sorted_by, ->(sort) {
+    case sort
+    when "title_asc" then order(title: :asc)
+    when "title_desc" then order(title: :desc)
+    when "year_asc" then order(year: :asc)
+    when "year_desc" then order(year: :desc)
+    when "recent" then order(created_at: :desc)
+    when "oldest" then order(created_at: :asc)
+    else order(created_at: :desc)
+    end
+  }
 
   def to_param
     slug

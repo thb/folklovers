@@ -1,16 +1,35 @@
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
-import { Search, ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, Plus, ArrowUpDown } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { SongCard } from '@/components/songs/SongCard'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { songs } from '@/lib/api'
 import type { Song } from '@/lib/api'
 import { z } from 'zod'
 
+const sortOptions = [
+  { value: 'recent', label: 'Newest first' },
+  { value: 'oldest', label: 'Oldest first' },
+  { value: 'title_asc', label: 'Title A-Z' },
+  { value: 'title_desc', label: 'Title Z-A' },
+  { value: 'year_desc', label: 'Year (newest)' },
+  { value: 'year_asc', label: 'Year (oldest)' },
+] as const
+
+type SortOption = typeof sortOptions[number]['value']
+
 const songsSearchSchema = z.object({
   page: z.number().optional().default(1),
   search: z.string().optional(),
+  sort: z.enum(['recent', 'oldest', 'title_asc', 'title_desc', 'year_asc', 'year_desc']).optional(),
 })
 
 type SongsSearch = z.infer<typeof songsSearchSchema>
@@ -18,12 +37,13 @@ type SongsSearch = z.infer<typeof songsSearchSchema>
 export const Route = createFileRoute('/songs/')({
   component: SongsPage,
   validateSearch: songsSearchSchema,
-  loaderDeps: ({ search }) => ({ page: search.page, search: search.search }),
+  loaderDeps: ({ search }) => ({ page: search.page, search: search.search, sort: search.sort }),
   loader: async ({ deps }) => {
     const data = await songs.list({
       per_page: 12,
       page: deps.page,
-      search: deps.search
+      search: deps.search,
+      sorted_by: deps.sort,
     })
     return data
   },
@@ -31,10 +51,20 @@ export const Route = createFileRoute('/songs/')({
 
 function SongsPage() {
   const { songs: songsList, pagination } = Route.useLoaderData()
-  const { page, search } = Route.useSearch()
+  const { page, search, sort } = Route.useSearch()
   const navigate = useNavigate({ from: Route.fullPath })
 
   const [searchInput, setSearchInput] = useState(search || '')
+
+  const handleSortChange = (value: SortOption) => {
+    navigate({
+      search: (prev: SongsSearch) => ({
+        ...prev,
+        sort: value === 'recent' ? undefined : value,
+        page: 1,
+      }),
+    })
+  }
 
   // Sync search input with URL param
   useEffect(() => {
@@ -91,16 +121,31 @@ function SongsPage() {
           </Link>
         </div>
 
-        {/* Search */}
-        <div className="relative mb-8 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search for a song or artist..."
-            className="pl-10"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
+        {/* Search and Sort */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search for a song or artist..."
+              className="pl-10"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+          </div>
+          <Select value={sort || 'recent'} onValueChange={handleSortChange}>
+            <SelectTrigger className="w-[180px]">
+              <ArrowUpDown className="w-4 h-4 mr-2" />
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              {sortOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Songs Grid */}

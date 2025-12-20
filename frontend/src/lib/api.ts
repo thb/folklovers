@@ -68,12 +68,13 @@ export const auth = {
 
 // Songs API
 export const songs = {
-  list: (params?: { page?: number; per_page?: number; by_artist?: string; search?: string }) => {
+  list: (params?: { page?: number; per_page?: number; by_artist?: string; search?: string; sorted_by?: string }) => {
     const searchParams = new URLSearchParams()
     if (params?.page) searchParams.set('page', params.page.toString())
     if (params?.per_page) searchParams.set('per_page', params.per_page.toString())
     if (params?.by_artist) searchParams.set('by_artist', params.by_artist)
     if (params?.search) searchParams.set('search', params.search)
+    if (params?.sorted_by) searchParams.set('sorted_by', params.sorted_by)
     const query = searchParams.toString()
     return request<{ songs: Song[]; pagination: Pagination }>(`/songs${query ? `?${query}` : ''}`)
   },

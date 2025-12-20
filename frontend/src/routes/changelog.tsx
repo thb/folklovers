@@ -21,6 +21,17 @@ type ChangelogEntry = {
 
 const changelog: ChangelogEntry[] = [
   {
+    date: '2025-12-20',
+    changes: [
+      {
+        type: 'added',
+        items: [
+          'Song sorting: alphabetical (A-Z, Z-A), by year, by date added',
+        ],
+      },
+    ],
+  },
+  {
     date: '2025-12-19',
     changes: [
       {

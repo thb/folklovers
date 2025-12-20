@@ -2,6 +2,7 @@ class SongsController < ApplicationController
   before_action :authenticate_user!, only: [ :create ]
   has_scope :by_artist
   has_scope :search
+  has_scope :sorted_by, default: "recent"
 
   def index
     songs = apply_scopes(Song).includes(:covers)
