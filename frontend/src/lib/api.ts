@@ -199,6 +199,7 @@ export type Article = {
   slug: string
   excerpt: string | null
   cover_image_url: string | null
+  cover_image_credit: string | null
   published_at: string | null
   is_published: boolean
   created_at: string

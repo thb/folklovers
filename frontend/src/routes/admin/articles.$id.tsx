@@ -21,6 +21,7 @@ type FormData = {
   content: string
   excerpt: string
   cover_image_url: string
+  cover_image_credit: string
   tag_names: string[]
 }
 
@@ -29,6 +30,7 @@ const emptyForm: FormData = {
   content: '',
   excerpt: '',
   cover_image_url: '',
+  cover_image_credit: '',
   tag_names: [],
 }
 
@@ -62,6 +64,7 @@ function AdminArticleEditorPage() {
         content: data.article.content,
         excerpt: data.article.excerpt || '',
         cover_image_url: data.article.cover_image_url || '',
+        cover_image_credit: data.article.cover_image_credit || '',
         tag_names: data.article.tags.map((t) => t.name),
       })
     } catch (error) {
@@ -217,6 +220,17 @@ function AdminArticleEditorPage() {
               />
             </div>
           )}
+        </div>
+
+        {/* Cover Image Credit */}
+        <div className="space-y-2">
+          <Label htmlFor="cover_image_credit">Cover Image Credit</Label>
+          <Input
+            id="cover_image_credit"
+            value={formData.cover_image_credit}
+            onChange={(e) => setFormData({ ...formData, cover_image_credit: e.target.value })}
+            placeholder="Photo by John Doe / Library of Congress"
+          />
         </div>
 
         {/* Tags */}

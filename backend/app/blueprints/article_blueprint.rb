@@ -1,7 +1,7 @@
 class ArticleBlueprint < Blueprinter::Base
   identifier :id
 
-  fields :title, :slug, :excerpt, :cover_image_url, :published_at, :created_at, :updated_at
+  fields :title, :slug, :excerpt, :cover_image_url, :cover_image_credit, :published_at, :created_at, :updated_at
 
   field :is_published do |article|
     article.published?

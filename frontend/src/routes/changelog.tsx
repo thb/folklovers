@@ -30,6 +30,12 @@ const changelog: ChangelogEntry[] = [
           'Admin tables now sortable by clicking column headers (songs, covers, users)',
         ],
       },
+      {
+        type: 'improved',
+        items: [
+          'Clearer sort labels: "Recently added" vs "Year (newest)" to avoid confusion',
+        ],
+      },
     ],
   },
   {

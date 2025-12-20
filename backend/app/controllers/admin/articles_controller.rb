@@ -68,7 +68,7 @@ module Admin
     private
 
     def article_params
-      params.permit(:title, :content, :excerpt, :cover_image_url, :published_at)
+      params.permit(:title, :content, :excerpt, :cover_image_url, :cover_image_credit, :published_at)
     end
 
     def sync_tags(article, tag_names)

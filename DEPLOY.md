@@ -7,7 +7,7 @@
 ```
 .github/workflows/
 ├── ci.yml        # Tests (backend RSpec + frontend build)
-└── deploy.yml    # Orchestrates everything: calls CI then deploys
+└── deploy.yml    # Tests → Build images → Push to GHCR → Deploy
 ```
 
 **Flow on `git push main`:**
@@ -26,8 +26,15 @@
 │                           │                                     │
 │                           ▼ (if tests pass)                     │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │ Job 2: deploy                                           │   │
-│  │   └── SSH to server → executes deploy.sh                │   │
+│  │ Job 2 & 3: build-backend & build-frontend (parallel)    │   │
+│  │   ├── Build Docker images with BuildKit cache           │   │
+│  │   └── Push to GHCR (ghcr.io/thb/folklovers/*)           │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                           │                                     │
+│                           ▼ (if builds succeed)                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ Job 4: deploy                                           │   │
+│  │   └── SSH to server → pull images → rolling restart     │   │
 │  └─────────────────────────────────────────────────────────┘   │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
@@ -38,15 +45,22 @@
 **`deploy.sh`** executes and does:
 
 ```bash
-git pull                    # 1. Pull latest code
-docker compose build        # 2. Rebuild Docker images
-docker compose up -d        # 3. Restart containers
-rails db:migrate            # 4. Run database migrations
+docker compose pull         # 1. Pull pre-built images from GHCR (~30s)
+docker compose up -d backend # 2. Restart backend
+rails db:migrate            # 3. Run database migrations
+docker compose up -d frontend # 4. Restart frontend (after migrations)
+docker image prune -f       # 5. Clean up old images
 ```
+
+**Note:** Images are built in CI, not on the server. This reduces deployment time from ~5min to ~30s.
 
 ### 3. Docker Compose (Orchestration)
 
-**`docker-compose.yml`** defines 3 services:
+Two compose files:
+- **`docker-compose.yml`** - Local development (builds images locally)
+- **`docker-compose.prod.yml`** - Production (pulls from GHCR)
+
+**`docker-compose.prod.yml`** defines 3 services:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -152,29 +166,31 @@ Internet
 ```
 1. You run: git push
 
-2. GitHub Actions:
-   └── deploy.yml starts
-       ├── Executes ci.yml (tests)
-       │   ├── Backend: RSpec with temporary PostgreSQL
-       │   └── Frontend: npm build
-       └── If OK → SSH to server
+2. GitHub Actions (deploy.yml):
+   ├── Job 1: test (ci.yml)
+   │   ├── Backend: RSpec with temporary PostgreSQL
+   │   └── Frontend: npm build
+   │
+   ├── Job 2 & 3: build-backend & build-frontend (parallel)
+   │   ├── Build Docker images with BuildKit + GHA cache
+   │   └── Push to ghcr.io/thb/folklovers/{backend,frontend}:latest
+   │
+   └── Job 4: deploy (SSH to server)
+       ├── docker login ghcr.io
+       ├── docker compose pull (pre-built images)
+       ├── Restart backend → run migrations → restart frontend
+       └── docker image prune
 
-3. On server (deploy.sh):
-   ├── git pull
-   ├── docker compose build
-   │   ├── Build backend/Dockerfile → folklovers-backend image
-   │   └── Build frontend/Dockerfile → folklovers-frontend image
-   ├── docker compose up -d
-   │   ├── Start db (PostgreSQL)
-   │   ├── Start backend (Rails)
-   │   └── Start frontend (Node SSR)
-   └── rails db:migrate
-
-4. Traefik detects new containers (via labels)
+3. Traefik detects new containers (via labels)
    └── Routes traffic to the right services
 
-5. Site accessible at https://thefolklovers.com
+4. Site accessible at https://thefolklovers.com
 ```
+
+**Why build in CI?**
+- Server has limited resources; building is slow (~5min)
+- CI has fast runners with BuildKit caching
+- Pulling pre-built images takes ~30s
 
 ## Server Setup
 
@@ -210,6 +226,14 @@ Configure in `Settings > Secrets and variables > Actions > Repository secrets`:
 | `SERVER_HOST` | Server IP or domain |
 | `SERVER_USER` | SSH user (e.g., `deploy`) |
 | `SERVER_SSH_KEY` | Private SSH key content |
+| `GHCR_PAT` | Personal Access Token with `write:packages` scope (for pulling images on server) |
+| `VITE_API_URL` | Production API URL (e.g., `https://api.thefolklovers.com`) |
+| `VITE_GOOGLE_CLIENT_ID` | Google OAuth Client ID |
+
+**Creating GHCR_PAT:**
+1. Go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+2. Generate new token with `write:packages` scope
+3. Add as repository secret
 
 ### Initial Deployment
 
@@ -223,12 +247,16 @@ cd folklovers
 cp .env.example .env
 vim .env  # Set your values
 
-# Build and start containers
-docker compose up -d --build
+# Login to GHCR (use your GitHub PAT)
+echo "YOUR_GHCR_PAT" | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
+
+# Pull and start containers
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
 
 # Run migrations and seed data
-docker compose exec backend bundle exec rails db:migrate
-docker compose exec backend bundle exec rails db:seed
+docker compose -f docker-compose.prod.yml exec backend bundle exec rails db:migrate
+docker compose -f docker-compose.prod.yml exec backend bundle exec rails db:seed
 ```
 
 ### Environment Variables
@@ -339,28 +367,35 @@ This means users can:
 
 ```bash
 # All services
-docker compose logs -f
+docker compose -f docker-compose.prod.yml logs -f
 
 # Specific service
-docker compose logs -f backend
-docker compose logs -f frontend
+docker compose -f docker-compose.prod.yml logs -f backend
+docker compose -f docker-compose.prod.yml logs -f frontend
 ```
 
-### Rebuild a specific service
+### Force pull latest images
 
 ```bash
-docker compose build --no-cache backend
-docker compose up -d backend
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
 ```
 
 ### Access Rails console
 
 ```bash
-docker compose exec backend bundle exec rails console
+docker compose -f docker-compose.prod.yml exec backend bundle exec rails console
 ```
 
 ### Reset database
 
 ```bash
-docker compose exec backend bundle exec rails db:reset
+docker compose -f docker-compose.prod.yml exec backend bundle exec rails db:reset
+```
+
+### Manual deploy (without CI)
+
+```bash
+cd ~/docker/folklovers
+./deploy.sh
 ```
