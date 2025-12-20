@@ -27,6 +27,7 @@ const changelog: ChangelogEntry[] = [
         type: 'added',
         items: [
           'Song sorting: alphabetical (A-Z, Z-A), by year, by date added',
+          'Admin tables now sortable by clicking column headers (songs, covers, users)',
         ],
       },
     ],

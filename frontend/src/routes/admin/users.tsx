@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { ChevronLeft, ChevronRight, User, Vote, Disc } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { SortableTableHead, useSorting, sortData } from '@/components/ui/sortable-table'
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,8 @@ export const Route = createFileRoute('/admin/users')({
   component: AdminUsersPage,
 })
 
+type UserSortColumn = 'username' | 'email' | 'role' | 'covers_count' | 'votes_count' | 'created_at'
+
 function AdminUsersPage() {
   const { token, isAdmin } = useAuth()
 
@@ -30,6 +33,18 @@ function AdminUsersPage() {
   const [pagination, setPagination] = useState({ current_page: 1, total_pages: 1, total_count: 0 })
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { sort, handleSort } = useSorting<UserSortColumn>('username')
+
+  const sortedUsers = useMemo(() => {
+    return sortData(users, sort, {
+      username: (u) => u.username.toLowerCase(),
+      email: (u) => u.email.toLowerCase(),
+      role: (u) => u.role,
+      covers_count: (u) => u.covers_count,
+      votes_count: (u) => u.votes_count,
+      created_at: (u) => new Date(u.created_at).getTime(),
+    })
+  }, [users, sort])
 
   const [selectedUser, setSelectedUser] = useState<{ user: UserType; contributions: UserContributions } | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -99,12 +114,24 @@ function AdminUsersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead className="text-center">Covers</TableHead>
-                <TableHead className="text-center">Votes</TableHead>
-                <TableHead>Joined</TableHead>
+                <SortableTableHead column="username" currentSort={sort} onSort={handleSort}>
+                  User
+                </SortableTableHead>
+                <SortableTableHead column="email" currentSort={sort} onSort={handleSort}>
+                  Email
+                </SortableTableHead>
+                <SortableTableHead column="role" currentSort={sort} onSort={handleSort}>
+                  Role
+                </SortableTableHead>
+                <SortableTableHead column="covers_count" currentSort={sort} onSort={handleSort} className="text-center">
+                  Covers
+                </SortableTableHead>
+                <SortableTableHead column="votes_count" currentSort={sort} onSort={handleSort} className="text-center">
+                  Votes
+                </SortableTableHead>
+                <SortableTableHead column="created_at" currentSort={sort} onSort={handleSort}>
+                  Joined
+                </SortableTableHead>
                 <TableHead></TableHead>
               </TableRow>
             </TableHeader>
@@ -115,14 +142,14 @@ function AdminUsersPage() {
                     Loading...
                   </TableCell>
                 </TableRow>
-              ) : users.length === 0 ? (
+              ) : sortedUsers.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                     No users found
                   </TableCell>
                 </TableRow>
               ) : (
-                users.map((user) => (
+                sortedUsers.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">

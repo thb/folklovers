@@ -1,5 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useState, useEffect, useMemo } from 'react'
 import { Plus, Pencil, Trash2, X, ExternalLink } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { SortableTableHead, useSorting, sortData } from '@/components/ui/sortable-table'
 import {
   Dialog,
   DialogContent,
@@ -71,14 +72,27 @@ const emptyCoverForm: CoverFormData = {
   description: '',
 }
 
+type CoverSortColumn = 'artist' | 'song' | 'year' | 'votes_score'
+
 function AdminCoversPage() {
   const { token, isAdmin } = useAuth()
   const { song_id: filterSongId } = Route.useSearch()
+  const navigate = useNavigate()
 
   const [covers, setCovers] = useState<AdminCover[]>([])
   const [songs, setSongs] = useState<Song[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { sort, handleSort } = useSorting<CoverSortColumn>('artist')
+
+  const sortedCovers = useMemo(() => {
+    return sortData(covers, sort, {
+      artist: (c) => c.artist.toLowerCase(),
+      song: (c) => c.song.title.toLowerCase(),
+      year: (c) => c.year,
+      votes_score: (c) => c.votes_score,
+    })
+  }, [covers, sort])
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -298,15 +312,25 @@ function AdminCoversPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Artist</TableHead>
-                  {!filterSongId && <TableHead>Song</TableHead>}
-                  <TableHead>Year</TableHead>
-                  <TableHead>Score</TableHead>
+                  <SortableTableHead column="artist" currentSort={sort} onSort={handleSort}>
+                    Artist
+                  </SortableTableHead>
+                  {!filterSongId && (
+                    <SortableTableHead column="song" currentSort={sort} onSort={handleSort}>
+                      Song
+                    </SortableTableHead>
+                  )}
+                  <SortableTableHead column="year" currentSort={sort} onSort={handleSort}>
+                    Year
+                  </SortableTableHead>
+                  <SortableTableHead column="votes_score" currentSort={sort} onSort={handleSort}>
+                    Score
+                  </SortableTableHead>
                   <TableHead className="w-[100px]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {covers.map((cover) => (
+                {sortedCovers.map((cover) => (
                   <TableRow key={cover.id}>
                     <TableCell className="font-medium">{cover.artist}</TableCell>
                     {!filterSongId && (
@@ -347,7 +371,7 @@ function AdminCoversPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {covers.length === 0 && (
+                {sortedCovers.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={filterSongId ? 4 : 5} className="text-center py-8 text-muted-foreground">
                       No covers

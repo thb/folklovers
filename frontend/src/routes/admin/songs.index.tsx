@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { SortableTableHead, useSorting, sortData } from '@/components/ui/sortable-table'
 import {
   Dialog,
   DialogContent,
@@ -55,12 +56,24 @@ const emptySongForm: SongFormData = {
   description: '',
 }
 
+type SongSortColumn = 'title' | 'original_artist' | 'year' | 'covers_count'
+
 function AdminSongsPage() {
   const { token, isAdmin } = useAuth()
 
   const [songs, setSongs] = useState<Song[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { sort, handleSort } = useSorting<SongSortColumn>('title')
+
+  const sortedSongs = useMemo(() => {
+    return sortData(songs, sort, {
+      title: (s) => s.title.toLowerCase(),
+      original_artist: (s) => s.original_artist.toLowerCase(),
+      year: (s) => s.year,
+      covers_count: (s) => s.covers_count,
+    })
+  }, [songs, sort])
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -189,15 +202,23 @@ function AdminSongsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Original artist</TableHead>
-                  <TableHead>Year</TableHead>
-                  <TableHead>Covers</TableHead>
+                  <SortableTableHead column="title" currentSort={sort} onSort={handleSort}>
+                    Title
+                  </SortableTableHead>
+                  <SortableTableHead column="original_artist" currentSort={sort} onSort={handleSort}>
+                    Original artist
+                  </SortableTableHead>
+                  <SortableTableHead column="year" currentSort={sort} onSort={handleSort}>
+                    Year
+                  </SortableTableHead>
+                  <SortableTableHead column="covers_count" currentSort={sort} onSort={handleSort}>
+                    Covers
+                  </SortableTableHead>
                   <TableHead className="w-[100px]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {songs.map((song) => (
+                {sortedSongs.map((song) => (
                   <TableRow key={song.id}>
                     <TableCell className="font-medium">
                       <Link
@@ -240,7 +261,7 @@ function AdminSongsPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {songs.length === 0 && (
+                {sortedSongs.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                       No songs
