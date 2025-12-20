@@ -16,8 +16,8 @@ import type { Song } from '@/lib/api'
 import { z } from 'zod'
 
 const sortOptions = [
-  { value: 'recent', label: 'Newest first' },
-  { value: 'oldest', label: 'Oldest first' },
+  { value: 'recent', label: 'Recently added' },
+  { value: 'oldest', label: 'Oldest added' },
   { value: 'title_asc', label: 'Title A-Z' },
   { value: 'title_desc', label: 'Title Z-A' },
   { value: 'year_desc', label: 'Year (newest)' },

@@ -185,6 +185,51 @@ export type Pagination = {
   per_page: number
 }
 
+// Blog types
+export type Tag = {
+  id: number
+  name: string
+  slug: string
+  articles_count?: number
+}
+
+export type Article = {
+  id: number
+  title: string
+  slug: string
+  excerpt: string | null
+  cover_image_url: string | null
+  published_at: string | null
+  is_published: boolean
+  created_at: string
+  updated_at: string
+  author: User
+  tags: Tag[]
+}
+
+export type ArticleWithContent = Article & {
+  content: string
+}
+
+// Blog API
+export const blog = {
+  list: (params?: { page?: number; per_page?: number; by_tag?: string; search?: string }) => {
+    const searchParams = new URLSearchParams()
+    if (params?.page) searchParams.set('page', params.page.toString())
+    if (params?.per_page) searchParams.set('per_page', params.per_page.toString())
+    if (params?.by_tag) searchParams.set('by_tag', params.by_tag)
+    if (params?.search) searchParams.set('search', params.search)
+    const query = searchParams.toString()
+    return request<{ articles: Article[]; pagination: Pagination }>(`/blog${query ? `?${query}` : ''}`)
+  },
+
+  get: (slug: string) =>
+    request<{ article: ArticleWithContent }>(`/blog/${slug}`),
+
+  tags: () =>
+    request<{ tags: Tag[] }>('/blog/tags'),
+}
+
 // Admin API
 export const admin = {
   songs: {
@@ -252,6 +297,57 @@ export const admin = {
 
     get: (token: string, id: number) =>
       request<{ user: User; contributions: UserContributions }>(`/admin/users/${id}`, { token }),
+  },
+
+  articles: {
+    list: (token: string, params?: { page?: number; per_page?: number; search?: string }) => {
+      const searchParams = new URLSearchParams()
+      if (params?.page) searchParams.set('page', params.page.toString())
+      if (params?.per_page) searchParams.set('per_page', params.per_page.toString())
+      if (params?.search) searchParams.set('search', params.search)
+      const query = searchParams.toString()
+      return request<{ articles: ArticleWithContent[]; pagination: Pagination }>(
+        `/admin/articles${query ? `?${query}` : ''}`,
+        { token }
+      )
+    },
+
+    get: (token: string, id: number) =>
+      request<{ article: ArticleWithContent }>(`/admin/articles/${id}`, { token }),
+
+    create: (token: string, data: {
+      title: string
+      content: string
+      excerpt?: string
+      cover_image_url?: string
+      published_at?: string | null
+      tag_names?: string[]
+    }) =>
+      request<{ article: ArticleWithContent }>('/admin/articles', { method: 'POST', body: data, token }),
+
+    update: (token: string, id: number, data: Partial<{
+      title: string
+      content: string
+      excerpt: string
+      cover_image_url: string
+      published_at: string | null
+      tag_names: string[]
+    }>) =>
+      request<{ article: ArticleWithContent }>(`/admin/articles/${id}`, { method: 'PATCH', body: data, token }),
+
+    delete: (token: string, id: number) =>
+      request<void>(`/admin/articles/${id}`, { method: 'DELETE', token }),
+
+    publish: (token: string, id: number) =>
+      request<{ article: ArticleWithContent }>(`/admin/articles/${id}/publish`, { method: 'POST', token }),
+  },
+
+  tags: {
+    list: (token: string) =>
+      request<{ tags: Tag[] }>('/admin/tags', { token }),
+
+    delete: (token: string, id: number) =>
+      request<void>(`/admin/tags/${id}`, { method: 'DELETE', token }),
   },
 }
 

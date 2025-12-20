@@ -57,6 +57,13 @@ export function Header() {
           >
             Songs
           </Link>
+          <Link
+            to="/blog"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            activeProps={{ className: 'text-sm font-medium text-foreground' }}
+          >
+            Blog
+          </Link>
         </nav>
 
         {/* Auth - Desktop */}
@@ -142,6 +149,13 @@ export function Header() {
                 className="text-base font-medium text-foreground hover:text-primary transition-colors"
               >
                 Songs
+              </Link>
+              <Link
+                to="/blog"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-base font-medium text-foreground hover:text-primary transition-colors"
+              >
+                Blog
               </Link>
               {isAuthenticated && (
                 <Link

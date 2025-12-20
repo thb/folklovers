@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, Link, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
-import { Music, Disc, Users } from 'lucide-react'
+import { Music, Disc, Users, FileText } from 'lucide-react'
 import { useAuth } from '@/lib/auth'
 
 export const Route = createFileRoute('/admin')({
@@ -38,6 +38,9 @@ function AdminLayout() {
             </NavLink>
             <NavLink to="/admin/users" icon={<Users className="w-4 h-4" />}>
               Users
+            </NavLink>
+            <NavLink to="/admin/articles" icon={<FileText className="w-4 h-4" />}>
+              Articles
             </NavLink>
           </nav>
         </div>

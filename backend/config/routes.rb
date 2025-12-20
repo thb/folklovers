@@ -23,10 +23,21 @@ Rails.application.routes.draw do
   post "covers/:cover_id/vote", to: "votes#create"
   delete "covers/:cover_id/vote", to: "votes#destroy"
 
+  # Blog
+  get "blog", to: "articles#index"
+  get "blog/tags", to: "articles#tags"
+  get "blog/:slug", to: "articles#show"
+
   # Admin
   namespace :admin do
     resources :songs, only: [ :index, :show, :create, :update, :destroy ]
     resources :covers, only: [ :index, :show, :create, :update, :destroy ]
     resources :users, only: [ :index, :show ]
+    resources :articles, only: [ :index, :show, :create, :update, :destroy ] do
+      member do
+        post :publish
+      end
+    end
+    resources :tags, only: [ :index, :destroy ]
   end
 end

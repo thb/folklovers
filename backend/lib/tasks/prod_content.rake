@@ -177,6 +177,31 @@ namespace :prod do
     end
   end
 
+  desc "Delete a song: bin/rails 'prod:delete[SONG_ID]'"
+  task :delete, [:song_id] => :environment do |_t, args|
+    song_id = args[:song_id] || raise("Usage: bin/rails 'prod:delete[SONG_ID]'")
+
+    api_url = ProdApi.api_url
+    email, password = ProdApi.credentials
+
+    token = ProdApi.login(api_url, email, password)
+
+    uri = URI("#{api_url}/admin/songs/#{song_id}")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = uri.scheme == "https"
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE if http.use_ssl?
+
+    request = Net::HTTP::Delete.new(uri.path)
+    request["Authorization"] = "Bearer #{token}"
+    response = http.request(request)
+
+    if response.code == "204"
+      puts "Deleted song ##{song_id}"
+    else
+      puts "Error: #{response.code} - #{response.body}"
+    end
+  end
+
   desc "Check production videos"
   task check: :environment do
     api_key = ENV["YOUTUBE_API_KEY"] || raise("Set YOUTUBE_API_KEY in .env")

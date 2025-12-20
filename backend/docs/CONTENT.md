@@ -72,6 +72,12 @@ bin/rails 'prod:update_cover[COVER_ID,https://www.youtube.com/watch?v=VIDEO_ID]'
 bin/rails prod:list
 ```
 
+### Delete a song
+
+```bash
+bin/rails 'prod:delete[SONG_ID]'
+```
+
 ### Check if YouTube videos are still available
 
 ```bash
