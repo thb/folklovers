@@ -1,0 +1,70 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-folklovers}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-folklovers_production}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-folklovers}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+  # Rails API Backend (pre-built from GHCR)
+  backend:
+    image: ghcr.io/thb/folklovers/backend:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      RAILS_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER:-folklovers}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-folklovers_production}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      FRONTEND_URL: https://${FRONTEND_DOMAIN}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.folklovers-api.rule=Host(`${API_DOMAIN}`)"
+      - "traefik.http.routers.folklovers-api.entrypoints=https"
+      - "traefik.http.routers.folklovers-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.folklovers-api.loadbalancer.server.port=3000"
+    networks:
+      - internal
+      - proxy
+
+  # TanStack Start Frontend (pre-built from GHCR)
+  frontend:
+    image: ghcr.io/thb/folklovers/frontend:latest
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NODE_ENV: production
+      API_URL_INTERNAL: http://backend:3000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.folklovers-web.rule=Host(`${FRONTEND_DOMAIN}`)"
+      - "traefik.http.routers.folklovers-web.entrypoints=https"
+      - "traefik.http.routers.folklovers-web.tls.certresolver=letsencrypt"
+      - "traefik.http.services.folklovers-web.loadbalancer.server.port=3000"
+    networks:
+      - internal
+      - proxy
+
+volumes:
+  postgres_data:
+
+networks:
+  internal:
+    driver: bridge
+  proxy:
+    external: true

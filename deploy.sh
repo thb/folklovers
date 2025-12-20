@@ -5,35 +5,28 @@ cd ~/docker/folklovers
 
 echo "=== Starting deployment ==="
 echo "Date: $(date)"
-echo "Directory: $(pwd)"
 
 echo ""
-echo "=== Pulling latest code ==="
-git fetch origin main
-git reset --hard origin/main
-
-echo ""
-echo "=== Building containers ==="
-docker compose build
+echo "=== Pulling latest images from GHCR ==="
+docker compose -f docker-compose.prod.yml pull backend frontend
 
 echo ""
 echo "=== Restarting backend ==="
-docker compose up -d --no-deps --wait backend
-echo "Backend is healthy"
+docker compose -f docker-compose.prod.yml up -d --no-deps backend
+sleep 5
 
 echo ""
 echo "=== Running migrations ==="
-docker compose exec -T backend bundle exec rails db:migrate
+docker compose -f docker-compose.prod.yml exec -T backend bundle exec rails db:migrate
 echo "Migrations completed"
 
 echo ""
 echo "=== Restarting frontend ==="
-docker compose up -d --no-deps --wait frontend
-echo "Frontend is healthy"
+docker compose -f docker-compose.prod.yml up -d --no-deps frontend
 
 echo ""
 echo "=== Container status ==="
-docker compose ps
+docker compose -f docker-compose.prod.yml ps
 
 echo ""
 echo "=== Cleaning up old images ==="
