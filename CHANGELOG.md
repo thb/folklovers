@@ -3,6 +3,8 @@
 ## 2025-12-20
 
 ### Added
+- CLAUDE.md with project instructions for Claude Code
+- `prod:delete` task for removing songs from production
 - Blog feature with full article management
   - Articles with markdown content, draft/published status, cover images, and tags
   - Admin article editor with live markdown preview toggle
@@ -15,6 +17,7 @@
 - Tailwind Typography plugin for proper prose styling
 
 ### Improved
+- DEPLOY.md updated with GHCR deployment architecture (CI builds images, server pulls)
 - Article page typography: proper heading hierarchy, spacing, and reading width
 - Google Sign-In button now responsive (adapts to container width, max 400px)
 - Utility functions `getYouTubeVideoId()` and `getYouTubeThumbnail()` for thumbnail URLs
