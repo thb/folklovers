@@ -5,6 +5,7 @@
 ### Added
 - CLAUDE.md with project instructions for Claude Code
 - `prod:delete` task for removing songs from production
+- `prod:create_article` task for publishing articles to production
 - Blog feature with full article management
   - Articles with markdown content, draft/published status, cover images, and tags
   - Admin article editor with live markdown preview toggle
