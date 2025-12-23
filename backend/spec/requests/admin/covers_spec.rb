@@ -67,7 +67,7 @@ RSpec.describe "Admin::Covers", type: :request do
             params: { youtube_url: "https://youtube.com/watch?v=newvideo" },
             headers: auth_headers(admin)
       expect(response).to have_http_status(:ok)
-      expect(cover.reload.youtube_url).to eq("https://youtube.com/watch?v=newvideo")
+      expect(cover.reload.youtube_url).to eq("https://www.youtube.com/watch?v=newvideo")
     end
   end
 
