@@ -40,4 +40,36 @@ RSpec.shared_examples "youtube_validatable" do
       end
     end
   end
+
+  describe "youtube_url normalization" do
+    it "normalizes youtu.be URLs to standard format" do
+      subject.youtube_url = "https://youtu.be/abc123"
+      subject.valid?
+      expect(subject.youtube_url).to eq("https://www.youtube.com/watch?v=abc123")
+    end
+
+    it "strips tracking parameters from youtu.be URLs" do
+      subject.youtube_url = "https://youtu.be/abc123?si=tracking-param"
+      subject.valid?
+      expect(subject.youtube_url).to eq("https://www.youtube.com/watch?v=abc123")
+    end
+
+    it "normalizes youtube.com URLs without www" do
+      subject.youtube_url = "https://youtube.com/watch?v=abc123"
+      subject.valid?
+      expect(subject.youtube_url).to eq("https://www.youtube.com/watch?v=abc123")
+    end
+
+    it "strips extra parameters from youtube.com URLs" do
+      subject.youtube_url = "https://www.youtube.com/watch?v=abc123&feature=share"
+      subject.valid?
+      expect(subject.youtube_url).to eq("https://www.youtube.com/watch?v=abc123")
+    end
+
+    it "does not modify blank URLs" do
+      subject.youtube_url = ""
+      subject.valid?
+      expect(subject.youtube_url).to eq("")
+    end
+  end
 end
