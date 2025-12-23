@@ -1,5 +1,5 @@
 import { HeadContent, Link, Outlet, Scripts, createRootRoute, useLocation } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { Home, RefreshCw } from 'lucide-react'
@@ -66,6 +66,7 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   const location = useLocation()
+  const isFirstRender = useRef(true)
 
   // Initialize Matomo (production only, when configured)
   useEffect(() => {
@@ -74,13 +75,13 @@ function RootComponent() {
 
     if (import.meta.env.DEV || !matomoUrl || !matomoSiteId) return
 
-    window._paq = window._paq || []
-    window._paq.push(['trackPageView'])
-    window._paq.push(['enableLinkTracking'])
-
     const u = matomoUrl.endsWith('/') ? matomoUrl : matomoUrl + '/'
+
+    window._paq = window._paq || []
     window._paq.push(['setTrackerUrl', u + 'matomo.php'])
     window._paq.push(['setSiteId', matomoSiteId])
+    window._paq.push(['trackPageView'])
+    window._paq.push(['enableLinkTracking'])
 
     const d = document
     const g = d.createElement('script')
@@ -90,12 +91,18 @@ function RootComponent() {
     s.parentNode?.insertBefore(g, s)
   }, [])
 
-  // Track route changes (production only, when configured)
+  // Track route changes (production only, skip first render)
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+
     if (import.meta.env.DEV || !import.meta.env.VITE_MATOMO_URL) return
 
     window._paq = window._paq || []
     window._paq.push(['setCustomUrl', location.pathname + location.search])
+    window._paq.push(['setDocumentTitle', document.title])
     window._paq.push(['trackPageView'])
   }, [location.pathname, location.search])
 
