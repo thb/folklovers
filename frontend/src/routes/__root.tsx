@@ -1,4 +1,5 @@
-import { HeadContent, Link, Outlet, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Link, Outlet, Scripts, createRootRoute, useLocation } from '@tanstack/react-router'
+import { useEffect } from 'react'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { Home, RefreshCw } from 'lucide-react'
@@ -11,6 +12,12 @@ import { PlayerProvider } from '@/lib/player-context'
 import { Button } from '@/components/ui/button'
 
 import appCss from '../styles.css?url'
+
+declare global {
+  interface Window {
+    _paq: unknown[]
+  }
+}
 
 export const Route = createRootRoute({
   errorComponent: ErrorPage,
@@ -58,6 +65,40 @@ export const Route = createRootRoute({
 })
 
 function RootComponent() {
+  const location = useLocation()
+
+  // Initialize Matomo (production only, when configured)
+  useEffect(() => {
+    const matomoUrl = import.meta.env.VITE_MATOMO_URL
+    const matomoSiteId = import.meta.env.VITE_MATOMO_SITE_ID
+
+    if (import.meta.env.DEV || !matomoUrl || !matomoSiteId) return
+
+    window._paq = window._paq || []
+    window._paq.push(['trackPageView'])
+    window._paq.push(['enableLinkTracking'])
+
+    const u = matomoUrl.endsWith('/') ? matomoUrl : matomoUrl + '/'
+    window._paq.push(['setTrackerUrl', u + 'matomo.php'])
+    window._paq.push(['setSiteId', matomoSiteId])
+
+    const d = document
+    const g = d.createElement('script')
+    const s = d.getElementsByTagName('script')[0]
+    g.async = true
+    g.src = u + 'matomo.js'
+    s.parentNode?.insertBefore(g, s)
+  }, [])
+
+  // Track route changes (production only, when configured)
+  useEffect(() => {
+    if (import.meta.env.DEV || !import.meta.env.VITE_MATOMO_URL) return
+
+    window._paq = window._paq || []
+    window._paq.push(['setCustomUrl', location.pathname + location.search])
+    window._paq.push(['trackPageView'])
+  }, [location.pathname, location.search])
+
   return (
     <RootDocument>
       <Outlet />
