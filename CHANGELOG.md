@@ -1,8 +1,25 @@
 # Changelog
 
+## 2025-12-24
+
+### Added
+- New "Add a cover" flow: search existing songs or create new ones in a single form
+- Song search autocomplete for faster song selection
+- Matomo analytics tracking (privacy-friendly)
+
+### Fixed
+- YouTube URL normalization: youtu.be links and tracking parameters now handled correctly
+- Delete actions in admin panel no longer show false errors
+
+### Changed
+- Year is now optional when creating songs (useful for traditional folk songs)
+- "Suggest song" button renamed to "Add a cover" with simplified flow
+
 ## 2025-12-20
 
 ### Added
+- Song sorting: alphabetical (A-Z, Z-A), by year, by date added
+- Admin tables now sortable by clicking column headers (songs, covers, users)
 - CLAUDE.md with project instructions for Claude Code
 - `prod:delete` task for removing songs from production
 - `prod:create_article` task for publishing articles to production
@@ -18,6 +35,7 @@
 - Tailwind Typography plugin for proper prose styling
 
 ### Improved
+- Clearer sort labels: "Recently added" vs "Year (newest)" to avoid confusion
 - DEPLOY.md updated with GHCR deployment architecture (CI builds images, server pulls)
 - Article page typography: proper heading hierarchy, spacing, and reading width
 - Google Sign-In button now responsive (adapts to container width, max 400px)
@@ -26,27 +44,36 @@
 ### Changed
 - Logo icon changed from Music to Guitar across all pages (header, footer, home, login, register)
 
+## 2025-12-19
+
+### Added
+- Persistent audio player bar (plays across page navigation, like France Inter)
+- Play queue with add-to-queue functionality on covers
+- Original version now displayed as first "cover" with distinctive amber badge
+- Custom 404 page with vinyl record illustration
+- Custom 500 error page with scratched record theme
+- Changelog page (/changelog)
+
+### Changed
+- Unified data model: original song version is now a cover with original flag
+- Song detail page renamed "Covers" section to "Versions"
+- Thumbnails now served directly from API instead of client-side extraction
+
+### Improved
+- Cover cards now show play/pause state and queue controls on hover
+- Original versions always appear first, regardless of vote count
+- Faster deployments: images built in CI, server just pulls (~30s vs ~5min)
+
 ## 2025-12-18
 
 ### Added
-- Users can submit new songs via dedicated /songs/new page (requires authentication)
-- "Suggest a song" buttons: homepage hero, navbar (authenticated), songs list header
+- Users can submit new songs via /songs/new form (requires authentication)
 - Users can add covers to existing songs with YouTube URL
 - Playable cover cards on homepage (top covers section)
 - Admin user management interface (/admin/users) with role editing
 - Search and pagination on songs listing page
-- Rails tasks for content management (`content:list`, `prod:populate`, `prod:update_song`, `prod:update_cover`)
-- YouTube search task (`youtube:search`) for finding video URLs
 - Admin dashboard counters (songs, covers, users)
 - Filter covers by song in admin panel
-- YouTube URL format validation (accepts youtube.com and youtu.be, with or without www)
-- Required fields for song submission: year, YouTube URL, description
-
-### Improved
-- Inline field-level error handling on song and cover submission forms (Rails-style errors)
-- DRY: shared `YoutubeValidatable` concern for backend validation
-- DRY: shared `form-utils.ts` for frontend error parsing
-- Comprehensive tests for YouTube URL validation (shared examples)
 
 ### Changed
 - Translated entire site from French to English (UI and seed data)
@@ -63,13 +90,10 @@
 - Google OAuth authentication (Sign in with Google)
 - Google Sign-In button on login and register pages
 - Tests for Google auth endpoint and service
-- Documentation for Google OAuth setup in DEPLOY.md
 
 ### Fixed
 - Votes +1/-1: user vote state now persists after page reload
-  - Loader runs server-side without auth, so covers are refetched client-side with token
-  - VotingButtons component now syncs state when cover prop changes
 
 ### Changed
 - Renamed "Folklovers" to "Folk Lovers" everywhere
-- Reduced deployment downtime with rolling restart (--no-deps --wait)
+- Reduced deployment downtime with rolling restart

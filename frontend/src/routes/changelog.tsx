@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Plus, RefreshCw, Wrench, Zap } from 'lucide-react'
+import changelogRaw from '../../../CHANGELOG.md?raw'
 
 export const Route = createFileRoute('/changelog')({
   component: ChangelogPage,
@@ -19,116 +20,69 @@ type ChangelogEntry = {
   changes: ChangeEntry[]
 }
 
-const changelog: ChangelogEntry[] = [
-  {
-    date: '2025-12-20',
-    changes: [
-      {
-        type: 'added',
-        items: [
-          'Song sorting: alphabetical (A-Z, Z-A), by year, by date added',
-          'Admin tables now sortable by clicking column headers (songs, covers, users)',
-        ],
-      },
-      {
-        type: 'improved',
-        items: [
-          'Clearer sort labels: "Recently added" vs "Year (newest)" to avoid confusion',
-        ],
-      },
-    ],
-  },
-  {
-    date: '2025-12-19',
-    changes: [
-      {
-        type: 'added',
-        items: [
-          'Persistent audio player bar (plays across page navigation, like France Inter)',
-          'Play queue with add-to-queue functionality on covers',
-          'Original version now displayed as first "cover" with distinctive amber badge',
-          'Custom 404 page with vinyl record illustration',
-          'Custom 500 error page with scratched record theme',
-          'Changelog page (/changelog)',
-        ],
-      },
-      {
-        type: 'changed',
-        items: [
-          'Unified data model: original song version is now a cover with original flag',
-          'Song detail page renamed "Covers" section to "Versions"',
-          'Thumbnails now served directly from API instead of client-side extraction',
-        ],
-      },
-      {
-        type: 'improved',
-        items: [
-          'Cover cards now show play/pause state and queue controls on hover',
-          'Original versions always appear first, regardless of vote count',
-          'Faster deployments: images built in CI, server just pulls (~30s vs ~5min)',
-        ],
-      },
-    ],
-  },
-  {
-    date: '2025-12-18',
-    changes: [
-      {
-        type: 'added',
-        items: [
-          'Users can submit new songs via /songs/new form (requires authentication)',
-          'Users can add covers to existing songs with YouTube URL',
-          'Playable cover cards on homepage (top covers section)',
-          'Admin user management interface (/admin/users) with role editing',
-          'Search and pagination on songs listing page',
-          'Admin dashboard counters (songs, covers, users)',
-          'Filter covers by song in admin panel',
-        ],
-      },
-      {
-        type: 'changed',
-        items: [
-          'Translated entire site from French to English (UI and seed data)',
-          'Wait for database migrations before starting frontend in deployment',
-        ],
-      },
-    ],
-  },
-  {
-    date: '2025-12-17',
-    changes: [
-      {
-        type: 'improved',
-        items: [
-          'Lighthouse performance: moved Google Fonts from @import to preconnect + link tags',
-          'Lighthouse performance: TanStack Devtools now conditionally loaded only in development',
-          'Lighthouse CLS: added explicit width/height dimensions to YouTube thumbnail images',
-        ],
-      },
-      {
-        type: 'added',
-        items: [
-          'Google OAuth authentication (Sign in with Google)',
-          'Google Sign-In button on login and register pages',
-          'Tests for Google auth endpoint and service',
-        ],
-      },
-      {
-        type: 'fixed',
-        items: [
-          'Votes +1/-1: user vote state now persists after page reload',
-        ],
-      },
-      {
-        type: 'changed',
-        items: [
-          'Renamed "Folklovers" to "Folk Lovers" everywhere',
-          'Reduced deployment downtime with rolling restart',
-        ],
-      },
-    ],
-  },
-]
+function parseChangelog(markdown: string): ChangelogEntry[] {
+  const entries: ChangelogEntry[] = []
+  const lines = markdown.split('\n')
+
+  let currentEntry: ChangelogEntry | null = null
+  let currentChange: ChangeEntry | null = null
+
+  for (const line of lines) {
+    // Match date header: ## 2025-12-24
+    const dateMatch = line.match(/^## (\d{4}-\d{2}-\d{2})/)
+    if (dateMatch) {
+      if (currentChange && currentEntry) {
+        currentEntry.changes.push(currentChange)
+      }
+      if (currentEntry) {
+        entries.push(currentEntry)
+      }
+      currentEntry = { date: dateMatch[1], changes: [] }
+      currentChange = null
+      continue
+    }
+
+    // Match change type header: ### Added, ### Changed, etc.
+    const typeMatch = line.match(/^### (Added|Changed|Fixed|Improved)/i)
+    if (typeMatch && currentEntry) {
+      if (currentChange) {
+        currentEntry.changes.push(currentChange)
+      }
+      currentChange = {
+        type: typeMatch[1].toLowerCase() as ChangeType,
+        items: [],
+      }
+      continue
+    }
+
+    // Match list item: - Something
+    const itemMatch = line.match(/^- (.+)/)
+    if (itemMatch && currentChange) {
+      currentChange.items.push(itemMatch[1])
+      continue
+    }
+
+    // Match indented list item (sub-item): "  - Something"
+    const subItemMatch = line.match(/^  - (.+)/)
+    if (subItemMatch && currentChange && currentChange.items.length > 0) {
+      // Append sub-item to the last item
+      const lastIndex = currentChange.items.length - 1
+      currentChange.items[lastIndex] += ` (${subItemMatch[1]})`
+    }
+  }
+
+  // Don't forget the last entries
+  if (currentChange && currentEntry) {
+    currentEntry.changes.push(currentChange)
+  }
+  if (currentEntry) {
+    entries.push(currentEntry)
+  }
+
+  return entries
+}
+
+const changelog = parseChangelog(changelogRaw)
 
 const typeConfig: Record<ChangeType, { label: string; icon: React.ElementType; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
   added: { label: 'Added', icon: Plus, variant: 'default' },

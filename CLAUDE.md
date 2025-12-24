@@ -31,6 +31,26 @@ cd frontend && npm run test
 cd frontend && npx @tanstack/router-cli generate
 ```
 
+## Changelog
+
+**Always document notable changes in `CHANGELOG.md` at the project root.** This file is parsed by the `/changelog` page to show updates to the community. Follow the existing format:
+
+```markdown
+## YYYY-MM-DD
+
+### Added
+- New feature description
+
+### Changed
+- Change description
+
+### Fixed
+- Bug fix description
+
+### Improved
+- Improvement description
+```
+
 ## Production Content Management
 
 **Always use `backend/docs/CONTENT.md` procedures for adding/editing content on production.**
