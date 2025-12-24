@@ -20,6 +20,15 @@
 - [ ] Infinite scroll pagination on songs page
 - [ ] Infinite scroll pagination on artists page
 
+## Cover Tags
+- [ ] Create CoverTag model with fixed list of tags (Traditional, Electric, Bob Dylan, Movie, Live, Acoustic, A Cappella, Instrumental, etc.)
+- [ ] Add tags to covers (many-to-many relationship)
+- [ ] Tag selection when submitting a cover
+- [ ] Tag page listing all covers with a specific tag (/tags/:slug)
+- [ ] Tags index page (/tags) showing all tags with cover counts
+- [ ] Display tags on cover cards
+- [ ] Admin: manage tags (add, edit, delete)
+
 ## Rankings & Discovery
 - [ ] Covers page with global rankings (/covers)
 - [ ] Rankings page with top songs, top covers, trending (/rankings)
