@@ -3,6 +3,21 @@
 ## Design
 - [ ] Créer une favico à partir du logo icône dans le fonds marron
 
+## Artists Feature
+- [ ] Create Artist model (name, slug, bio, image_url)
+- [ ] Link Song.original_artist and Cover.artist to Artist model
+- [ ] Artists page (/artists) with list of all artists
+- [ ] Artist detail page with originals count and covers count
+- [ ] Artist search/autocomplete when adding songs or covers (prevent duplicates)
+- [ ] Admin: manage artists (merge duplicates, edit info)
+
+## Duplicate Prevention
+- [ ] Songs: detect duplicates by title + artist similarity (fuzzy matching)
+- [ ] Covers: prevent same YouTube URL, detect same artist + song combination
+- [ ] Artists: normalize names (case, accents, "The" prefix), suggest existing matches
+- [ ] Find-or-create pattern for all entities with user confirmation
+- [ ] Admin: merge duplicate records tool (songs, covers, artists)
+
 ## Performance
 - [ ] Self-host les Google Fonts (éviter le FOUC / tremblement au chargement)
 
