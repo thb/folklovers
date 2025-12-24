@@ -1,8 +1,5 @@
 # TODO
 
-## Design
-- [x] Create favicon from logo icon with brown background
-
 ## Artists Feature
 - [ ] Create Artist model (name, slug, bio, image_url)
 - [ ] Link Song.original_artist and Cover.artist to Artist model
