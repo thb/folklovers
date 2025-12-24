@@ -1,8 +1,7 @@
 # TODO
 
 ## Design
-- [ ] Créer un logo dans le style vintage 60s avec Nano Banana
-- [ ] Avoir des vignettes (miniatures) des chansons
+- [ ] Créer une favico à partir du logo icône dans le fonds marron
 
 ## Performance
 - [ ] Self-host les Google Fonts (éviter le FOUC / tremblement au chargement)
@@ -12,16 +11,19 @@
 - [ ] Action Mailer pour mot de passe oublié
 
 ## Espace Utilisateur
+- [ ] Commenter une cover
+- [ ] Lien rapide : supprimer / modifier sa cover (admin peut toujours le faire)
 - [ ] Page par défaut après inscription/connexion
 - [ ] Mes suggestions
 - [ ] Mes votes
-
-## Roles & Permissions
-- [x] Créer des rôles admin et user
+- [ ] Mot de passe oublié
+- [ ] Changer son mot de passe
+- [ ] Supprimer son compte
+- [ ] Modifier son profil
+- [ ] Créer une playlist (publique, privé ou en collaboration)
+- [ ] Gestion de la playlist (ajout/suppression de cover, midifier / supprimer la playlist)
 
 ## Espace Admin
-- [x] CRUD chansons
-- [x] CRUD interprétations (covers)
 - [ ] Suggestions (à modérer | acceptées | refusées)
 
 ## Système de Notifications
@@ -32,3 +34,12 @@
 - [ ] Le user reçoit une notif avec le statut et la raison de la modération de sa suggestion
 - [ ] Le user reçoit une notif quand quelqu'un vote ou commente sa suggestion
 - [ ] Idem pour les interprétations (covers)
+
+## Blog Article Ideas
+
+- [ ] **Traditional Era** - Folk songs with unknown authors, oral tradition, ballads passed down through generations
+- [ ] **1960s New York / Greenwich Village** - Dave Van Ronk, Bob Dylan, Joan Baez, Pete Seeger, Phil Ochs, the folk revival movement
+- [ ] **British Folk School** - Nick Drake, Donovan, John Martyn, Incredible String Band, Fairport Convention, Pentangle, Bert Jansch
+- [ ] **Electric Era** - When folk went electric: Bob Dylan at Newport '65, The Byrds, The Rolling Stones folk influences
+- [ ] **Modern Folk** - Bon Iver, Jose Gonzalez, Iron & Wine, Fleet Foxes, Sufjan Stevens, contemporary folk artists
+- [ ] **YouTube Folk Artists** - Elle & Toni, Lazy Shark, Chuck Van Dyke, and the new generation of folk musicians on YouTube
