@@ -119,6 +119,92 @@ RSpec.describe "Covers", type: :request do
     end
   end
 
+  describe "POST /covers (create_with_song)" do
+    let(:user) { create(:user) }
+    let!(:existing_song) { create(:song, with_original: false) }
+
+    context "without authentication" do
+      it "returns unauthorized" do
+        post "/covers", params: { song_id: existing_song.id, artist: "Test", youtube_url: "https://youtube.com/watch?v=abc" }
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context "with existing song" do
+      let(:valid_params) do
+        {
+          song_id: existing_song.id,
+          artist: "Johnny Cash",
+          youtube_url: "https://www.youtube.com/watch?v=abc123",
+          year: 2003
+        }
+      end
+
+      it "creates a cover for the existing song" do
+        expect {
+          post "/covers", params: valid_params, headers: auth_headers(user)
+        }.to change(Cover, :count).by(1).and change(Song, :count).by(0)
+
+        expect(response).to have_http_status(:created)
+        expect(json_response[:cover][:artist]).to eq("Johnny Cash")
+        expect(json_response[:song][:id]).to eq(existing_song.id)
+      end
+
+      it "returns 404 for non-existent song_id" do
+        post "/covers", params: valid_params.merge(song_id: 99999), headers: auth_headers(user)
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "with new song" do
+      let(:valid_params) do
+        {
+          song_title: "New Folk Song",
+          original_artist: "Traditional",
+          song_year: 1960,
+          artist: "Cover Artist",
+          youtube_url: "https://www.youtube.com/watch?v=xyz789",
+          year: 2020
+        }
+      end
+
+      it "creates both song and cover" do
+        expect {
+          post "/covers", params: valid_params, headers: auth_headers(user)
+        }.to change(Song, :count).by(1).and change(Cover, :count).by(1)
+
+        expect(response).to have_http_status(:created)
+        expect(json_response[:song][:title]).to eq("New Folk Song")
+        expect(json_response[:cover][:artist]).to eq("Cover Artist")
+      end
+
+      it "creates song without year when not provided" do
+        params = valid_params.except(:song_year)
+        post "/covers", params: params, headers: auth_headers(user)
+
+        expect(response).to have_http_status(:created)
+        expect(json_response[:song][:year]).to be_nil
+      end
+
+      it "rolls back song if cover fails" do
+        params = valid_params.merge(youtube_url: "invalid-url")
+
+        expect {
+          post "/covers", params: params, headers: auth_headers(user)
+        }.to change(Song, :count).by(0).and change(Cover, :count).by(0)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it "returns errors for missing song fields" do
+        post "/covers", params: { artist: "Test", youtube_url: "https://youtube.com/watch?v=abc" }, headers: auth_headers(user)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(json_response[:errors]).to include("Title can't be blank")
+      end
+    end
+  end
+
   describe "GET /covers/top" do
     before do
       @song1 = create(:song)

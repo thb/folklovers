@@ -1,5 +1,5 @@
 class CoversController < ApplicationController
-  before_action :authenticate_user!, only: [ :create ]
+  before_action :authenticate_user!, only: [ :create, :create_with_song ]
   has_scope :sorted_by, default: "score"
 
   def index
@@ -29,6 +29,43 @@ class CoversController < ApplicationController
     else
       render json: { errors: cover.errors.full_messages }, status: :unprocessable_entity
     end
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Song not found" }, status: :not_found
+  end
+
+  def create_with_song
+    @cover_errors = nil
+
+    Cover.transaction do
+      if params[:song_id].present?
+        @song = Song.find(params[:song_id])
+      else
+        @song = Song.new(
+          title: params[:song_title],
+          original_artist: params[:original_artist],
+          year: params[:song_year],
+          submitted_by: current_user
+        )
+        unless @song.save
+          return render json: { errors: @song.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+
+      @cover = @song.covers.build(cover_params)
+      @cover.submitted_by = current_user
+
+      if @cover.save
+        return render json: {
+          cover: CoverBlueprint.render_as_hash(@cover, view: :with_user_vote, current_user: current_user),
+          song: SongBlueprint.render_as_hash(@song)
+        }, status: :created
+      else
+        @cover_errors = @cover.errors.full_messages
+        raise ActiveRecord::Rollback
+      end
+    end
+
+    render json: { errors: @cover_errors }, status: :unprocessable_entity if @cover_errors
   rescue ActiveRecord::RecordNotFound
     render json: { error: "Song not found" }, status: :not_found
   end

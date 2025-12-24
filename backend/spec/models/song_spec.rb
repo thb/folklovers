@@ -6,7 +6,7 @@ RSpec.describe Song, type: :model do
 
     it { should validate_presence_of(:title) }
     it { should validate_presence_of(:original_artist) }
-    it { should validate_presence_of(:year) }
+    it { should validate_numericality_of(:year).only_integer.allow_nil }
 
     # slug is auto-generated, so we test uniqueness differently
     it "enforces slug uniqueness at database level" do

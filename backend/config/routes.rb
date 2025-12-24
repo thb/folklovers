@@ -10,12 +10,14 @@ Rails.application.routes.draw do
 
   # Songs
   get "songs/top", to: "songs#top"
+  get "songs/search", to: "songs#search"
   get "songs", to: "songs#index"
   post "songs", to: "songs#create"
   get "songs/:slug", to: "songs#show"
 
   # Covers
   get "covers/top", to: "covers#top"
+  post "covers", to: "covers#create_with_song"
   get "songs/:song_slug/covers", to: "covers#index"
   post "songs/:song_slug/covers", to: "covers#create"
 

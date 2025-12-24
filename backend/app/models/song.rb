@@ -5,7 +5,7 @@ class Song < ApplicationRecord
 
   validates :title, presence: true
   validates :original_artist, presence: true
-  validates :year, presence: true
+  validates :year, numericality: { only_integer: true }, allow_nil: true
   validates :slug, presence: true, uniqueness: true
 
   before_validation :generate_slug, on: :create

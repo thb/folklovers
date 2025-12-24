@@ -43,6 +43,41 @@ RSpec.describe "Songs", type: :request do
     end
   end
 
+  describe "GET /songs/search" do
+    let!(:dylan_song) { create(:song, title: "Blowin' in the Wind", original_artist: "Bob Dylan") }
+    let!(:cohen_song) { create(:song, title: "Hallelujah", original_artist: "Leonard Cohen") }
+
+    it "returns empty array for short queries" do
+      get "/songs/search", params: { q: "a" }
+      expect(response).to have_http_status(:ok)
+      expect(json_response[:songs]).to eq([])
+    end
+
+    it "searches by title" do
+      get "/songs/search", params: { q: "Blowin" }
+      expect(json_response[:songs].length).to eq(1)
+      expect(json_response[:songs].first[:title]).to eq("Blowin' in the Wind")
+    end
+
+    it "searches by artist" do
+      get "/songs/search", params: { q: "Cohen" }
+      expect(json_response[:songs].length).to eq(1)
+      expect(json_response[:songs].first[:original_artist]).to eq("Leonard Cohen")
+    end
+
+    it "returns lightweight response" do
+      get "/songs/search", params: { q: "Dylan" }
+      song = json_response[:songs].first
+      expect(song.keys).to contain_exactly(:id, :title, :original_artist, :slug)
+    end
+
+    it "limits results to 10" do
+      create_list(:song, 15, title: "Test Song")
+      get "/songs/search", params: { q: "Test" }
+      expect(json_response[:songs].length).to eq(10)
+    end
+  end
+
   describe "GET /songs/top" do
     before do
       @song1 = create(:song)

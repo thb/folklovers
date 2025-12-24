@@ -33,6 +33,15 @@ class SongsController < ApplicationController
     render json: { songs: SongBlueprint.render_as_hash(songs) }
   end
 
+  def search
+    return render json: { songs: [] } if params[:q].blank? || params[:q].length < 2
+
+    songs = Song.search(params[:q]).limit(10)
+    render json: {
+      songs: songs.map { |s| { id: s.id, title: s.title, original_artist: s.original_artist, slug: s.slug } }
+    }
+  end
+
   def create
     song = Song.new(song_params)
     song.submitted_by = current_user

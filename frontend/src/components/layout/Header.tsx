@@ -69,10 +69,10 @@ export function Header() {
         {/* Auth - Desktop */}
         <div className="hidden md:flex items-center gap-3">
           {isAuthenticated && (
-            <Link to="/songs/new">
+            <Link to="/covers/new">
               <Button variant="outline" size="sm">
                 <Plus className="w-4 h-4 mr-2" />
-                Suggest song
+                Add a cover
               </Button>
             </Link>
           )}
@@ -159,12 +159,12 @@ export function Header() {
               </Link>
               {isAuthenticated && (
                 <Link
-                  to="/songs/new"
+                  to="/covers/new"
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-base font-medium text-foreground hover:text-primary transition-colors"
                 >
                   <Plus className="w-4 h-4 inline mr-2" />
-                  Suggest song
+                  Add a cover
                 </Link>
               )}
               {isAdmin && (

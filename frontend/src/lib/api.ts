@@ -85,6 +85,9 @@ export const songs = {
   get: (slug: string, token?: string | null) =>
     request<{ song: SongWithCovers }>(`/songs/${slug}`, { token: token || undefined }),
 
+  search: (query: string) =>
+    request<{ songs: SongSearchResult[] }>(`/songs/search?q=${encodeURIComponent(query)}`),
+
   create: (data: { title: string; original_artist: string; year?: number; youtube_url?: string; description?: string }, token: string) =>
     request<{ song: Song }>('/songs', {
       method: 'POST',
@@ -110,6 +113,25 @@ export const covers = {
 
   create: (songSlug: string, data: { artist: string; year?: number; youtube_url: string; description?: string }, token: string) =>
     request<{ cover: Cover }>(`/songs/${songSlug}/covers`, {
+      method: 'POST',
+      body: data,
+      token,
+    }),
+
+  createWithSong: (
+    data: {
+      song_id?: number
+      song_title?: string
+      original_artist?: string
+      song_year?: number
+      artist: string
+      year?: number
+      youtube_url: string
+      description?: string
+    },
+    token: string
+  ) =>
+    request<{ cover: Cover; song: Song }>('/covers', {
       method: 'POST',
       body: data,
       token,
@@ -151,6 +173,13 @@ export type Song = {
   slug: string
   covers_count: number
   created_at: string
+}
+
+export type SongSearchResult = {
+  id: number
+  title: string
+  original_artist: string
+  slug: string
 }
 
 export type SongWithCovers = Song & {
