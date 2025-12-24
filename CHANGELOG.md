@@ -97,3 +97,17 @@
 ### Changed
 - Renamed "Folklovers" to "Folk Lovers" everywhere
 - Reduced deployment downtime with rolling restart
+
+## 2025-12-17 - Initial Release
+
+### Added
+- Folk Lovers website launch
+- Browse and discover folk song covers
+- Vote on covers (upvote/downvote, Stack Overflow-style)
+- Song pages with embedded YouTube players
+- Cover rankings by community votes
+- User authentication (email/password registration and login)
+- Responsive design inspired by 1960s Greenwich Village folk scene
+- Admin panel for content management (songs, covers)
+- Docker-based deployment with Traefik reverse proxy
+- CI/CD pipeline with GitHub Actions

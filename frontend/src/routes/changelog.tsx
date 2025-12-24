@@ -17,6 +17,7 @@ type ChangeEntry = {
 
 type ChangelogEntry = {
   date: string
+  title?: string
   changes: ChangeEntry[]
 }
 
@@ -28,8 +29,8 @@ function parseChangelog(markdown: string): ChangelogEntry[] {
   let currentChange: ChangeEntry | null = null
 
   for (const line of lines) {
-    // Match date header: ## 2025-12-24
-    const dateMatch = line.match(/^## (\d{4}-\d{2}-\d{2})/)
+    // Match date header: ## 2025-12-24 or ## 2025-12-24 - Title
+    const dateMatch = line.match(/^## (\d{4}-\d{2}-\d{2})(?:\s*-\s*(.+))?/)
     if (dateMatch) {
       if (currentChange && currentEntry) {
         currentEntry.changes.push(currentChange)
@@ -37,7 +38,7 @@ function parseChangelog(markdown: string): ChangelogEntry[] {
       if (currentEntry) {
         entries.push(currentEntry)
       }
-      currentEntry = { date: dateMatch[1], changes: [] }
+      currentEntry = { date: dateMatch[1], title: dateMatch[2], changes: [] }
       currentChange = null
       continue
     }
@@ -105,6 +106,7 @@ function ChangelogPage() {
             <CardHeader>
               <CardTitle className="text-2xl">
                 {formatDate(entry.date)}
+                {entry.title && <span className="text-muted-foreground font-normal"> — {entry.title}</span>}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
