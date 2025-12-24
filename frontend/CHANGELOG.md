@@ -20,6 +20,7 @@
 ### Changed
 - Year is now optional when creating songs (useful for traditional folk songs)
 - "Suggest song" button renamed to "Add a cover" with simplified flow
+- Renamed "Blog" to "Articles" throughout the site (route changed from /blog to /articles)
 
 ## 2025-12-20
 

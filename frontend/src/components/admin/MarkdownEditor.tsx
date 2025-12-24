@@ -3,7 +3,7 @@ import { Eye, Edit } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { MarkdownContent } from '@/components/blog/MarkdownContent'
+import { MarkdownContent } from '@/components/articles/MarkdownContent'
 
 type MarkdownEditorProps = {
   value: string

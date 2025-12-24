@@ -3,10 +3,10 @@ import { ArrowLeft, Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { MarkdownContent } from '@/components/blog/MarkdownContent'
+import { MarkdownContent } from '@/components/articles/MarkdownContent'
 import { blog } from '@/lib/api'
 
-export const Route = createFileRoute('/blog/$slug')({
+export const Route = createFileRoute('/articles/$slug')({
   component: ArticlePage,
   loader: async ({ params }) => {
     const data = await blog.get(params.slug)
@@ -29,10 +29,10 @@ function ArticlePage() {
     <div className="py-8 md:py-16 px-4">
       <article className="max-w-2xl mx-auto">
         {/* Back link */}
-        <Link to="/blog" className="inline-block mb-8">
+        <Link to="/articles" className="inline-block mb-8">
           <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to blog
+            Back to articles
           </Button>
         </Link>
 
@@ -60,7 +60,7 @@ function ArticlePage() {
           {article.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
               {article.tags.map((tag) => (
-                <Link key={tag.id} to="/blog" search={{ tag: tag.slug }}>
+                <Link key={tag.id} to="/articles" search={{ tag: tag.slug }}>
                   <Badge
                     variant="secondary"
                     className="cursor-pointer hover:bg-secondary/80 text-xs uppercase tracking-wide"
@@ -108,7 +108,7 @@ function ArticlePage() {
 
         {/* Footer */}
         <footer className="mt-16 pt-8 border-t border-border">
-          <Link to="/blog">
+          <Link to="/articles">
             <Button variant="outline">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to all articles

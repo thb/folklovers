@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArticleCard } from '@/components/blog/ArticleCard'
+import { ArticleCard } from '@/components/articles/ArticleCard'
 import { blog } from '@/lib/api'
 import type { Article, Tag } from '@/lib/api'
 import { z } from 'zod'
@@ -17,7 +17,7 @@ const blogSearchSchema = z.object({
 
 type BlogSearch = z.infer<typeof blogSearchSchema>
 
-export const Route = createFileRoute('/blog/')({
+export const Route = createFileRoute('/articles/')({
   component: BlogPage,
   validateSearch: blogSearchSchema,
   loaderDeps: ({ search }) => ({ page: search.page, search: search.search, tag: search.tag }),
@@ -90,7 +90,7 @@ function BlogPage() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Blog</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Articles</h1>
           <p className="text-muted-foreground">
             {search
               ? `${pagination.total_count} results for "${search}"`

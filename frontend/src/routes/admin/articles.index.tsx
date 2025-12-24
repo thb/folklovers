@@ -130,7 +130,7 @@ function AdminArticlesPage() {
                     {article.title}
                     {article.is_published && (
                       <a
-                        href={`/blog/${article.slug}`}
+                        href={`/articles/${article.slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-foreground"

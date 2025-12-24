@@ -18,7 +18,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
     : null
 
   return (
-    <Link to="/blog/$slug" params={{ slug: article.slug }}>
+    <Link to="/articles/$slug" params={{ slug: article.slug }}>
       <Card className="group hover:shadow-lg transition-all duration-300 hover:border-primary/30 cursor-pointer h-full overflow-hidden">
         {article.cover_image_url && (
           <div className="aspect-video bg-muted relative overflow-hidden">

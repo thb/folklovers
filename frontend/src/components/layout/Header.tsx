@@ -58,11 +58,11 @@ export function Header() {
             Songs
           </Link>
           <Link
-            to="/blog"
+            to="/articles"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             activeProps={{ className: 'text-sm font-medium text-foreground' }}
           >
-            Blog
+            Articles
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -179,11 +179,11 @@ export function Header() {
                 Songs
               </Link>
               <Link
-                to="/blog"
+                to="/articles"
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-base font-medium text-foreground hover:text-primary transition-colors"
               >
-                Blog
+                Articles
               </Link>
               <div className="pt-2">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Community</p>
