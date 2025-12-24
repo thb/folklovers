@@ -30,6 +30,9 @@ Rails.application.routes.draw do
   get "blog/tags", to: "articles#tags"
   get "blog/:slug", to: "articles#show"
 
+  # Feedbacks
+  resources :feedbacks, only: [ :create ]
+
   # Admin
   namespace :admin do
     resources :songs, only: [ :index, :show, :create, :update, :destroy ]
@@ -41,5 +44,6 @@ Rails.application.routes.draw do
       end
     end
     resources :tags, only: [ :index, :destroy ]
+    resources :feedbacks, only: [ :index, :update, :destroy ]
   end
 end

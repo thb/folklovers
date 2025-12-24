@@ -384,6 +384,26 @@ export const admin = {
     delete: (token: string, id: number) =>
       request<void>(`/admin/tags/${id}`, { method: 'DELETE', token }),
   },
+
+  feedbacks: {
+    list: (token: string, params?: { page?: number; per_page?: number; status?: string }) => {
+      const searchParams = new URLSearchParams()
+      if (params?.page) searchParams.set('page', params.page.toString())
+      if (params?.per_page) searchParams.set('per_page', params.per_page.toString())
+      if (params?.status) searchParams.set('status', params.status)
+      const query = searchParams.toString()
+      return request<{ feedbacks: Feedback[]; pagination: Pagination }>(
+        `/admin/feedbacks${query ? `?${query}` : ''}`,
+        { token }
+      )
+    },
+
+    update: (token: string, id: number, data: { status: string }) =>
+      request<{ feedback: Feedback }>(`/admin/feedbacks/${id}`, { method: 'PATCH', body: data, token }),
+
+    delete: (token: string, id: number) =>
+      request<void>(`/admin/feedbacks/${id}`, { method: 'DELETE', token }),
+  },
 }
 
 export type AdminUser = {
@@ -414,6 +434,23 @@ export type AdminCover = Cover & {
     title: string
     slug: string
   }
+}
+
+// Feedback types
+export type Feedback = {
+  id: number
+  category: 'bug' | 'feature' | 'general'
+  message: string
+  status: 'pending' | 'reviewed' | 'resolved'
+  user: User
+  created_at: string
+  updated_at: string
+}
+
+// Feedbacks API
+export const feedbacks = {
+  create: (data: { category: string; message: string }, token: string) =>
+    request<{ feedback: Feedback }>('/feedbacks', { method: 'POST', body: data, token }),
 }
 
 export { ApiError }

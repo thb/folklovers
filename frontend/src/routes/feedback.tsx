@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -12,8 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { MessageSquare, Bug, Lightbulb, Heart } from 'lucide-react'
+import { MessageSquare, Bug, Lightbulb, Heart, LogIn } from 'lucide-react'
 import { useAuth } from '@/lib/auth'
+import { feedbacks, ApiError } from '@/lib/api'
 
 export const Route = createFileRoute('/feedback')({
   component: FeedbackPage,
@@ -28,25 +28,33 @@ const categoryConfig: Record<FeedbackCategory, { label: string; icon: React.Elem
 }
 
 function FeedbackPage() {
-  const { user } = useAuth()
-  const [email, setEmail] = useState(user?.email || '')
+  const { isAuthenticated, token } = useAuth()
   const [category, setCategory] = useState<FeedbackCategory | ''>('')
   const [message, setMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!token || !category) return
 
-    // Build mailto link
-    const subject = category ? `[${categoryConfig[category].label}] Folk Lovers Feedback` : 'Folk Lovers Feedback'
-    const body = `From: ${email || 'Anonymous'}\nCategory: ${category ? categoryConfig[category].label : 'Not specified'}\n\n${message}`
-    const mailtoLink = `mailto:feedback@folklovers.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    setIsSubmitting(true)
+    setError(null)
 
-    // Open email client
-    window.location.href = mailtoLink
-
-    // Show thank you message
-    setSubmitted(true)
+    try {
+      await feedbacks.create({ category, message }, token)
+      setSubmitted(true)
+    } catch (err) {
+      if (err instanceof ApiError) {
+        const data = err.data as { errors?: string[]; error?: string }
+        setError(data.errors?.join(', ') || data.error || 'Failed to submit feedback')
+      } else {
+        setError('Network error. Please try again.')
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   if (submitted) {
@@ -57,18 +65,43 @@ function FeedbackPage() {
         </div>
         <h1 className="text-3xl font-bold mb-4">Thank you!</h1>
         <p className="text-muted-foreground mb-8">
-          Your email client should have opened with your feedback ready to send.
-          If it didn't, you can email us directly at{' '}
-          <a href="mailto:feedback@folklovers.com" className="text-primary hover:underline">
-            feedback@folklovers.com
-          </a>
+          Your feedback has been submitted. We appreciate you taking the time to help us improve Folk Lovers.
         </p>
         <div className="flex gap-4 justify-center">
-          <Button variant="outline" onClick={() => setSubmitted(false)}>
+          <Button variant="outline" onClick={() => {
+            setSubmitted(false)
+            setCategory('')
+            setMessage('')
+          }}>
             Send another
           </Button>
           <Link to="/">
             <Button>Back to home</Button>
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="max-w-xl mx-auto py-16 px-4 text-center">
+        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
+          <LogIn className="w-8 h-8 text-muted-foreground" />
+        </div>
+        <h1 className="text-3xl font-bold mb-4">Sign in to send feedback</h1>
+        <p className="text-muted-foreground mb-8">
+          Please sign in to your account to submit feedback. This helps us follow up with you if needed.
+        </p>
+        <div className="flex gap-4 justify-center">
+          <Link to="/login">
+            <Button>
+              <LogIn className="w-4 h-4 mr-2" />
+              Sign in
+            </Button>
+          </Link>
+          <Link to="/register">
+            <Button variant="outline">Create account</Button>
           </Link>
         </div>
       </div>
@@ -90,24 +123,16 @@ function FeedbackPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <div className="mb-4 p-3 bg-destructive/10 text-destructive text-sm rounded-lg">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email (optional)</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-              />
-              <p className="text-xs text-muted-foreground">
-                So we can follow up if needed
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
-              <Select value={category} onValueChange={(v) => setCategory(v as FeedbackCategory)}>
+              <Label htmlFor="category">Category *</Label>
+              <Select value={category} onValueChange={(v) => setCategory(v as FeedbackCategory)} required>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
@@ -139,9 +164,9 @@ function FeedbackPage() {
               />
             </div>
 
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={isSubmitting || !category}>
               <MessageSquare className="w-4 h-4 mr-2" />
-              Send feedback
+              {isSubmitting ? 'Sending...' : 'Send feedback'}
             </Button>
           </form>
         </CardContent>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_20_215722) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_24_132109) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -56,6 +56,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_20_215722) do
     t.index ["song_id", "votes_score"], name: "index_covers_on_song_id_and_votes_score"
     t.index ["song_id"], name: "index_covers_on_song_id"
     t.index ["submitted_by_id"], name: "index_covers_on_submitted_by_id"
+  end
+
+  create_table "feedbacks", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "category", null: false
+    t.text "message", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_feedbacks_on_category"
+    t.index ["status"], name: "index_feedbacks_on_status"
+    t.index ["user_id"], name: "index_feedbacks_on_user_id"
   end
 
   create_table "songs", force: :cascade do |t|
@@ -110,6 +122,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_20_215722) do
   add_foreign_key "articles", "users", column: "author_id"
   add_foreign_key "covers", "songs"
   add_foreign_key "covers", "users", column: "submitted_by_id"
+  add_foreign_key "feedbacks", "users"
   add_foreign_key "songs", "users", column: "submitted_by_id"
   add_foreign_key "votes", "covers"
   add_foreign_key "votes", "users"

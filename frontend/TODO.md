@@ -1,7 +1,7 @@
 # TODO
 
 ## Design
-- [x] Créer une favico à partir du logo icône dans le fonds marron
+- [x] Create favicon from logo icon with brown background
 
 ## Artists Feature
 - [ ] Create Artist model (name, slug, bio, image_url)
@@ -18,37 +18,47 @@
 - [ ] Find-or-create pattern for all entities with user confirmation
 - [ ] Admin: merge duplicate records tool (songs, covers, artists)
 
+## Navigation & Search
+- [ ] Quick search in header with dropdown results (songs, artists, covers)
+- [ ] Infinite scroll pagination on songs page
+- [ ] Infinite scroll pagination on artists page
+
+## Rankings & Discovery
+- [ ] Covers page with global rankings (/covers)
+- [ ] Rankings page with top songs, top covers, trending (/rankings)
+- [ ] Community leaderboard: top contributors, top voters, most cover suggestions
+
 ## Performance
-- [ ] Self-host les Google Fonts (éviter le FOUC / tremblement au chargement)
+- [ ] Self-host Google Fonts (avoid FOUC / flash of unstyled content)
 
 ## Email
-- [ ] Configurer SMTP Scaleway Transactional Emails
-- [ ] Action Mailer pour mot de passe oublié
+- [ ] Configure SMTP with Scaleway Transactional Emails
+- [ ] Action Mailer for password reset
 
-## Espace Utilisateur
-- [ ] Commenter une cover
-- [ ] Lien rapide : supprimer / modifier sa cover (admin peut toujours le faire)
-- [ ] Page par défaut après inscription/connexion
-- [ ] Mes suggestions
-- [ ] Mes votes
-- [ ] Mot de passe oublié
-- [ ] Changer son mot de passe
-- [ ] Supprimer son compte
-- [ ] Modifier son profil
-- [ ] Créer une playlist (publique, privé ou en collaboration)
-- [ ] Gestion de la playlist (ajout/suppression de cover, midifier / supprimer la playlist)
+## User Space
+- [ ] Comment on a cover
+- [ ] Quick link: delete / edit own cover (admin can always do it)
+- [ ] Default page after sign up / sign in
+- [ ] My suggestions
+- [ ] My votes
+- [ ] Forgot password
+- [ ] Change password
+- [ ] Delete account
+- [ ] Edit profile
+- [ ] Create playlist (public, private, or collaborative)
+- [ ] Playlist management (add/remove covers, edit/delete playlist)
 
-## Espace Admin
-- [ ] Suggestions (à modérer | acceptées | refusées)
+## Admin Space
+- [ ] Suggestions moderation (pending | approved | rejected)
 
-## Système de Notifications
-- [ ] Cloche avec notifications (non lues, mark as read)
-- [ ] Réception d'email de notifications
-- [ ] L'admin reçoit une notif quand une nouvelle suggestion est ajoutée
-- [ ] Le user qui a suggéré reçoit une notif que sa suggestion est en cours de modération
-- [ ] Le user reçoit une notif avec le statut et la raison de la modération de sa suggestion
-- [ ] Le user reçoit une notif quand quelqu'un vote ou commente sa suggestion
-- [ ] Idem pour les interprétations (covers)
+## Notification System
+- [ ] Bell icon with notifications (unread, mark as read)
+- [ ] Email notifications
+- [ ] Admin receives notification when new suggestion is added
+- [ ] User who suggested receives notification that suggestion is being moderated
+- [ ] User receives notification with moderation status and reason
+- [ ] User receives notification when someone votes or comments on their suggestion
+- [ ] Same for cover submissions
 
 ## Blog Article Ideas
 

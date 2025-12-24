@@ -2,6 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { Play, Pause, Calendar, User, ExternalLink, ListPlus, Star } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ExpandableText } from '@/components/ui/expandable-text'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -484,9 +485,7 @@ function CoverItem({
 
             {/* Description */}
             {cover.description && (
-              <p className="mt-4 text-muted-foreground leading-relaxed">
-                {cover.description}
-              </p>
+              <ExpandableText text={cover.description} maxLines={5} className="mt-4" />
             )}
 
             {/* YouTube link */}
