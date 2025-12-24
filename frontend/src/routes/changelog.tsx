@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Plus, RefreshCw, Wrench, Zap } from 'lucide-react'
-import changelogRaw from '../../../CHANGELOG.md?raw'
+import changelogRaw from '../../CHANGELOG.md?raw'
 
 export const Route = createFileRoute('/changelog')({
   component: ChangelogPage,

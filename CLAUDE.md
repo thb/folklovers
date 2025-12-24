@@ -33,7 +33,7 @@ cd frontend && npx @tanstack/router-cli generate
 
 ## Changelog
 
-**Always document notable changes in `CHANGELOG.md` at the project root.** This file is parsed by the `/changelog` page to show updates to the community. Follow the existing format:
+**Always document notable changes in `frontend/CHANGELOG.md`.** This file is parsed by the `/changelog` page to show updates to the community. Follow the existing format:
 
 ```markdown
 ## YYYY-MM-DD
