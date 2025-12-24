@@ -6,6 +6,9 @@
 - New "Add a cover" flow: search existing songs or create new ones in a single form
 - Song search autocomplete for faster song selection
 - Matomo analytics tracking (privacy-friendly)
+- Community dropdown in header with What's New, Roadmap, and Feedback links
+- Public Roadmap page showing planned features (/roadmap)
+- Feedback page for bug reports and feature requests (/feedback)
 
 ### Fixed
 - YouTube URL normalization: youtu.be links and tracking parameters now handled correctly

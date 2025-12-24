@@ -66,6 +66,12 @@ bin/rails 'prod:update_song[SONG_ID,https://www.youtube.com/watch?v=VIDEO_ID]'
 bin/rails 'prod:update_cover[COVER_ID,https://www.youtube.com/watch?v=VIDEO_ID]'
 ```
 
+### Update a cover's description
+
+```bash
+bin/rails 'prod:update_cover_description[COVER_ID,New description text]'
+```
+
 ### List all songs in production
 
 ```bash

@@ -9,8 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as SplatRouteImport } from './routes/$'
@@ -29,6 +31,11 @@ import { Route as AdminArticlesIndexRouteImport } from './routes/admin/articles.
 import { Route as AdminSongsIdRouteImport } from './routes/admin/songs.$id'
 import { Route as AdminArticlesIdRouteImport } from './routes/admin/articles.$id'
 
+const RoadmapRoute = RoadmapRouteImport.update({
+  id: '/roadmap',
+  path: '/roadmap',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -37,6 +44,11 @@ const RegisterRoute = RegisterRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedbackRoute = FeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChangelogRoute = ChangelogRouteImport.update({
@@ -130,8 +142,10 @@ export interface FileRoutesByFullPath {
   '/$': typeof SplatRoute
   '/admin': typeof AdminRouteWithChildren
   '/changelog': typeof ChangelogRoute
+  '/feedback': typeof FeedbackRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/roadmap': typeof RoadmapRoute
   '/admin/covers': typeof AdminCoversRoute
   '/admin/users': typeof AdminUsersRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -150,8 +164,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/changelog': typeof ChangelogRoute
+  '/feedback': typeof FeedbackRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/roadmap': typeof RoadmapRoute
   '/admin/covers': typeof AdminCoversRoute
   '/admin/users': typeof AdminUsersRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -172,8 +188,10 @@ export interface FileRoutesById {
   '/$': typeof SplatRoute
   '/admin': typeof AdminRouteWithChildren
   '/changelog': typeof ChangelogRoute
+  '/feedback': typeof FeedbackRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/roadmap': typeof RoadmapRoute
   '/admin/covers': typeof AdminCoversRoute
   '/admin/users': typeof AdminUsersRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -195,8 +213,10 @@ export interface FileRouteTypes {
     | '/$'
     | '/admin'
     | '/changelog'
+    | '/feedback'
     | '/login'
     | '/register'
+    | '/roadmap'
     | '/admin/covers'
     | '/admin/users'
     | '/blog/$slug'
@@ -215,8 +235,10 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/changelog'
+    | '/feedback'
     | '/login'
     | '/register'
+    | '/roadmap'
     | '/admin/covers'
     | '/admin/users'
     | '/blog/$slug'
@@ -236,8 +258,10 @@ export interface FileRouteTypes {
     | '/$'
     | '/admin'
     | '/changelog'
+    | '/feedback'
     | '/login'
     | '/register'
+    | '/roadmap'
     | '/admin/covers'
     | '/admin/users'
     | '/blog/$slug'
@@ -258,8 +282,10 @@ export interface RootRouteChildren {
   SplatRoute: typeof SplatRoute
   AdminRoute: typeof AdminRouteWithChildren
   ChangelogRoute: typeof ChangelogRoute
+  FeedbackRoute: typeof FeedbackRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  RoadmapRoute: typeof RoadmapRoute
   BlogSlugRoute: typeof BlogSlugRoute
   CoversNewRoute: typeof CoversNewRoute
   SongsSlugRoute: typeof SongsSlugRoute
@@ -270,6 +296,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/roadmap': {
+      id: '/roadmap'
+      path: '/roadmap'
+      fullPath: '/roadmap'
+      preLoaderRoute: typeof RoadmapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -282,6 +315,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feedback': {
+      id: '/feedback'
+      path: '/feedback'
+      fullPath: '/feedback'
+      preLoaderRoute: typeof FeedbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/changelog': {
@@ -433,8 +473,10 @@ const rootRouteChildren: RootRouteChildren = {
   SplatRoute: SplatRoute,
   AdminRoute: AdminRouteWithChildren,
   ChangelogRoute: ChangelogRoute,
+  FeedbackRoute: FeedbackRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  RoadmapRoute: RoadmapRoute,
   BlogSlugRoute: BlogSlugRoute,
   CoversNewRoute: CoversNewRoute,
   SongsSlugRoute: SongsSlugRoute,

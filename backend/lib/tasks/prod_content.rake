@@ -145,6 +145,19 @@ namespace :prod do
     puts result["cover"] ? "Updated: #{result["cover"]["artist"]}" : "Error: #{result}"
   end
 
+  desc "Update cover description: bin/rails 'prod:update_cover_description[ID,DESCRIPTION]'"
+  task :update_cover_description, [:cover_id, :description] => :environment do |_t, args|
+    cover_id = args[:cover_id] || raise("Usage: bin/rails 'prod:update_cover_description[ID,DESCRIPTION]'")
+    description = args[:description] || ""
+
+    api_url = ProdApi.api_url
+    email, password = ProdApi.credentials
+
+    token = ProdApi.login(api_url, email, password)
+    result = ProdApi.patch("#{api_url}/admin/covers/#{cover_id}", { description: description }, token)
+    puts result["cover"] ? "Updated description for: #{result["cover"]["artist"]}" : "Error: #{result}"
+  end
+
   desc "Add cover to existing song: bin/rails 'prod:add_cover[SONG_ID,ARTIST,YEAR,URL,DESCRIPTION]'"
   task :add_cover, [:song_id, :artist, :year, :url, :description] => :environment do |_t, args|
     song_id = args[:song_id] || raise("Usage: bin/rails 'prod:add_cover[SONG_ID,ARTIST,YEAR,URL,DESCRIPTION]'")

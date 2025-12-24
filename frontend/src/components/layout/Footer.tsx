@@ -38,6 +38,14 @@ export function Footer() {
             <Link to="/changelog" className="hover:text-foreground transition-colors">
               Changelog
             </Link>
+            <span className="mx-2">·</span>
+            <Link to="/roadmap" className="hover:text-foreground transition-colors">
+              Roadmap
+            </Link>
+            <span className="mx-2">·</span>
+            <Link to="/feedback" className="hover:text-foreground transition-colors">
+              Feedback
+            </Link>
           </p>
         </div>
       </div>

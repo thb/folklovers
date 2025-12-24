@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Guitar, LogOut, Shield, Plus, Menu } from 'lucide-react'
+import { Guitar, LogOut, Shield, Plus, Menu, Sparkles, Map, MessageSquare, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -64,6 +64,34 @@ export function Header() {
           >
             Blog
           </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                Community
+                <ChevronDown className="w-3 h-3" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem asChild>
+                <Link to="/changelog" className="cursor-pointer">
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  What's New
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/roadmap" className="cursor-pointer">
+                  <Map className="mr-2 h-4 w-4" />
+                  Roadmap
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/feedback" className="cursor-pointer">
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  Feedback
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
 
         {/* Auth - Desktop */}
@@ -157,6 +185,35 @@ export function Header() {
               >
                 Blog
               </Link>
+              <div className="pt-2">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Community</p>
+                <div className="flex flex-col gap-2 pl-2">
+                  <Link
+                    to="/changelog"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-base font-medium text-foreground hover:text-primary transition-colors flex items-center gap-2"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    What's New
+                  </Link>
+                  <Link
+                    to="/roadmap"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-base font-medium text-foreground hover:text-primary transition-colors flex items-center gap-2"
+                  >
+                    <Map className="w-4 h-4" />
+                    Roadmap
+                  </Link>
+                  <Link
+                    to="/feedback"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-base font-medium text-foreground hover:text-primary transition-colors flex items-center gap-2"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    Feedback
+                  </Link>
+                </div>
+              </div>
               {isAuthenticated && (
                 <Link
                   to="/covers/new"

@@ -1,7 +1,7 @@
 # TODO
 
 ## Design
-- [ ] Créer une favico à partir du logo icône dans le fonds marron
+- [x] Créer une favico à partir du logo icône dans le fonds marron
 
 ## Artists Feature
 - [ ] Create Artist model (name, slug, bio, image_url)
