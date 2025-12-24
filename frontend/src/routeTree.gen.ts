@@ -25,6 +25,7 @@ import { Route as SongsSlugRouteImport } from './routes/songs/$slug'
 import { Route as CoversNewRouteImport } from './routes/covers/new'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as AdminFeedbacksRouteImport } from './routes/admin/feedbacks'
 import { Route as AdminCoversRouteImport } from './routes/admin/covers'
 import { Route as AdminSongsIndexRouteImport } from './routes/admin/songs.index'
 import { Route as AdminArticlesIndexRouteImport } from './routes/admin/articles.index'
@@ -111,6 +112,11 @@ const AdminUsersRoute = AdminUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminFeedbacksRoute = AdminFeedbacksRouteImport.update({
+  id: '/feedbacks',
+  path: '/feedbacks',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCoversRoute = AdminCoversRouteImport.update({
   id: '/covers',
   path: '/covers',
@@ -147,6 +153,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/roadmap': typeof RoadmapRoute
   '/admin/covers': typeof AdminCoversRoute
+  '/admin/feedbacks': typeof AdminFeedbacksRoute
   '/admin/users': typeof AdminUsersRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/covers/new': typeof CoversNewRoute
@@ -169,6 +176,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/roadmap': typeof RoadmapRoute
   '/admin/covers': typeof AdminCoversRoute
+  '/admin/feedbacks': typeof AdminFeedbacksRoute
   '/admin/users': typeof AdminUsersRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/covers/new': typeof CoversNewRoute
@@ -193,6 +201,7 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/roadmap': typeof RoadmapRoute
   '/admin/covers': typeof AdminCoversRoute
+  '/admin/feedbacks': typeof AdminFeedbacksRoute
   '/admin/users': typeof AdminUsersRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/covers/new': typeof CoversNewRoute
@@ -218,6 +227,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/roadmap'
     | '/admin/covers'
+    | '/admin/feedbacks'
     | '/admin/users'
     | '/blog/$slug'
     | '/covers/new'
@@ -240,6 +250,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/roadmap'
     | '/admin/covers'
+    | '/admin/feedbacks'
     | '/admin/users'
     | '/blog/$slug'
     | '/covers/new'
@@ -263,6 +274,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/roadmap'
     | '/admin/covers'
+    | '/admin/feedbacks'
     | '/admin/users'
     | '/blog/$slug'
     | '/covers/new'
@@ -408,6 +420,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/feedbacks': {
+      id: '/admin/feedbacks'
+      path: '/feedbacks'
+      fullPath: '/admin/feedbacks'
+      preLoaderRoute: typeof AdminFeedbacksRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/covers': {
       id: '/admin/covers'
       path: '/covers'
@@ -448,6 +467,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminCoversRoute: typeof AdminCoversRoute
+  AdminFeedbacksRoute: typeof AdminFeedbacksRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminArticlesIdRoute: typeof AdminArticlesIdRoute
@@ -458,6 +478,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminCoversRoute: AdminCoversRoute,
+  AdminFeedbacksRoute: AdminFeedbacksRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminArticlesIdRoute: AdminArticlesIdRoute,
