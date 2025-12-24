@@ -148,7 +148,8 @@ namespace :prod do
   desc "Update cover description: bin/rails 'prod:update_cover_description[ID,DESCRIPTION]'"
   task :update_cover_description, [:cover_id, :description] => :environment do |_t, args|
     cover_id = args[:cover_id] || raise("Usage: bin/rails 'prod:update_cover_description[ID,DESCRIPTION]'")
-    description = args[:description] || ""
+    # Commas in description split into extras, so rejoin them with ", "
+    description = ([args[:description]] + args.extras).compact.join(", ")
 
     api_url = ProdApi.api_url
     email, password = ProdApi.credentials
