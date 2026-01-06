@@ -1,10 +1,11 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { ArrowLeft, Check, ChevronsUpDown, Music, Plus } from 'lucide-react'
+import { ArrowLeft, Check, ChevronsUpDown, Music, Plus, Star } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Command,
@@ -56,7 +57,7 @@ function parseErrors(errors: string[]): FieldErrors {
 
 function NewCoverPage() {
   const navigate = useNavigate()
-  const { token, isAuthenticated, isLoading } = useAuth()
+  const { token, isAuthenticated, isLoading, isAdmin } = useAuth()
 
   // Song selection state
   const [songSearch, setSongSearch] = useState('')
@@ -76,6 +77,7 @@ function NewCoverPage() {
   const [coverYear, setCoverYear] = useState('')
   const [youtubeUrl, setYoutubeUrl] = useState('')
   const [description, setDescription] = useState('')
+  const [isOriginal, setIsOriginal] = useState(false)
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
@@ -124,6 +126,7 @@ function NewCoverPage() {
     setNewSongTitle('')
     setOriginalArtist('')
     setSongYear('')
+    setIsOriginal(false)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -141,6 +144,7 @@ function NewCoverPage() {
             year: coverYear ? parseInt(coverYear) : undefined,
             youtube_url: youtubeUrl,
             description: description || undefined,
+            original: isOriginal || undefined,
           }
         : {
             song_title: newSongTitle,
@@ -150,6 +154,7 @@ function NewCoverPage() {
             year: coverYear ? parseInt(coverYear) : undefined,
             youtube_url: youtubeUrl,
             description: description || undefined,
+            original: isOriginal || undefined,
           }
 
       const { song } = await covers.createWithSong(payload, token)
@@ -174,6 +179,8 @@ function NewCoverPage() {
 
   const hasErrors = Object.keys(fieldErrors).length > 0
   const hasSongSelected = selectedSong !== null || isNewSong
+  // Show original checkbox: if admin (always), or if new song, or if existing song has no original
+  const showOriginalCheckbox = isAdmin || isNewSong || (selectedSong && !selectedSong.has_original)
 
   if (isLoading) {
     return null
@@ -497,6 +504,20 @@ function NewCoverPage() {
                       <p className="text-sm text-destructive">{fieldErrors.description}</p>
                     )}
                   </div>
+
+                  {showOriginalCheckbox && (
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                      <Checkbox
+                        id="original"
+                        checked={isOriginal}
+                        onCheckedChange={setIsOriginal}
+                      />
+                      <Label htmlFor="original" className="flex items-center gap-2 cursor-pointer font-normal">
+                        <Star className="w-4 h-4 text-amber-500" />
+                        This is the original recording
+                      </Label>
+                    </div>
+                  )}
                 </div>
               )}
 

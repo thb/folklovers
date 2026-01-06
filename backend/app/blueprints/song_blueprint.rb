@@ -11,6 +11,10 @@ class SongBlueprint < Blueprinter::Base
     song.thumbnail_url
   end
 
+  field :has_original do |song|
+    song.has_original?
+  end
+
   view :with_covers do
     association :covers, blueprint: CoverBlueprint, view: :with_user_vote
   end

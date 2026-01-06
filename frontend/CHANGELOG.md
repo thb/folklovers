@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-01-06
+
+### Added
+- Mark cover as original: users can now indicate if a cover is the original recording when submitting
+- Admin can change which cover is marked as original for any song
+- Visual indicator (star badge) for original recordings on song pages
+
+### Improved
+- Song thumbnails now fallback to the first cover when no original is set
+- Original recording checkbox only visible when appropriate (no existing original or admin user)
+
 ## 2025-12-24
 
 ### Added

@@ -36,9 +36,9 @@ class SongsController < ApplicationController
   def search
     return render json: { songs: [] } if params[:q].blank? || params[:q].length < 2
 
-    songs = Song.search(params[:q]).limit(10)
+    songs = Song.includes(:original_cover).search(params[:q]).limit(10)
     render json: {
-      songs: songs.map { |s| { id: s.id, title: s.title, original_artist: s.original_artist, slug: s.slug } }
+      songs: songs.map { |s| { id: s.id, title: s.title, original_artist: s.original_artist, slug: s.slug, has_original: s.has_original? } }
     }
   end
 

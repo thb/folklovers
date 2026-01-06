@@ -116,6 +116,40 @@ RSpec.describe "Covers", type: :request do
 
         expect(response).to have_http_status(:not_found)
       end
+
+      context "with original parameter" do
+        context "when song has no original" do
+          it "allows user to mark cover as original" do
+            post "/songs/#{song.slug}/covers", params: valid_params.merge(original: true), headers: auth_headers(user)
+
+            expect(response).to have_http_status(:created)
+            expect(json_response[:cover][:original]).to be true
+          end
+        end
+
+        context "when song already has an original" do
+          before { create(:cover, song: song, original: true) }
+
+          it "ignores original flag for regular user" do
+            post "/songs/#{song.slug}/covers", params: valid_params.merge(original: true), headers: auth_headers(user)
+
+            expect(response).to have_http_status(:created)
+            expect(json_response[:cover][:original]).to be false
+          end
+
+          context "with admin user" do
+            let(:admin) { create(:user, role: :admin) }
+
+            it "allows admin to set original and removes existing" do
+              post "/songs/#{song.slug}/covers", params: valid_params.merge(original: true), headers: auth_headers(admin)
+
+              expect(response).to have_http_status(:created)
+              expect(json_response[:cover][:original]).to be true
+              expect(song.reload.covers.where(original: true).count).to eq(1)
+            end
+          end
+        end
+      end
     end
   end
 

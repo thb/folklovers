@@ -36,7 +36,11 @@ Rails.application.routes.draw do
   # Admin
   namespace :admin do
     resources :songs, only: [ :index, :show, :create, :update, :destroy ]
-    resources :covers, only: [ :index, :show, :create, :update, :destroy ]
+    resources :covers, only: [ :index, :show, :create, :update, :destroy ] do
+      member do
+        post :set_original
+      end
+    end
     resources :users, only: [ :index, :show ]
     resources :articles, only: [ :index, :show, :create, :update, :destroy ] do
       member do

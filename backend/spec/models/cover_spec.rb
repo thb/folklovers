@@ -85,6 +85,27 @@ RSpec.describe Cover, type: :model do
     end
   end
 
+  describe "#mark_as_original!" do
+    let(:song) { create(:song, with_original: false) }
+    let!(:existing_original) { create(:cover, song: song, original: true) }
+    let!(:cover) { create(:cover, song: song, original: false) }
+
+    it "marks the cover as original" do
+      cover.mark_as_original!
+      expect(cover.reload.original).to be true
+    end
+
+    it "removes original flag from existing original" do
+      cover.mark_as_original!
+      expect(existing_original.reload.original).to be false
+    end
+
+    it "ensures only one original exists" do
+      cover.mark_as_original!
+      expect(song.covers.where(original: true).count).to eq(1)
+    end
+  end
+
   describe "#recalculate_votes!" do
     let(:cover) { create(:cover, votes_score: 0, votes_count: 0) }
     let(:user1) { create(:user) }

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, ExternalLink, Play } from 'lucide-react'
+import { Plus, Pencil, Trash2, ExternalLink, Play, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -207,6 +207,17 @@ function AdminSongDetailPage() {
     }
   }
 
+  async function handleSetOriginal(cover: AdminCover) {
+    if (!token) return
+
+    try {
+      await admin.covers.setOriginal(token, cover.id)
+      fetchData()
+    } catch (err) {
+      setError('Error setting original')
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="py-12 px-4">
@@ -336,7 +347,7 @@ function AdminSongDetailPage() {
             {covers.map((cover) => {
               const thumbnail = getYouTubeThumbnail(cover.youtube_url)
               return (
-                <Card key={cover.id} className="overflow-hidden">
+                <Card key={cover.id} className={`overflow-hidden ${cover.original ? 'border-amber-500/50 bg-amber-500/5' : ''}`}>
                   <div className="flex">
                     {/* Thumbnail */}
                     <a
@@ -359,6 +370,12 @@ function AdminSongDetailPage() {
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <Play className="w-8 h-8 text-white" />
                       </div>
+                      {cover.original && (
+                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-amber-500 text-white flex items-center gap-1 font-semibold text-xs">
+                          <Star className="w-3 h-3" fill="currentColor" />
+                          Original
+                        </div>
+                      )}
                     </a>
 
                     {/* Content */}
@@ -379,6 +396,17 @@ function AdminSongDetailPage() {
                         )}
                       </div>
                       <div className="flex items-center gap-1">
+                        {!cover.original && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleSetOriginal(cover)}
+                            title="Set as original"
+                            className="text-amber-500 hover:text-amber-600 hover:bg-amber-500/10"
+                          >
+                            <Star className="w-4 h-4" />
+                          </Button>
+                        )}
                         <Button
                           variant="ghost"
                           size="icon"

@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { Play, Pause, Calendar, User, ExternalLink, ListPlus, Star } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ExpandableText } from '@/components/ui/expandable-text'
 import { Badge } from '@/components/ui/badge'
@@ -46,6 +47,7 @@ type CoverFormData = {
   year: string
   youtube_url: string
   description: string
+  original: boolean
 }
 
 type CoverFieldErrors = {
@@ -61,6 +63,7 @@ const emptyForm: CoverFormData = {
   year: '',
   youtube_url: '',
   description: '',
+  original: false,
 }
 
 const COVER_FIELD_MATCHERS = {
@@ -77,8 +80,11 @@ function parseCoverErrors(errors: string[]): CoverFieldErrors {
 
 function SongPage() {
   const song = Route.useLoaderData()
-  const { token, isAuthenticated, isLoading: authLoading } = useAuth()
+  const { token, isAuthenticated, isLoading: authLoading, isAdmin } = useAuth()
   const [coversList, setCoversList] = useState(song.covers)
+  // Check if song has an original cover (from API or from current covers list)
+  const hasOriginal = song.has_original || coversList.some(c => c.original)
+  const showOriginalCheckbox = isAdmin || !hasOriginal
 
   // Submit cover form state
   const [formData, setFormData] = useState<CoverFormData>(emptyForm)
@@ -117,6 +123,7 @@ function SongPage() {
           year: formData.year ? parseInt(formData.year) : undefined,
           youtube_url: formData.youtube_url,
           description: formData.description || undefined,
+          original: formData.original || undefined,
         },
         token
       )
@@ -311,6 +318,20 @@ function SongPage() {
                       <p className="text-sm text-destructive">{fieldErrors.description}</p>
                     )}
                   </div>
+
+                  {showOriginalCheckbox && (
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                      <Checkbox
+                        id="original"
+                        checked={formData.original}
+                        onCheckedChange={(checked) => setFormData({ ...formData, original: checked })}
+                      />
+                      <Label htmlFor="original" className="flex items-center gap-2 cursor-pointer font-normal">
+                        <Star className="w-4 h-4 text-amber-500" />
+                        This is the original recording
+                      </Label>
+                    </div>
+                  )}
 
                   <div className="flex justify-end">
                     <Button type="submit" disabled={isSubmitting}>

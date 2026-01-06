@@ -22,6 +22,8 @@ class CoversController < ApplicationController
     cover = song.covers.build(cover_params)
     cover.submitted_by = current_user
 
+    handle_original_flag(cover, song)
+
     if cover.save
       render json: {
         cover: CoverBlueprint.render_as_hash(cover, view: :with_user_vote, current_user: current_user)
@@ -53,6 +55,8 @@ class CoversController < ApplicationController
 
       @cover = @song.covers.build(cover_params)
       @cover.submitted_by = current_user
+
+      handle_original_flag(@cover, @song)
 
       if @cover.save
         return render json: {
@@ -87,5 +91,19 @@ class CoversController < ApplicationController
 
   def cover_params
     params.permit(:artist, :year, :youtube_url, :description)
+  end
+
+  def handle_original_flag(cover, song)
+    return unless params[:original] == true || params[:original] == "true"
+
+    if current_user&.admin?
+      # Admin can always set original, remove existing one if needed
+      song.covers.where(original: true).update_all(original: false) if song.has_original?
+      cover.original = true
+    elsif !song.has_original?
+      # User can only set original if song doesn't have one
+      cover.original = true
+    end
+    # If user tries to set original but song already has one, silently ignore
   end
 end

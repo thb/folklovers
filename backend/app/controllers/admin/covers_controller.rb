@@ -50,6 +50,14 @@ module Admin
       head :no_content
     end
 
+    def set_original
+      cover = Cover.find(params[:id])
+      cover.mark_as_original!
+      render json: { cover: CoverBlueprint.render_as_hash(cover) }
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
+    end
+
     private
 
     def cover_params

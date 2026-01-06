@@ -29,7 +29,12 @@ class Song < ApplicationRecord
   end
 
   def thumbnail_url
-    original_cover&.youtube_url&.then { |url| extract_youtube_thumbnail(url) }
+    cover = original_cover || covers.first
+    cover&.youtube_url&.then { |url| extract_youtube_thumbnail(url) }
+  end
+
+  def has_original?
+    original_cover.present?
   end
 
   private

@@ -116,7 +116,7 @@ export const covers = {
   top: (limit?: number) =>
     request<{ covers: CoverWithSong[] }>(`/covers/top${limit ? `?limit=${limit}` : ''}`),
 
-  create: (songSlug: string, data: { artist: string; year?: number; youtube_url: string; description?: string }, token: string) =>
+  create: (songSlug: string, data: { artist: string; year?: number; youtube_url: string; description?: string; original?: boolean }, token: string) =>
     request<{ cover: Cover }>(`/songs/${songSlug}/covers`, {
       method: 'POST',
       body: data,
@@ -133,6 +133,7 @@ export const covers = {
       year?: number
       youtube_url: string
       description?: string
+      original?: boolean
     },
     token: string
   ) =>
@@ -177,6 +178,7 @@ export type Song = {
   thumbnail_url: string | null
   slug: string
   covers_count: number
+  has_original: boolean
   created_at: string
 }
 
@@ -185,6 +187,7 @@ export type SongSearchResult = {
   title: string
   original_artist: string
   slug: string
+  has_original: boolean
 }
 
 export type SongWithCovers = Song & {
@@ -316,6 +319,9 @@ export const admin = {
 
     delete: (token: string, id: number) =>
       request<void>(`/admin/covers/${id}`, { method: 'DELETE', token }),
+
+    setOriginal: (token: string, id: number) =>
+      request<{ cover: Cover }>(`/admin/covers/${id}/set_original`, { method: 'POST', token }),
   },
 
   users: {

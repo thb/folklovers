@@ -30,6 +30,13 @@ class Cover < ApplicationRecord
     )
   end
 
+  def mark_as_original!
+    Cover.transaction do
+      song.covers.where(original: true).where.not(id: id).update_all(original: false)
+      update!(original: true)
+    end
+  end
+
   private
 
   def only_one_original_per_song

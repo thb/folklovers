@@ -81,6 +81,36 @@ RSpec.describe "Admin::Covers", type: :request do
     end
   end
 
+  describe "POST /admin/covers/:id/set_original" do
+    let!(:original_cover) { create(:cover, song: song, original: true) }
+    let!(:other_cover) { create(:cover, song: song, original: false) }
+
+    it "marks cover as original" do
+      post "/admin/covers/#{other_cover.id}/set_original", headers: auth_headers(admin)
+
+      expect(response).to have_http_status(:ok)
+      expect(json_response["cover"]["original"]).to be true
+      expect(other_cover.reload.original).to be true
+    end
+
+    it "removes original flag from previous original" do
+      post "/admin/covers/#{other_cover.id}/set_original", headers: auth_headers(admin)
+
+      expect(original_cover.reload.original).to be false
+    end
+
+    it "ensures only one original exists" do
+      post "/admin/covers/#{other_cover.id}/set_original", headers: auth_headers(admin)
+
+      expect(song.covers.where(original: true).count).to eq(1)
+    end
+
+    it "returns 403 for non-admin" do
+      post "/admin/covers/#{other_cover.id}/set_original", headers: auth_headers(user)
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
   def json_response
     JSON.parse(response.body)
   end
