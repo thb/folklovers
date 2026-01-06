@@ -68,7 +68,7 @@ RSpec.describe "Songs", type: :request do
     it "returns lightweight response" do
       get "/songs/search", params: { q: "Dylan" }
       song = json_response[:songs].first
-      expect(song.keys).to contain_exactly(:id, :title, :original_artist, :slug)
+      expect(song.keys).to contain_exactly(:id, :title, :original_artist, :slug, :has_original)
     end
 
     it "limits results to 10" do
