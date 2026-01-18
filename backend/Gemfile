@@ -36,6 +36,9 @@ gem "pagy", "~> 8.0"
 gem "has_scope"
 gem "blueprinter"
 
+# Background jobs
+gem "good_job"
+
 group :development, :test do
   # Load environment variables from .env
   gem "dotenv-rails"

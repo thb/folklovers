@@ -43,8 +43,7 @@ Rails.application.configure do
   # Use memory cache (simple, no separate database needed)
   config.cache_store = :memory_store
 
-  # Use async queue adapter (simple, no separate database needed)
-  config.active_job.queue_adapter = :async
+  # Use GoodJob for background processing (configured in application.rb)
 
   # Email delivery configuration
   config.action_mailer.raise_delivery_errors = true

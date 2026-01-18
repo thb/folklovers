@@ -1,0 +1,20 @@
+<h2>Hi <%= @user.username %>,</h2>
+
+<p>Great news! Someone voted on your cover submission.</p>
+
+<p>
+  <strong>Song:</strong> <%= @song.title %><br>
+  <strong>Artist:</strong> <%= @cover.artist_name %>
+</p>
+
+<p>
+  Current score: <strong><%= @cover.votes_score %></strong> (<%= @cover.votes_count %> votes)
+</p>
+
+<p>
+  Keep sharing great music!
+</p>
+
+<p>
+  - The Folk Lovers Team
+</p>

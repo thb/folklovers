@@ -45,6 +45,11 @@ Rails.application.routes.draw do
   patch "me/covers/:id", to: "user_space#update_cover"
   delete "me/covers/:id", to: "user_space#delete_cover"
 
+  # Notifications
+  get "notifications", to: "notifications#index"
+  post "notifications/:id/read", to: "notifications#mark_as_read"
+  post "notifications/read_all", to: "notifications#mark_all_as_read"
+
   # Feedbacks
   resources :feedbacks, only: [ :create ]
 

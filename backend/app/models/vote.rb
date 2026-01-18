@@ -7,10 +7,15 @@ class Vote < ApplicationRecord
 
   after_save :update_cover_score
   after_destroy :update_cover_score
+  after_create :notify_cover_submitter
 
   private
 
   def update_cover_score
     cover.recalculate_votes!
+  end
+
+  def notify_cover_submitter
+    NotificationService.notify_vote_received(self)
   end
 end

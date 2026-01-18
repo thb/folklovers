@@ -40,5 +40,12 @@ module Backend
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # Good Job configuration
+    config.active_job.queue_adapter = :good_job
+    config.good_job.execution_mode = :async
+    config.good_job.preserve_job_records = true
+    config.good_job.retry_on_unhandled_error = false
+    config.good_job.on_thread_error = ->(exception) { Rails.logger.error(exception) }
   end
 end

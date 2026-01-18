@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_many :votes, dependent: :destroy
   has_many :submitted_covers, class_name: "Cover", foreign_key: :submitted_by_id
   has_many :feedbacks, dependent: :destroy
+  has_many :notifications, dependent: :destroy
 
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :username, presence: true, uniqueness: true, length: { minimum: 3, maximum: 30 }
