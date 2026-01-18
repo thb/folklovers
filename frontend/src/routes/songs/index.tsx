@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
-import { Search, ChevronLeft, ChevronRight, Plus, ArrowUpDown } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { Search, Plus, ArrowUpDown, Loader2 } from 'lucide-react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { SongCard } from '@/components/songs/SongCard'
@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { songs } from '@/lib/api'
-import type { Song } from '@/lib/api'
+import type { Song, Pagination } from '@/lib/api'
 import { z } from 'zod'
 
 const sortOptions = [
@@ -27,7 +27,6 @@ const sortOptions = [
 type SortOption = typeof sortOptions[number]['value']
 
 const songsSearchSchema = z.object({
-  page: z.number().optional().default(1),
   search: z.string().optional(),
   sort: z.enum(['recent', 'oldest', 'title_asc', 'title_desc', 'year_asc', 'year_desc']).optional(),
 })
@@ -37,11 +36,11 @@ type SongsSearch = z.infer<typeof songsSearchSchema>
 export const Route = createFileRoute('/songs/')({
   component: SongsPage,
   validateSearch: songsSearchSchema,
-  loaderDeps: ({ search }) => ({ page: search.page, search: search.search, sort: search.sort }),
+  loaderDeps: ({ search }) => ({ search: search.search, sort: search.sort }),
   loader: async ({ deps }) => {
     const data = await songs.list({
       per_page: 12,
-      page: deps.page,
+      page: 1,
       search: deps.search,
       sorted_by: deps.sort,
     })
@@ -50,18 +49,68 @@ export const Route = createFileRoute('/songs/')({
 })
 
 function SongsPage() {
-  const { songs: songsList, pagination } = Route.useLoaderData()
-  const { page, search, sort } = Route.useSearch()
+  const initialData = Route.useLoaderData()
+  const { search, sort } = Route.useSearch()
   const navigate = useNavigate({ from: Route.fullPath })
 
+  // State for infinite scroll
+  const [allSongs, setAllSongs] = useState<Song[]>(initialData.songs)
+  const [pagination, setPagination] = useState<Pagination>(initialData.pagination)
+  const [isLoading, setIsLoading] = useState(false)
   const [searchInput, setSearchInput] = useState(search || '')
+
+  // Reset when search/sort changes (new loader data)
+  useEffect(() => {
+    setAllSongs(initialData.songs)
+    setPagination(initialData.pagination)
+  }, [initialData])
+
+  // Intersection observer for infinite scroll
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  const hasMore = pagination.current_page < pagination.total_pages
+
+  const loadMore = useCallback(async () => {
+    if (isLoading || !hasMore) return
+
+    setIsLoading(true)
+    try {
+      const data = await songs.list({
+        per_page: 12,
+        page: pagination.current_page + 1,
+        search: search,
+        sorted_by: sort,
+      })
+      setAllSongs(prev => [...prev, ...data.songs])
+      setPagination(data.pagination)
+    } catch (error) {
+      console.error('Failed to load more songs:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [isLoading, hasMore, pagination.current_page, search, sort])
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current
+    if (!sentinel) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoading) {
+          loadMore()
+        }
+      },
+      { rootMargin: '200px' }
+    )
+
+    observer.observe(sentinel)
+    return () => observer.disconnect()
+  }, [hasMore, isLoading, loadMore])
 
   const handleSortChange = (value: SortOption) => {
     navigate({
       search: (prev: SongsSearch) => ({
         ...prev,
         sort: value === 'recent' ? undefined : value,
-        page: 1,
       }),
     })
   }
@@ -79,7 +128,6 @@ function SongsPage() {
           search: (prev: SongsSearch) => ({
             ...prev,
             search: searchInput || undefined,
-            page: 1, // Reset to first page on new search
           }),
         })
       }
@@ -87,15 +135,6 @@ function SongsPage() {
 
     return () => clearTimeout(timer)
   }, [searchInput, search, navigate])
-
-  const goToPage = (newPage: number) => {
-    navigate({
-      search: (prev: SongsSearch) => ({
-        ...prev,
-        page: newPage,
-      }),
-    })
-  }
 
   return (
     <div className="py-12 px-4">
@@ -149,70 +188,32 @@ function SongsPage() {
         </div>
 
         {/* Songs Grid */}
-        {songsList.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {songsList.map((song: Song) => (
-              <SongCard key={song.id} song={song} />
-            ))}
-          </div>
+        {allSongs.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {allSongs.map((song: Song) => (
+                <SongCard key={song.id} song={song} />
+              ))}
+            </div>
+
+            {/* Sentinel for infinite scroll */}
+            <div ref={sentinelRef} className="h-10 mt-8 flex items-center justify-center">
+              {isLoading && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Loading more songs...</span>
+                </div>
+              )}
+              {!hasMore && allSongs.length > 12 && (
+                <p className="text-sm text-muted-foreground">
+                  You've reached the end! {pagination.total_count} songs total.
+                </p>
+              )}
+            </div>
+          </>
         ) : (
           <div className="text-center py-12 text-muted-foreground">
             No songs found for "{search}"
-          </div>
-        )}
-
-        {/* Pagination */}
-        {pagination.total_pages > 1 && (
-          <div className="mt-8 flex items-center justify-center gap-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => goToPage(page - 1)}
-              disabled={page <= 1}
-            >
-              <ChevronLeft className="w-4 h-4 mr-1" />
-              Previous
-            </Button>
-
-            <div className="flex items-center gap-2">
-              {/* Page numbers */}
-              {Array.from({ length: pagination.total_pages }, (_, i) => i + 1)
-                .filter(p => {
-                  // Show first, last, and pages around current
-                  return p === 1 ||
-                         p === pagination.total_pages ||
-                         Math.abs(p - page) <= 1
-                })
-                .map((p, i, arr) => {
-                  // Add ellipsis if there's a gap
-                  const showEllipsisBefore = i > 0 && p - arr[i - 1] > 1
-                  return (
-                    <span key={p} className="flex items-center gap-2">
-                      {showEllipsisBefore && (
-                        <span className="text-muted-foreground px-1">...</span>
-                      )}
-                      <Button
-                        variant={p === page ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => goToPage(p)}
-                        className="min-w-[2.5rem]"
-                      >
-                        {p}
-                      </Button>
-                    </span>
-                  )
-                })}
-            </div>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => goToPage(page + 1)}
-              disabled={page >= pagination.total_pages}
-            >
-              Next
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
           </div>
         )}
       </div>

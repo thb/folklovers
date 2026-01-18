@@ -17,7 +17,7 @@
 
 ## Navigation & Search
 - [ ] Quick search in header with dropdown results (songs, artists, covers)
-- [ ] Infinite scroll pagination on songs page
+- [x] Infinite scroll pagination on songs page
 - [ ] Infinite scroll pagination on artists page
 
 ## Cover Tags

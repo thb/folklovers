@@ -10,6 +10,7 @@
 
 ### Improved
 - Self-hosted fonts for faster loading and no flash of unstyled content (FOUC)
+- Infinite scroll on songs page - no more pagination buttons
 
 ## 2026-01-06
 
