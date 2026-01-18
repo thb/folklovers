@@ -31,6 +31,13 @@ services:
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       FRONTEND_URL: https://${FRONTEND_DOMAIN}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      # Email settings (Scaleway TEM)
+      MAILER_HOST: ${FRONTEND_DOMAIN}
+      MAILER_FROM: ${MAILER_FROM:-Folk Lovers <hello@folklovers.com>}
+      SMTP_ADDRESS: ${SMTP_ADDRESS:-smtp.tem.scw.cloud}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.folklovers-api.rule=Host(`${API_DOMAIN}`)"
