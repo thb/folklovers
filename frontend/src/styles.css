@@ -5,6 +5,31 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Self-hosted fonts */
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/playfair-display.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('/fonts/source-serif-4.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Special Elite';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/special-elite.woff2') format('woff2');
+}
+
 body {
   @apply m-0;
   font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;

@@ -66,21 +66,6 @@ export const Route = createRootRoute({
         rel: 'manifest',
         href: '/manifest.json',
       },
-      // Preconnect to Google Fonts for faster loading
-      {
-        rel: 'preconnect',
-        href: 'https://fonts.googleapis.com',
-      },
-      {
-        rel: 'preconnect',
-        href: 'https://fonts.gstatic.com',
-        crossOrigin: 'anonymous',
-      },
-      // Google Fonts - loaded via link instead of @import for better performance
-      {
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Special+Elite&display=swap',
-      },
       {
         rel: 'stylesheet',
         href: appCss,

@@ -35,7 +35,7 @@
 - [ ] Community leaderboard: top contributors, top voters, most cover suggestions
 
 ## Performance
-- [ ] Self-host Google Fonts (avoid FOUC / flash of unstyled content)
+- [x] Self-host Google Fonts (avoid FOUC / flash of unstyled content)
 
 ## Email
 - [ ] Configure SMTP with Scaleway Transactional Emails

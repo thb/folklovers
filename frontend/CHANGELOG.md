@@ -8,6 +8,9 @@
 - Popular section highlights top-voted covers by the community
 - Removed the "Popular songs" section in favor of cover-focused content
 
+### Improved
+- Self-hosted fonts for faster loading and no flash of unstyled content (FOUC)
+
 ## 2026-01-06
 
 ### Added
