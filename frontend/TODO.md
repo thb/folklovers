@@ -16,7 +16,7 @@
 - [ ] Admin: merge duplicate records tool (songs, covers, artists)
 
 ## Navigation & Search
-- [ ] Quick search in header with dropdown results (songs, artists, covers)
+- [x] Quick search in header with dropdown results (songs, artists, covers)
 - [x] Infinite scroll pagination on songs page
 - [ ] Infinite scroll pagination on artists page
 

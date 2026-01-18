@@ -8,6 +8,9 @@
 - Popular section highlights top-voted covers by the community
 - Removed the "Popular songs" section in favor of cover-focused content
 
+### Added
+- Quick search in header with Cmd+K shortcut to find songs by title or artist
+
 ### Improved
 - Self-hosted fonts for faster loading and no flash of unstyled content (FOUC)
 - Infinite scroll on songs page - no more pagination buttons
