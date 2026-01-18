@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-01-18
+
+### Changed
+- Redesigned homepage with two new sections: "Recently added" and "Popular covers"
+- Recently added section shows newest contributions with date and contributor info
+- Popular section highlights top-voted covers by the community
+- Removed the "Popular songs" section in favor of cover-focused content
+
 ## 2026-01-06
 
 ### Added

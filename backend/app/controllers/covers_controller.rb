@@ -87,6 +87,19 @@ class CoversController < ApplicationController
     }
   end
 
+  def recent
+    covers = Cover.includes(:song, :submitted_by)
+                  .order(created_at: :desc)
+                  .limit(params[:limit] || 6)
+
+    render json: {
+      covers: covers.map do |cover|
+        CoverBlueprint.render_as_hash(cover, view: :with_user_vote, current_user: current_user)
+          .merge(song: { title: cover.song.title, slug: cover.song.slug })
+      end
+    }
+  end
+
   private
 
   def cover_params

@@ -1,28 +1,28 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Link } from '@tanstack/react-router'
-import { Guitar, ArrowRight, Plus } from 'lucide-react'
+import { Guitar, ArrowRight, Plus, Clock, TrendingUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { SongCard } from '@/components/songs/SongCard'
 import { CoverCard } from '@/components/songs/CoverCard'
-import { songs, covers } from '@/lib/api'
-import type { Song, CoverWithSong } from '@/lib/api'
+import { RecentCoverCard } from '@/components/songs/RecentCoverCard'
+import { covers } from '@/lib/api'
+import type { CoverWithSong } from '@/lib/api'
 
 export const Route = createFileRoute('/')({
   component: HomePage,
   loader: async () => {
-    const [songsData, coversData] = await Promise.all([
-      songs.top(6),
+    const [topCoversData, recentCoversData] = await Promise.all([
       covers.top(6),
+      covers.recent(6),
     ])
     return {
-      topSongs: songsData.songs,
-      topCovers: coversData.covers,
+      topCovers: topCoversData.covers,
+      recentCovers: recentCoversData.covers,
     }
   },
 })
 
 function HomePage() {
-  const { topSongs, topCovers } = Route.useLoaderData()
+  const { topCovers, recentCovers } = Route.useLoaderData()
 
   return (
     <div>
@@ -80,45 +80,51 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Top Songs Section */}
+      {/* Recently Added Section */}
       <section className="py-16 px-4 bg-muted/30">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">
-                Popular songs
-              </h2>
-              <p className="text-muted-foreground mt-1">
-                The most beloved folk classics
-              </p>
+            <div className="flex items-center gap-3">
+              <Clock className="w-6 h-6 text-primary" />
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">
+                  Recently added
+                </h2>
+                <p className="text-muted-foreground mt-1">
+                  Fresh contributions from the community
+                </p>
+              </div>
             </div>
             <Link to="/songs">
               <Button variant="outline" className="gap-2">
-                View all
+                Browse all
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {topSongs.map((song: Song) => (
-              <SongCard key={song.id} song={song} />
+            {recentCovers.map((cover: CoverWithSong) => (
+              <RecentCoverCard key={cover.id} cover={cover} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Top Covers Section */}
+      {/* Popular Section */}
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">
-                Top covers
-              </h2>
-              <p className="text-muted-foreground mt-1">
-                The highest-rated interpretations by the community
-              </p>
+            <div className="flex items-center gap-3">
+              <TrendingUp className="w-6 h-6 text-primary" />
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">
+                  Popular covers
+                </h2>
+                <p className="text-muted-foreground mt-1">
+                  The highest-rated interpretations by the community
+                </p>
+              </div>
             </div>
           </div>
 

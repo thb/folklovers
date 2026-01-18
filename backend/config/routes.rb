@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 
   # Covers
   get "covers/top", to: "covers#top"
+  get "covers/recent", to: "covers#recent"
   post "covers", to: "covers#create_with_song"
   get "songs/:song_slug/covers", to: "covers#index"
   post "songs/:song_slug/covers", to: "covers#create"

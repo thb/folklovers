@@ -269,4 +269,38 @@ RSpec.describe "Covers", type: :request do
       expect(json_response[:covers].length).to eq(2)
     end
   end
+
+  describe "GET /covers/recent" do
+    let(:song1) { create(:song, with_original: false) }
+    let(:song2) { create(:song, with_original: false) }
+
+    it "returns covers ordered by most recent first" do
+      old_cover = create(:cover, song: song1)
+      old_cover.update_column(:created_at, 3.days.ago)
+
+      recent_cover = create(:cover, song: song2)
+      recent_cover.update_column(:created_at, 1.hour.ago)
+
+      newest_cover = create(:cover, song: song1)
+
+      get "/covers/recent"
+      expect(response).to have_http_status(:ok)
+      ids = json_response[:covers].map { |i| i[:id] }
+      expect(ids).to eq([ newest_cover.id, recent_cover.id, old_cover.id ])
+    end
+
+    it "includes song info with each cover" do
+      cover = create(:cover, song: song1)
+      get "/covers/recent"
+      first_cover = json_response[:covers].first
+      expect(first_cover[:song][:title]).to eq(song1.title)
+      expect(first_cover[:song][:slug]).to eq(song1.slug)
+    end
+
+    it "limits results" do
+      create_list(:cover, 5, song: song1)
+      get "/covers/recent", params: { limit: 2 }
+      expect(json_response[:covers].length).to eq(2)
+    end
+  end
 end

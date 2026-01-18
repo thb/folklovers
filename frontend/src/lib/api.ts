@@ -116,6 +116,9 @@ export const covers = {
   top: (limit?: number) =>
     request<{ covers: CoverWithSong[] }>(`/covers/top${limit ? `?limit=${limit}` : ''}`),
 
+  recent: (limit?: number) =>
+    request<{ covers: CoverWithSong[] }>(`/covers/recent${limit ? `?limit=${limit}` : ''}`),
+
   create: (songSlug: string, data: { artist: string; year?: number; youtube_url: string; description?: string; original?: boolean }, token: string) =>
     request<{ cover: Cover }>(`/songs/${songSlug}/covers`, {
       method: 'POST',
