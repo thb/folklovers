@@ -39,6 +39,12 @@ Rails.application.routes.draw do
   get "rankings/songs", to: "rankings#songs"
   get "rankings/contributors", to: "rankings#contributors"
 
+  # User Space
+  get "me/covers", to: "user_space#my_covers"
+  get "me/votes", to: "user_space#my_votes"
+  patch "me/covers/:id", to: "user_space#update_cover"
+  delete "me/covers/:id", to: "user_space#delete_cover"
+
   # Feedbacks
   resources :feedbacks, only: [ :create ]
 

@@ -184,6 +184,27 @@ export type RankedContributor = {
   total_score: number
 }
 
+// User Space API
+export const userSpace = {
+  myCovers: (token: string) =>
+    request<{ covers: CoverWithSong[] }>('/me/covers', { token }),
+
+  myVotes: (token: string) =>
+    request<{ votes: UserVote[] }>('/me/votes', { token }),
+
+  updateCover: (id: number, data: { artist?: string; year?: number; youtube_url?: string; description?: string; tag_ids?: number[] }, token: string) =>
+    request<{ cover: CoverWithSong }>(`/me/covers/${id}`, { method: 'PATCH', body: data, token }),
+
+  deleteCover: (id: number, token: string) =>
+    request<void>(`/me/covers/${id}`, { method: 'DELETE', token }),
+}
+
+export type UserVote = {
+  vote_value: 1 | -1
+  voted_at: string
+  cover: CoverWithSong
+}
+
 // Votes API
 export const votes = {
   vote: (coverId: number, value: 1 | -1, token: string) =>

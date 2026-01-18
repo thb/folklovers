@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Guitar, LogOut, Shield, Plus, Menu, Sparkles, Map, MessageSquare, ChevronDown, Trophy } from 'lucide-react'
+import { Guitar, LogOut, Shield, Plus, Menu, Sparkles, Map, MessageSquare, ChevronDown, Trophy, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -131,6 +131,12 @@ export function Header() {
                   <p className="text-xs text-muted-foreground">{user.email}</p>
                 </div>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/me" className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    My Space
+                  </Link>
+                </DropdownMenuItem>
                 {isAdmin && (
                   <DropdownMenuItem asChild>
                     <Link to="/admin" className="cursor-pointer">
@@ -266,6 +272,14 @@ export function Header() {
                       <p className="text-xs text-muted-foreground">{user.email}</p>
                     </div>
                   </div>
+                  <Link
+                    to="/me"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-base font-medium text-foreground hover:text-primary transition-colors"
+                  >
+                    <User className="w-4 h-4 inline mr-2" />
+                    My Space
+                  </Link>
                   <Button
                     variant="ghost"
                     className="justify-start text-destructive hover:text-destructive"

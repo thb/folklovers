@@ -8,6 +8,10 @@
 - Tags displayed on cover cards (shows first 3 with "+N" for more)
 - Rankings page: see top covers, top songs, and top contributors
 - Tabbed interface with medal badges for top 3 positions
+- User Space (/me): personal dashboard for registered users
+  - View your submitted covers with edit and delete options
+  - See all covers you've voted on
+  - Inline editing for cover details and tags
 
 ## 2026-01-18
 
