@@ -154,6 +154,36 @@ export const tags = {
     request<{ tags: Tag[] }>('/tags'),
 }
 
+// Rankings API
+export const rankings = {
+  covers: (limit?: number) =>
+    request<{ covers: RankedCover[] }>(`/rankings/covers${limit ? `?limit=${limit}` : ''}`),
+
+  songs: (limit?: number) =>
+    request<{ songs: RankedSong[] }>(`/rankings/songs${limit ? `?limit=${limit}` : ''}`),
+
+  contributors: (limit?: number) =>
+    request<{ contributors: RankedContributor[] }>(`/rankings/contributors${limit ? `?limit=${limit}` : ''}`),
+}
+
+export type RankedCover = CoverWithSong & {
+  rank: number
+}
+
+export type RankedSong = Song & {
+  rank: number
+  total_score: number
+}
+
+export type RankedContributor = {
+  rank: number
+  id: number
+  username: string
+  avatar_url: string | null
+  covers_count: number
+  total_score: number
+}
+
 // Votes API
 export const votes = {
   vote: (coverId: number, value: 1 | -1, token: string) =>

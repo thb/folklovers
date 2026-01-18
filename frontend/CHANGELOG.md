@@ -6,6 +6,8 @@
 - Cover tags: categorize covers with tags like "Acoustic", "Blues", "Folk", etc.
 - Tag selection when submitting a new cover
 - Tags displayed on cover cards (shows first 3 with "+N" for more)
+- Rankings page: see top covers, top songs, and top contributors
+- Tabbed interface with medal badges for top 3 positions
 
 ## 2026-01-18
 

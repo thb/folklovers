@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as RankingsRouteImport } from './routes/rankings'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as ChangelogRouteImport } from './routes/changelog'
@@ -40,6 +41,11 @@ const RoadmapRoute = RoadmapRouteImport.update({
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RankingsRoute = RankingsRouteImport.update({
+  id: '/rankings',
+  path: '/rankings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -150,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/changelog': typeof ChangelogRoute
   '/feedback': typeof FeedbackRoute
   '/login': typeof LoginRoute
+  '/rankings': typeof RankingsRoute
   '/register': typeof RegisterRoute
   '/roadmap': typeof RoadmapRoute
   '/admin/covers': typeof AdminCoversRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByTo {
   '/changelog': typeof ChangelogRoute
   '/feedback': typeof FeedbackRoute
   '/login': typeof LoginRoute
+  '/rankings': typeof RankingsRoute
   '/register': typeof RegisterRoute
   '/roadmap': typeof RoadmapRoute
   '/admin/covers': typeof AdminCoversRoute
@@ -198,6 +206,7 @@ export interface FileRoutesById {
   '/changelog': typeof ChangelogRoute
   '/feedback': typeof FeedbackRoute
   '/login': typeof LoginRoute
+  '/rankings': typeof RankingsRoute
   '/register': typeof RegisterRoute
   '/roadmap': typeof RoadmapRoute
   '/admin/covers': typeof AdminCoversRoute
@@ -224,6 +233,7 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/feedback'
     | '/login'
+    | '/rankings'
     | '/register'
     | '/roadmap'
     | '/admin/covers'
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/feedback'
     | '/login'
+    | '/rankings'
     | '/register'
     | '/roadmap'
     | '/admin/covers'
@@ -271,6 +282,7 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/feedback'
     | '/login'
+    | '/rankings'
     | '/register'
     | '/roadmap'
     | '/admin/covers'
@@ -296,6 +308,7 @@ export interface RootRouteChildren {
   ChangelogRoute: typeof ChangelogRoute
   FeedbackRoute: typeof FeedbackRoute
   LoginRoute: typeof LoginRoute
+  RankingsRoute: typeof RankingsRoute
   RegisterRoute: typeof RegisterRoute
   RoadmapRoute: typeof RoadmapRoute
   ArticlesSlugRoute: typeof ArticlesSlugRoute
@@ -320,6 +333,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rankings': {
+      id: '/rankings'
+      path: '/rankings'
+      fullPath: '/rankings'
+      preLoaderRoute: typeof RankingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -496,6 +516,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChangelogRoute: ChangelogRoute,
   FeedbackRoute: FeedbackRoute,
   LoginRoute: LoginRoute,
+  RankingsRoute: RankingsRoute,
   RegisterRoute: RegisterRoute,
   RoadmapRoute: RoadmapRoute,
   ArticlesSlugRoute: ArticlesSlugRoute,

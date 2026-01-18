@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Guitar, LogOut, Shield, Plus, Menu, Sparkles, Map, MessageSquare, ChevronDown } from 'lucide-react'
+import { Guitar, LogOut, Shield, Plus, Menu, Sparkles, Map, MessageSquare, ChevronDown, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -73,6 +73,12 @@ export function Header() {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem asChild>
+                <Link to="/rankings" className="cursor-pointer">
+                  <Trophy className="mr-2 h-4 w-4" />
+                  Rankings
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to="/changelog" className="cursor-pointer">
                   <Sparkles className="mr-2 h-4 w-4" />
@@ -191,6 +197,14 @@ export function Header() {
               <div className="pt-2">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Community</p>
                 <div className="flex flex-col gap-2 pl-2">
+                  <Link
+                    to="/rankings"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-base font-medium text-foreground hover:text-primary transition-colors flex items-center gap-2"
+                  >
+                    <Trophy className="w-4 h-4" />
+                    Rankings
+                  </Link>
                   <Link
                     to="/changelog"
                     onClick={() => setMobileMenuOpen(false)}

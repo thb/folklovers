@@ -34,6 +34,11 @@ Rails.application.routes.draw do
   # Tags
   get "tags", to: "tags#index"
 
+  # Rankings
+  get "rankings/covers", to: "rankings#covers"
+  get "rankings/songs", to: "rankings#songs"
+  get "rankings/contributors", to: "rankings#contributors"
+
   # Feedbacks
   resources :feedbacks, only: [ :create ]
 
