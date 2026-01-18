@@ -4,7 +4,7 @@ class CoversController < ApplicationController
 
   def index
     song = Song.find_by!(slug: params[:song_slug])
-    covers = apply_scopes(song.covers).includes(:submitted_by, :tags)
+    covers = apply_scopes(song.covers).includes(:submitted_by, :tags, :artist)
 
     render json: {
       covers: CoverBlueprint.render_as_hash(
@@ -77,7 +77,7 @@ class CoversController < ApplicationController
   end
 
   def top
-    covers = Cover.includes(:song, :submitted_by, :tags)
+    covers = Cover.includes(:song, :submitted_by, :tags, :artist)
                   .order(votes_score: :desc, created_at: :desc)
                   .limit(params[:limit] || 6)
 
@@ -90,7 +90,7 @@ class CoversController < ApplicationController
   end
 
   def recent
-    covers = Cover.includes(:song, :submitted_by, :tags)
+    covers = Cover.includes(:song, :submitted_by, :tags, :artist)
                   .order(created_at: :desc)
                   .limit(params[:limit] || 6)
 

@@ -59,7 +59,7 @@ RSpec.describe "Admin::Covers", type: :request do
             headers: auth_headers(admin)
       expect(response).to have_http_status(:ok)
       expect(json_response["cover"]["artist"]).to eq("Updated Artist")
-      expect(cover.reload.artist).to eq("Updated Artist")
+      expect(cover.reload.artist.name).to eq("Updated Artist")
     end
 
     it "updates youtube_url" do

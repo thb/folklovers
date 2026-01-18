@@ -1,7 +1,18 @@
 class CoverBlueprint < Blueprinter::Base
   identifier :id
 
-  fields :artist, :year, :youtube_url, :description, :original, :votes_score, :votes_count, :created_at
+  fields :year, :youtube_url, :description, :original, :votes_score, :votes_count, :created_at
+
+  # Use artist_name for backward compatibility (reads from association or legacy field)
+  field :artist do |cover|
+    cover.artist_name
+  end
+
+  field :artist_info do |cover|
+    if cover.artist
+      { id: cover.artist.id, name: cover.artist.name, slug: cover.artist.slug }
+    end
+  end
 
   field :submitted_by do |cover|
     cover.submitted_by ? UserBlueprint.render_as_hash(cover.submitted_by) : nil

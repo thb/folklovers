@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_18_231628) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_18_233207) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_18_231628) do
     t.index ["slug"], name: "index_articles_on_slug", unique: true
   end
 
+  create_table "artists", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.text "bio"
+    t.string "image_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_artists_on_name"
+    t.index ["slug"], name: "index_artists_on_slug", unique: true
+  end
+
   create_table "cover_tags", force: :cascade do |t|
     t.bigint "cover_id", null: false
     t.bigint "tag_id", null: false
@@ -52,7 +63,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_18_231628) do
 
   create_table "covers", force: :cascade do |t|
     t.bigint "song_id", null: false
-    t.string "artist", null: false
+    t.string "artist"
     t.integer "year"
     t.string "youtube_url", null: false
     t.text "description"
@@ -62,6 +73,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_18_231628) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "original", default: false, null: false
+    t.bigint "artist_id", null: false
+    t.index ["artist_id"], name: "index_covers_on_artist_id"
     t.index ["song_id", "original"], name: "index_covers_on_song_id_unique_original", unique: true, where: "(original = true)"
     t.index ["song_id", "votes_score"], name: "index_covers_on_song_id_and_votes_score"
     t.index ["song_id"], name: "index_covers_on_song_id"
@@ -132,6 +145,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_18_231628) do
   add_foreign_key "articles", "users", column: "author_id"
   add_foreign_key "cover_tags", "covers"
   add_foreign_key "cover_tags", "tags"
+  add_foreign_key "covers", "artists"
   add_foreign_key "covers", "songs"
   add_foreign_key "covers", "users", column: "submitted_by_id"
   add_foreign_key "feedbacks", "users"

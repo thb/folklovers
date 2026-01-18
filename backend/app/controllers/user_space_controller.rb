@@ -3,7 +3,7 @@ class UserSpaceController < ApplicationController
 
   def my_covers
     covers = current_user.submitted_covers
-                         .includes(:song, :tags)
+                         .includes(:song, :tags, :artist)
                          .order(created_at: :desc)
 
     render json: {
@@ -15,7 +15,7 @@ class UserSpaceController < ApplicationController
   end
 
   def my_votes
-    votes = current_user.votes.includes(cover: [ :song, :tags, :submitted_by ])
+    votes = current_user.votes.includes(cover: [ :song, :tags, :submitted_by, :artist ])
                         .order(created_at: :desc)
 
     render json: {

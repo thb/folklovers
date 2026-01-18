@@ -16,7 +16,7 @@ module Admin
 
     def show
       user = User.find(params[:id])
-      covers = user.submitted_covers.includes(:song).order(created_at: :desc)
+      covers = user.submitted_covers.includes(:song, :artist).order(created_at: :desc)
 
       render json: {
         user: UserBlueprint.render_as_hash(user, view: :with_email),
@@ -45,7 +45,7 @@ module Admin
     def cover_data(cover)
       {
         id: cover.id,
-        artist: cover.artist,
+        artist: cover.artist_name,
         song_title: cover.song.title,
         song_slug: cover.song.slug,
         created_at: cover.created_at

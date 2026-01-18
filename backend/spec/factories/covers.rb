@@ -1,7 +1,10 @@
 FactoryBot.define do
   factory :cover do
     song
-    artist { Faker::Music.band }
+    transient do
+      artist_name { Faker::Music.band }
+    end
+    artist { Artist.find_or_create_by_name(artist_name) }
     year { Faker::Number.between(from: 1960, to: 2023) }
     youtube_url { "https://www.youtube.com/watch?v=#{Faker::Alphanumeric.alphanumeric(number: 11)}" }
     description { Faker::Lorem.paragraph(sentence_count: 2) }

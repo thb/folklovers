@@ -1,6 +1,6 @@
 class RankingsController < ApplicationController
   def covers
-    covers = Cover.includes(:song, :submitted_by, :tags)
+    covers = Cover.includes(:song, :submitted_by, :tags, :artist)
                   .order(votes_score: :desc, created_at: :desc)
                   .limit(params[:limit] || 50)
 

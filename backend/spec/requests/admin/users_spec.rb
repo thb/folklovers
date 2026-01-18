@@ -63,7 +63,7 @@ RSpec.describe "Admin::Users", type: :request do
       expect(response).to have_http_status(:ok)
 
       cover_data = json_response["contributions"]["covers_submitted"].first
-      expect(cover_data["artist"]).to eq(cover.artist)
+      expect(cover_data["artist"]).to eq(cover.artist_name)
       expect(cover_data["song_title"]).to eq(song.title)
       expect(cover_data["song_slug"]).to eq(song.slug)
     end

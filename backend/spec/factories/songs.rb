@@ -13,7 +13,7 @@ FactoryBot.define do
 
     after(:create) do |song, evaluator|
       if evaluator.with_original
-        create(:cover, song: song, artist: song.original_artist, year: song.year,
+        create(:cover, song: song, artist_name: song.original_artist, year: song.year,
                youtube_url: evaluator.original_youtube_url,
                description: evaluator.original_description,
                original: true)
