@@ -119,7 +119,7 @@ export const covers = {
   recent: (limit?: number) =>
     request<{ covers: CoverWithSong[] }>(`/covers/recent${limit ? `?limit=${limit}` : ''}`),
 
-  create: (songSlug: string, data: { artist: string; year?: number; youtube_url: string; description?: string; original?: boolean }, token: string) =>
+  create: (songSlug: string, data: { artist: string; year?: number; youtube_url: string; description?: string; original?: boolean; tag_ids?: number[] }, token: string) =>
     request<{ cover: Cover }>(`/songs/${songSlug}/covers`, {
       method: 'POST',
       body: data,
@@ -137,6 +137,7 @@ export const covers = {
       youtube_url: string
       description?: string
       original?: boolean
+      tag_ids?: number[]
     },
     token: string
   ) =>
@@ -145,6 +146,12 @@ export const covers = {
       body: data,
       token,
     }),
+}
+
+// Tags API
+export const tags = {
+  list: () =>
+    request<{ tags: Tag[] }>('/tags'),
 }
 
 // Votes API
@@ -197,6 +204,12 @@ export type SongWithCovers = Song & {
   covers: Cover[]
 }
 
+export type Tag = {
+  id: number
+  name: string
+  slug: string
+}
+
 export type Cover = {
   id: number
   artist: string
@@ -208,6 +221,7 @@ export type Cover = {
   votes_count: number
   user_vote: 1 | -1 | null
   submitted_by: User | null
+  tags: Tag[]
   created_at: string
 }
 

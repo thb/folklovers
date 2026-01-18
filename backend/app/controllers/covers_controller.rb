@@ -4,7 +4,7 @@ class CoversController < ApplicationController
 
   def index
     song = Song.find_by!(slug: params[:song_slug])
-    covers = apply_scopes(song.covers).includes(:submitted_by)
+    covers = apply_scopes(song.covers).includes(:submitted_by, :tags)
 
     render json: {
       covers: CoverBlueprint.render_as_hash(
@@ -25,8 +25,9 @@ class CoversController < ApplicationController
     handle_original_flag(cover, song)
 
     if cover.save
+      assign_tags(cover)
       render json: {
-        cover: CoverBlueprint.render_as_hash(cover, view: :with_user_vote, current_user: current_user)
+        cover: CoverBlueprint.render_as_hash(cover.reload, view: :with_user_vote, current_user: current_user)
       }, status: :created
     else
       render json: { errors: cover.errors.full_messages }, status: :unprocessable_entity
@@ -59,8 +60,9 @@ class CoversController < ApplicationController
       handle_original_flag(@cover, @song)
 
       if @cover.save
+        assign_tags(@cover)
         return render json: {
-          cover: CoverBlueprint.render_as_hash(@cover, view: :with_user_vote, current_user: current_user),
+          cover: CoverBlueprint.render_as_hash(@cover.reload, view: :with_user_vote, current_user: current_user),
           song: SongBlueprint.render_as_hash(@song)
         }, status: :created
       else
@@ -75,7 +77,7 @@ class CoversController < ApplicationController
   end
 
   def top
-    covers = Cover.includes(:song, :submitted_by)
+    covers = Cover.includes(:song, :submitted_by, :tags)
                   .order(votes_score: :desc, created_at: :desc)
                   .limit(params[:limit] || 6)
 
@@ -88,7 +90,7 @@ class CoversController < ApplicationController
   end
 
   def recent
-    covers = Cover.includes(:song, :submitted_by)
+    covers = Cover.includes(:song, :submitted_by, :tags)
                   .order(created_at: :desc)
                   .limit(params[:limit] || 6)
 
@@ -104,6 +106,14 @@ class CoversController < ApplicationController
 
   def cover_params
     params.permit(:artist, :year, :youtube_url, :description)
+  end
+
+  def assign_tags(cover)
+    return unless params[:tag_ids].present?
+
+    tag_ids = Array(params[:tag_ids]).map(&:to_i).uniq
+    tags = Tag.where(id: tag_ids)
+    cover.tags = tags
   end
 
   def handle_original_flag(cover, song)

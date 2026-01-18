@@ -50,6 +50,21 @@ RSpec.describe "Covers", type: :request do
         expect(voted_cover[:user_vote]).to eq(-1)
       end
     end
+
+    context "with tags" do
+      let!(:tag) { Tag.create!(name: "Acoustic", slug: "acoustic") }
+
+      before do
+        covers.first.tags << tag
+      end
+
+      it "includes tags with each cover" do
+        get "/songs/#{song.slug}/covers"
+        cover_with_tag = json_response[:covers].find { |c| c[:id] == covers.first.id }
+        expect(cover_with_tag[:tags].length).to eq(1)
+        expect(cover_with_tag[:tags].first[:name]).to eq("Acoustic")
+      end
+    end
   end
 
   describe "POST /songs/:song_slug/covers" do
@@ -109,6 +124,30 @@ RSpec.describe "Covers", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
         expect(json_response[:errors]).to include("Artist can't be blank")
         expect(json_response[:errors]).to include("Youtube url can't be blank")
+      end
+
+      context "with tags" do
+        let!(:tag1) { Tag.create!(name: "Acoustic", slug: "acoustic") }
+        let!(:tag2) { Tag.create!(name: "Blues", slug: "blues") }
+
+        it "creates cover with tags" do
+          post "/songs/#{song.slug}/covers",
+               params: valid_params.merge(tag_ids: [ tag1.id, tag2.id ]),
+               headers: auth_headers(user)
+
+          expect(response).to have_http_status(:created)
+          expect(json_response[:cover][:tags].length).to eq(2)
+          expect(json_response[:cover][:tags].map { |t| t[:name] }).to contain_exactly("Acoustic", "Blues")
+        end
+
+        it "ignores invalid tag ids" do
+          post "/songs/#{song.slug}/covers",
+               params: valid_params.merge(tag_ids: [ tag1.id, 99999 ]),
+               headers: auth_headers(user)
+
+          expect(response).to have_http_status(:created)
+          expect(json_response[:cover][:tags].length).to eq(1)
+        end
       end
 
       it "returns 404 for non-existent song" do

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-01-19
+
+### Added
+- Cover tags: categorize covers with tags like "Acoustic", "Blues", "Folk", etc.
+- Tag selection when submitting a new cover
+- Tags displayed on cover cards (shows first 3 with "+N" for more)
+
 ## 2026-01-18
 
 ### Changed

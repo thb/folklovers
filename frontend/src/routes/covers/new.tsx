@@ -20,7 +20,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { songs, covers, ApiError, SongSearchResult } from '@/lib/api'
+import { songs, covers, tags as tagsApi, ApiError, SongSearchResult, Tag } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 import { parseFieldErrors } from '@/lib/form-utils'
@@ -78,9 +78,16 @@ function NewCoverPage() {
   const [youtubeUrl, setYoutubeUrl] = useState('')
   const [description, setDescription] = useState('')
   const [isOriginal, setIsOriginal] = useState(false)
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([])
+  const [availableTags, setAvailableTags] = useState<Tag[]>([])
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+
+  // Load available tags
+  useEffect(() => {
+    tagsApi.list().then(({ tags }) => setAvailableTags(tags)).catch(console.error)
+  }, [])
 
   // Debounced search
   useEffect(() => {
@@ -145,6 +152,7 @@ function NewCoverPage() {
             youtube_url: youtubeUrl,
             description: description || undefined,
             original: isOriginal || undefined,
+            tag_ids: selectedTagIds.length > 0 ? selectedTagIds : undefined,
           }
         : {
             song_title: newSongTitle,
@@ -155,6 +163,7 @@ function NewCoverPage() {
             youtube_url: youtubeUrl,
             description: description || undefined,
             original: isOriginal || undefined,
+            tag_ids: selectedTagIds.length > 0 ? selectedTagIds : undefined,
           }
 
       const { song } = await covers.createWithSong(payload, token)
@@ -504,6 +513,41 @@ function NewCoverPage() {
                       <p className="text-sm text-destructive">{fieldErrors.description}</p>
                     )}
                   </div>
+
+                  {availableTags.length > 0 && (
+                    <div className="space-y-2">
+                      <Label>Tags (optional)</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {availableTags.map((tag) => {
+                          const isSelected = selectedTagIds.includes(tag.id)
+                          return (
+                            <button
+                              key={tag.id}
+                              type="button"
+                              onClick={() => {
+                                setSelectedTagIds(prev =>
+                                  isSelected
+                                    ? prev.filter(id => id !== tag.id)
+                                    : [...prev, tag.id]
+                                )
+                              }}
+                              className={cn(
+                                "px-3 py-1 text-sm rounded-full border transition-colors",
+                                isSelected
+                                  ? "bg-primary text-primary-foreground border-primary"
+                                  : "bg-background text-muted-foreground border-border hover:border-primary hover:text-foreground"
+                              )}
+                            >
+                              {tag.name}
+                            </button>
+                          )
+                        })}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Select tags that describe this cover
+                      </p>
+                    </div>
+                  )}
 
                   {showOriginalCheckbox && (
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">

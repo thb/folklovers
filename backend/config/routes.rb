@@ -31,6 +31,9 @@ Rails.application.routes.draw do
   get "blog/tags", to: "articles#tags"
   get "blog/:slug", to: "articles#show"
 
+  # Tags
+  get "tags", to: "tags#index"
+
   # Feedbacks
   resources :feedbacks, only: [ :create ]
 

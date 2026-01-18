@@ -4,6 +4,8 @@ class Cover < ApplicationRecord
   belongs_to :song, counter_cache: true
   belongs_to :submitted_by, class_name: "User", optional: true
   has_many :votes, dependent: :destroy
+  has_many :cover_tags, dependent: :destroy
+  has_many :tags, through: :cover_tags
 
   validates :artist, presence: true
   validates :youtube_url, presence: true

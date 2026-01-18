@@ -110,6 +110,25 @@ export function CoverCard({ cover }: CoverCardProps) {
           <p className="text-xs text-muted-foreground mt-0.5">{cover.year}</p>
         )}
 
+        {/* Tags */}
+        {cover.tags && cover.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {cover.tags.slice(0, 3).map((tag) => (
+              <span
+                key={tag.id}
+                className="px-2 py-0.5 text-xs rounded-full bg-muted text-muted-foreground"
+              >
+                {tag.name}
+              </span>
+            ))}
+            {cover.tags.length > 3 && (
+              <span className="px-2 py-0.5 text-xs text-muted-foreground">
+                +{cover.tags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Score */}
         <div className="flex items-center gap-3 mt-3 pt-3 border-t border-border/50">
           <div className="flex items-center gap-1 text-sm">

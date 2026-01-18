@@ -1,6 +1,8 @@
 class Tag < ApplicationRecord
   has_many :article_tags, dependent: :destroy
   has_many :articles, through: :article_tags
+  has_many :cover_tags, dependent: :destroy
+  has_many :covers, through: :cover_tags
 
   validates :name, presence: true, uniqueness: { case_sensitive: false }
   validates :slug, presence: true, uniqueness: true

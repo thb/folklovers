@@ -7,6 +7,10 @@ class CoverBlueprint < Blueprinter::Base
     cover.submitted_by ? UserBlueprint.render_as_hash(cover.submitted_by) : nil
   end
 
+  field :tags do |cover|
+    cover.tags.map { |tag| { id: tag.id, name: tag.name, slug: tag.slug } }
+  end
+
   view :with_user_vote do
     field :user_vote do |cover, options|
       if options[:current_user]
