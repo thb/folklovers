@@ -82,10 +82,7 @@ class CoversController < ApplicationController
                   .limit(params[:limit] || 6)
 
     render json: {
-      covers: covers.map do |cover|
-        CoverBlueprint.render_as_hash(cover, view: :with_user_vote, current_user: current_user)
-          .merge(song: { title: cover.song.title, slug: cover.song.slug })
-      end
+      covers: CoverBlueprint.render_as_hash(covers, view: :with_song, current_user: current_user)
     }
   end
 
@@ -95,10 +92,7 @@ class CoversController < ApplicationController
                   .limit(params[:limit] || 6)
 
     render json: {
-      covers: covers.map do |cover|
-        CoverBlueprint.render_as_hash(cover, view: :with_user_vote, current_user: current_user)
-          .merge(song: { title: cover.song.title, slug: cover.song.slug })
-      end
+      covers: CoverBlueprint.render_as_hash(covers, view: :with_song, current_user: current_user)
     }
   end
 

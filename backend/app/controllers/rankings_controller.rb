@@ -6,11 +6,8 @@ class RankingsController < ApplicationController
 
     render json: {
       covers: covers.map.with_index do |cover, index|
-        CoverBlueprint.render_as_hash(cover, view: :with_user_vote, current_user: current_user)
-          .merge(
-            rank: index + 1,
-            song: { title: cover.song.title, slug: cover.song.slug }
-          )
+        CoverBlueprint.render_as_hash(cover, view: :with_song, current_user: current_user)
+          .merge(rank: index + 1)
       end
     }
   end

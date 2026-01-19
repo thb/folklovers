@@ -7,10 +7,7 @@ class UserSpaceController < ApplicationController
                          .order(created_at: :desc)
 
     render json: {
-      covers: covers.map do |cover|
-        CoverBlueprint.render_as_hash(cover, view: :with_user_vote, current_user: current_user)
-          .merge(song: { title: cover.song.title, slug: cover.song.slug })
-      end
+      covers: CoverBlueprint.render_as_hash(covers, view: :with_song, current_user: current_user)
     }
   end
 
@@ -20,12 +17,10 @@ class UserSpaceController < ApplicationController
 
     render json: {
       votes: votes.map do |vote|
-        cover = vote.cover
         {
           vote_value: vote.value,
           voted_at: vote.created_at,
-          cover: CoverBlueprint.render_as_hash(cover, view: :with_user_vote, current_user: current_user)
-                    .merge(song: { title: cover.song.title, slug: cover.song.slug })
+          cover: CoverBlueprint.render_as_hash(vote.cover, view: :with_song, current_user: current_user)
         }
       end
     }
@@ -37,8 +32,7 @@ class UserSpaceController < ApplicationController
     if cover.update(cover_params)
       update_tags(cover) if params[:tag_ids].present?
       render json: {
-        cover: CoverBlueprint.render_as_hash(cover.reload, view: :with_user_vote, current_user: current_user)
-          .merge(song: { title: cover.song.title, slug: cover.song.slug })
+        cover: CoverBlueprint.render_as_hash(cover.reload, view: :with_song, current_user: current_user)
       }
     else
       render json: { errors: cover.errors.full_messages }, status: :unprocessable_entity

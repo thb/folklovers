@@ -30,4 +30,12 @@ class CoverBlueprint < Blueprinter::Base
       end
     end
   end
+
+  view :with_song do
+    include_view :with_user_vote
+
+    field :song do |cover|
+      { title: cover.song.title, slug: cover.song.slug }
+    end
+  end
 end
