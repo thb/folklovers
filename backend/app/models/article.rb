@@ -1,10 +1,9 @@
 class Article < ApplicationRecord
   include Sluggable
+  include Taggable
   sluggable_source :title
 
   belongs_to :author, class_name: "User"
-  has_many :article_tags, dependent: :destroy
-  has_many :tags, through: :article_tags
 
   validates :title, presence: true
   validates :content, presence: true

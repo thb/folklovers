@@ -72,12 +72,7 @@ module Admin
     end
 
     def sync_tags(article, tag_names)
-      return if tag_names.nil?
-
-      tags = tag_names.map do |name|
-        Tag.find_or_create_by!(name: name.strip.downcase)
-      end
-      article.tags = tags
+      article.sync_tags_by_names(tag_names)
     end
   end
 end

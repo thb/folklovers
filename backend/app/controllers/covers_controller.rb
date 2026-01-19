@@ -103,11 +103,7 @@ class CoversController < ApplicationController
   end
 
   def assign_tags(cover)
-    return unless params[:tag_ids].present?
-
-    tag_ids = Array(params[:tag_ids]).map(&:to_i).uniq
-    tags = Tag.where(id: tag_ids)
-    cover.tags = tags
+    cover.sync_tags_by_ids(params[:tag_ids]) if params[:tag_ids].present?
   end
 
   def handle_original_flag(cover, song)

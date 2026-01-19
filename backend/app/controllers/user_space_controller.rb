@@ -56,8 +56,6 @@ class UserSpaceController < ApplicationController
   end
 
   def update_tags(cover)
-    tag_ids = Array(params[:tag_ids]).map(&:to_i).uniq
-    tags = Tag.where(id: tag_ids)
-    cover.tags = tags
+    cover.sync_tags_by_ids(params[:tag_ids])
   end
 end

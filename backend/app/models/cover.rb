@@ -1,5 +1,6 @@
 class Cover < ApplicationRecord
   include YoutubeValidatable
+  include Taggable
 
   belongs_to :song, counter_cache: true
   belongs_to :submitted_by, class_name: "User", optional: true
