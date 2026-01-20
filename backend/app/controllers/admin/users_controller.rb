@@ -6,7 +6,7 @@ module Admin
                   .group("users.id")
                   .order(created_at: :desc)
 
-      pagy, users = pagy(users, items: params[:per_page] || 20)
+      pagy, users = pagy(users, items: params[:per_page] || Pagination::ADMIN_PER_PAGE)
 
       render json: {
         users: users.map { |u| user_with_stats(u) },

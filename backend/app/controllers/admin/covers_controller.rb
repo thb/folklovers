@@ -3,7 +3,7 @@ module Admin
     def index
       covers = Cover.includes(:song, :submitted_by).order(created_at: :desc)
       covers = covers.where(song_id: params[:song_id]) if params[:song_id].present?
-      pagy, covers = pagy(covers, items: params[:per_page] || 20)
+      pagy, covers = pagy(covers, items: params[:per_page] || Pagination::ADMIN_PER_PAGE)
 
       render json: {
         covers: covers.map do |cover|

@@ -4,7 +4,7 @@ module Admin
 
     def index
       articles = apply_scopes(Article).includes(:author, :tags).order(created_at: :desc)
-      pagy, articles = pagy(articles, items: params[:per_page] || 20)
+      pagy, articles = pagy(articles, items: params[:per_page] || Pagination::ADMIN_PER_PAGE)
 
       render json: {
         articles: ArticleBlueprint.render_as_hash(articles, view: :admin),

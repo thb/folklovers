@@ -79,7 +79,7 @@ class CoversController < ApplicationController
   def top
     covers = Cover.includes(:song, :submitted_by, :tags, :artist)
                   .order(votes_score: :desc, created_at: :desc)
-                  .limit(params[:limit] || 6)
+                  .limit(params[:limit] || Pagination::HOMEPAGE_LIMIT)
 
     render json: {
       covers: CoverBlueprint.render_as_hash(covers, view: :with_song, current_user: current_user)
@@ -89,7 +89,7 @@ class CoversController < ApplicationController
   def recent
     covers = Cover.includes(:song, :submitted_by, :tags, :artist)
                   .order(created_at: :desc)
-                  .limit(params[:limit] || 6)
+                  .limit(params[:limit] || Pagination::HOMEPAGE_LIMIT)
 
     render json: {
       covers: CoverBlueprint.render_as_hash(covers, view: :with_song, current_user: current_user)

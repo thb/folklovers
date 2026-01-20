@@ -4,7 +4,7 @@ class ArticlesController < ApplicationController
 
   def index
     articles = apply_scopes(Article).published.recent.includes(:author, :tags)
-    pagy, articles = pagy(articles, items: params[:per_page] || 10)
+    pagy, articles = pagy(articles, items: params[:per_page] || Pagination::ARTICLES_PER_PAGE)
 
     render json: {
       articles: ArticleBlueprint.render_as_hash(articles),

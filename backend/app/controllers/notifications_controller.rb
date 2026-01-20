@@ -5,7 +5,7 @@ class NotificationsController < ApplicationController
     notifications = current_user.notifications
                                .includes(:notifiable)
                                .recent
-                               .limit(50)
+                               .limit(Pagination::NOTIFICATIONS_LIMIT)
 
     render json: {
       notifications: notifications.map { |n| notification_data(n) },

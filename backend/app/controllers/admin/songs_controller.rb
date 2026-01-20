@@ -2,7 +2,7 @@ module Admin
   class SongsController < BaseController
     def index
       songs = Song.includes(:covers).order(created_at: :desc)
-      pagy, songs = pagy(songs, items: params[:per_page] || 20)
+      pagy, songs = pagy(songs, items: params[:per_page] || Pagination::ADMIN_PER_PAGE)
 
       render json: {
         songs: SongBlueprint.render_as_hash(songs),

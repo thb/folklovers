@@ -6,7 +6,7 @@ class SongsController < ApplicationController
 
   def index
     songs = apply_scopes(Song).includes(:covers)
-    pagy, songs = pagy(songs, items: params[:per_page] || 12)
+    pagy, songs = pagy(songs, items: params[:per_page] || Pagination::SONGS_PER_PAGE)
 
     render json: {
       songs: SongBlueprint.render_as_hash(songs),
@@ -28,7 +28,7 @@ class SongsController < ApplicationController
     songs = Song.joins(:covers)
                 .group("songs.id")
                 .order("SUM(covers.votes_score) DESC")
-                .limit(params[:limit] || 6)
+                .limit(params[:limit] || Pagination::HOMEPAGE_LIMIT)
 
     render json: { songs: SongBlueprint.render_as_hash(songs) }
   end
@@ -36,7 +36,7 @@ class SongsController < ApplicationController
   def search
     return render json: { songs: [] } if params[:q].blank? || params[:q].length < 2
 
-    songs = Song.includes(:original_cover).search(params[:q]).limit(10)
+    songs = Song.includes(:original_cover).search(params[:q]).limit(Pagination::SEARCH_LIMIT)
     render json: {
       songs: songs.map { |s| { id: s.id, title: s.title, original_artist: s.original_artist, slug: s.slug, has_original: s.has_original? } }
     }

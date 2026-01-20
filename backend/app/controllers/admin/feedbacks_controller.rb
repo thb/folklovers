@@ -3,7 +3,7 @@ module Admin
     def index
       feedbacks = Feedback.includes(:user).order(created_at: :desc)
       feedbacks = feedbacks.where(status: params[:status]) if params[:status].present?
-      pagy, feedbacks = pagy(feedbacks, items: params[:per_page] || 20)
+      pagy, feedbacks = pagy(feedbacks, items: params[:per_page] || Pagination::ADMIN_PER_PAGE)
 
       render json: {
         feedbacks: FeedbackBlueprint.render_as_hash(feedbacks),
