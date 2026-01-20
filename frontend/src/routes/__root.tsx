@@ -22,6 +22,52 @@ declare global {
 export const Route = createRootRoute({
   errorComponent: ErrorPage,
   head: () => ({
+    scripts: [
+      // Prevent FOUC by hiding content until stylesheet is loaded
+      {
+        children: `
+          (function() {
+            var style = document.createElement('style');
+            style.textContent = 'body { opacity: 0; }';
+            document.head.appendChild(style);
+
+            function showBody() {
+              style.textContent = 'body { opacity: 1; transition: opacity 0.1s; }';
+            }
+
+            // Check if stylesheet is already loaded
+            var links = document.querySelectorAll('link[rel="stylesheet"]');
+            var loaded = 0;
+            var total = links.length;
+
+            if (total === 0) {
+              showBody();
+              return;
+            }
+
+            links.forEach(function(link) {
+              if (link.sheet) {
+                loaded++;
+              } else {
+                link.addEventListener('load', function() {
+                  loaded++;
+                  if (loaded >= total) showBody();
+                });
+                link.addEventListener('error', function() {
+                  loaded++;
+                  if (loaded >= total) showBody();
+                });
+              }
+            });
+
+            if (loaded >= total) showBody();
+
+            // Fallback: show after 500ms regardless
+            setTimeout(showBody, 500);
+          })();
+        `,
+      },
+    ],
     meta: [
       {
         charSet: 'utf-8',
@@ -87,6 +133,12 @@ export const Route = createRootRoute({
       {
         rel: 'manifest',
         href: '/manifest.json',
+      },
+      // Preload CSS to prevent FOUC in production
+      {
+        rel: 'preload',
+        href: appCss,
+        as: 'style',
       },
       {
         rel: 'stylesheet',
