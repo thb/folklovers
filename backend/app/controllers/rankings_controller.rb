@@ -1,8 +1,10 @@
 class RankingsController < ApplicationController
+  DEFAULT_LIMIT = 50
+
   def covers
     covers = Cover.includes(:song, :submitted_by, :tags, :artist)
                   .order(votes_score: :desc, created_at: :desc)
-                  .limit(params[:limit] || 50)
+                  .limit(limit)
 
     render json: {
       covers: covers.map.with_index do |cover, index|
@@ -13,11 +15,7 @@ class RankingsController < ApplicationController
   end
 
   def songs
-    songs = Song.left_joins(:covers)
-                .select("songs.*, SUM(COALESCE(covers.votes_score, 0)) as total_score")
-                .group("songs.id")
-                .order("total_score DESC")
-                .limit(params[:limit] || 50)
+    songs = TopSongsQuery.new(limit: limit).call
 
     render json: {
       songs: songs.map.with_index do |song, index|
@@ -30,12 +28,7 @@ class RankingsController < ApplicationController
   end
 
   def contributors
-    users = User.joins(:submitted_covers)
-                .select("users.*, COUNT(covers.id) as covers_count, SUM(covers.votes_score) as total_score")
-                .group("users.id")
-                .having("COUNT(covers.id) > 0")
-                .order("total_score DESC, covers_count DESC")
-                .limit(params[:limit] || 50)
+    users = TopContributorsQuery.new(limit: limit).call
 
     render json: {
       contributors: users.map.with_index do |user, index|
@@ -49,5 +42,11 @@ class RankingsController < ApplicationController
         }
       end
     }
+  end
+
+  private
+
+  def limit
+    params[:limit] || DEFAULT_LIMIT
   end
 end
