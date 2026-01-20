@@ -39,6 +39,28 @@ export const Route = createRootRoute({
       },
     ],
     links: [
+      // Preload fonts to reduce FOUC
+      {
+        rel: 'preload',
+        href: '/fonts/playfair-display.woff2',
+        as: 'font',
+        type: 'font/woff2',
+        crossOrigin: 'anonymous',
+      },
+      {
+        rel: 'preload',
+        href: '/fonts/source-serif-4.woff2',
+        as: 'font',
+        type: 'font/woff2',
+        crossOrigin: 'anonymous',
+      },
+      {
+        rel: 'preload',
+        href: '/fonts/special-elite.woff2',
+        as: 'font',
+        type: 'font/woff2',
+        crossOrigin: 'anonymous',
+      },
       // Favicon
       {
         rel: 'icon',
