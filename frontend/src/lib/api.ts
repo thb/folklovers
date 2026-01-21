@@ -527,4 +527,39 @@ export const feedbacks = {
     request<{ feedback: Feedback }>('/feedbacks', { method: 'POST', body: data, token }),
 }
 
+// Notification types
+export type NotificationType = 'vote_received' | 'new_cover_on_song'
+
+export type NotificationData = {
+  vote_value?: 1 | -1
+  cover_artist?: string
+  song_title?: string
+  song_slug?: string
+}
+
+export type Notification = {
+  id: number
+  type: NotificationType
+  read: boolean
+  created_at: string
+  data: NotificationData
+}
+
+export type NotificationsResponse = {
+  notifications: Notification[]
+  unread_count: number
+}
+
+// Notifications API
+export const notifications = {
+  list: (token: string) =>
+    request<NotificationsResponse>('/notifications', { token }),
+
+  markAsRead: (id: number, token: string) =>
+    request<{ notification: Notification }>(`/notifications/${id}/read`, { method: 'POST', token }),
+
+  markAllAsRead: (token: string) =>
+    request<{ message: string }>('/notifications/read_all', { method: 'POST', token }),
+}
+
 export { ApiError }

@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/sheet'
 import { useAuth } from '@/lib/auth'
 import { HeaderSearch } from './HeaderSearch'
+import { NotificationDropdown } from '@/components/notifications/NotificationDropdown'
 
 export function Header() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth()
@@ -113,6 +114,7 @@ export function Header() {
               </Button>
             </Link>
           )}
+          {isAuthenticated && <NotificationDropdown />}
           {isAuthenticated && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -168,12 +170,14 @@ export function Header() {
         </div>
 
         {/* Mobile Menu */}
-        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-          <SheetTrigger asChild className="md:hidden">
-            <Button variant="ghost" size="sm">
-              <Menu className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
+        <div className="flex items-center gap-1 md:hidden">
+          {isAuthenticated && <NotificationDropdown />}
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
           <SheetContent side="right" className="w-72">
             <SheetHeader>
               <SheetTitle>Menu</SheetTitle>
@@ -309,6 +313,7 @@ export function Header() {
             </nav>
           </SheetContent>
         </Sheet>
+        </div>
       </div>
     </header>
   )

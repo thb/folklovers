@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-01-21
+
+### Added
+- Notification bell in header: see who voted on your covers and new covers on songs you follow
+- Dropdown shows unread notifications with blue dot indicator
+- "Mark all read" button to clear all unread notifications
+- Works on both desktop and mobile
+
 ## 2026-01-19
 
 ### Added
