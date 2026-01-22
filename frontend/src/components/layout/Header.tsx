@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from '@tanstack/react-router'
 import { Guitar, LogOut, Shield, Plus, Menu, Sparkles, Map, MessageSquare, ChevronDown, Trophy, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -22,8 +22,18 @@ import { HeaderSearch } from './HeaderSearch'
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown'
 
 export function Header() {
+  const [isMounted, setIsMounted] = useState(false)
   const { user, isAuthenticated, isAdmin, logout } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  // Avoid SSR hydration mismatch - auth state only available on client
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  // During SSR, treat as not authenticated to avoid hydration issues
+  const showAuth = isMounted && isAuthenticated
+  const showAdmin = isMounted && isAdmin
 
   return (
     <header className="border-b border-border bg-card">
@@ -106,7 +116,7 @@ export function Header() {
 
         {/* Auth - Desktop */}
         <div className="hidden md:flex items-center gap-3">
-          {isAuthenticated && (
+          {showAuth && (
             <Link to="/covers/new">
               <Button variant="outline" size="sm">
                 <Plus className="w-4 h-4 mr-2" />
@@ -114,8 +124,8 @@ export function Header() {
               </Button>
             </Link>
           )}
-          {isAuthenticated && <NotificationDropdown />}
-          {isAuthenticated && user ? (
+          {showAuth && <NotificationDropdown />}
+          {showAuth && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-9 w-9 rounded-full">
@@ -139,7 +149,7 @@ export function Header() {
                     My Space
                   </Link>
                 </DropdownMenuItem>
-                {isAdmin && (
+                {showAdmin && (
                   <DropdownMenuItem asChild>
                     <Link to="/admin" className="cursor-pointer">
                       <Shield className="mr-2 h-4 w-4" />
@@ -171,7 +181,7 @@ export function Header() {
 
         {/* Mobile Menu */}
         <div className="flex items-center gap-1 md:hidden">
-          {isAuthenticated && <NotificationDropdown />}
+          {showAuth && <NotificationDropdown />}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="sm">
@@ -241,7 +251,7 @@ export function Header() {
                   </Link>
                 </div>
               </div>
-              {isAuthenticated && (
+              {showAuth && (
                 <Link
                   to="/covers/new"
                   onClick={() => setMobileMenuOpen(false)}
@@ -251,7 +261,7 @@ export function Header() {
                   Add a cover
                 </Link>
               )}
-              {isAdmin && (
+              {showAdmin && (
                 <Link
                   to="/admin"
                   onClick={() => setMobileMenuOpen(false)}
@@ -262,7 +272,7 @@ export function Header() {
                 </Link>
               )}
               <hr className="border-border" />
-              {isAuthenticated && user ? (
+              {showAuth && user ? (
                 <>
                   <div className="flex items-center gap-3 py-2">
                     <Avatar className="h-8 w-8">
