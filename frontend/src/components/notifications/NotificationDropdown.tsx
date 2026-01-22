@@ -21,23 +21,16 @@ export function NotificationDropdown() {
   const queryClient = useQueryClient()
   const [isOpen, setIsOpen] = useState(false)
 
-  // Only render on client side to avoid SSR issues with localStorage
+  // Only render full UI on client side to avoid SSR issues with localStorage
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  if (!isMounted) {
-    return (
-      <Button variant="ghost" size="icon" className="relative h-9 w-9">
-        <Bell className="h-5 w-5" />
-      </Button>
-    )
-  }
-
+  // All hooks must be called unconditionally (React rules of hooks)
   const { data, isLoading } = useQuery({
     queryKey: ['notifications'],
     queryFn: () => notifications.list(token!),
-    enabled: !!token,
+    enabled: isMounted && !!token,
     refetchInterval: 60000, // Refresh every minute
   })
 
@@ -54,6 +47,15 @@ export function NotificationDropdown() {
       queryClient.invalidateQueries({ queryKey: ['notifications'] })
     },
   })
+
+  // Render simple bell during SSR
+  if (!isMounted) {
+    return (
+      <Button variant="ghost" size="icon" className="relative h-9 w-9">
+        <Bell className="h-5 w-5" />
+      </Button>
+    )
+  }
 
   const unreadCount = data?.unread_count ?? 0
   const notificationsList = data?.notifications ?? []
