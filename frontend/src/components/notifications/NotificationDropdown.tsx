@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState, useEffect, useCallback } from 'react'
 import { Link } from '@tanstack/react-router'
 import { Bell, ThumbsUp, ThumbsDown, Music, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -18,35 +17,59 @@ import { formatDistanceToNow } from 'date-fns'
 export function NotificationDropdown() {
   const [isMounted, setIsMounted] = useState(false)
   const { token } = useAuth()
-  const queryClient = useQueryClient()
   const [isOpen, setIsOpen] = useState(false)
+  const [data, setData] = useState<{ notifications: Notification[]; unread_count: number } | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isMarkingAllRead, setIsMarkingAllRead] = useState(false)
 
-  // Only render full UI on client side to avoid SSR issues with localStorage
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  // All hooks must be called unconditionally (React rules of hooks)
-  const { data, isLoading } = useQuery({
-    queryKey: ['notifications'],
-    queryFn: () => notifications.list(token!),
-    enabled: isMounted && !!token,
-    refetchInterval: 60000, // Refresh every minute
-  })
+  const fetchNotifications = useCallback(async () => {
+    if (!token) return
+    setIsLoading(true)
+    try {
+      const result = await notifications.list(token)
+      setData(result)
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [token])
 
-  const markAsReadMutation = useMutation({
-    mutationFn: (id: number) => notifications.markAsRead(id, token!),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] })
-    },
-  })
+  // Fetch on mount and every 60 seconds
+  useEffect(() => {
+    if (!isMounted || !token) return
 
-  const markAllAsReadMutation = useMutation({
-    mutationFn: () => notifications.markAllAsRead(token!),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] })
-    },
-  })
+    fetchNotifications()
+    const interval = setInterval(fetchNotifications, 60000)
+    return () => clearInterval(interval)
+  }, [isMounted, token, fetchNotifications])
+
+  const handleMarkAsRead = async (id: number) => {
+    if (!token) return
+    try {
+      await notifications.markAsRead(id, token)
+      fetchNotifications()
+    } catch (error) {
+      console.error('Failed to mark as read:', error)
+    }
+  }
+
+  const handleMarkAllAsRead = async () => {
+    if (!token) return
+    setIsMarkingAllRead(true)
+    try {
+      await notifications.markAllAsRead(token)
+      fetchNotifications()
+    } catch (error) {
+      console.error('Failed to mark all as read:', error)
+    } finally {
+      setIsMarkingAllRead(false)
+    }
+  }
 
   // Render simple bell during SSR
   if (!isMounted) {
@@ -62,7 +85,7 @@ export function NotificationDropdown() {
 
   const handleNotificationClick = (notification: Notification) => {
     if (!notification.read) {
-      markAsReadMutation.mutate(notification.id)
+      handleMarkAsRead(notification.id)
     }
     setIsOpen(false)
   }
@@ -129,8 +152,8 @@ export function NotificationDropdown() {
               variant="ghost"
               size="sm"
               className="h-auto py-1 px-2 text-xs text-muted-foreground hover:text-foreground"
-              onClick={() => markAllAsReadMutation.mutate()}
-              disabled={markAllAsReadMutation.isPending}
+              onClick={handleMarkAllAsRead}
+              disabled={isMarkingAllRead}
             >
               <Check className="h-3 w-3 mr-1" />
               Mark all read
@@ -138,7 +161,7 @@ export function NotificationDropdown() {
           )}
         </div>
         <DropdownMenuSeparator />
-        {isLoading ? (
+        {isLoading && notificationsList.length === 0 ? (
           <div className="px-3 py-6 text-center text-sm text-muted-foreground">
             Loading...
           </div>
