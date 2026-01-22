@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { Bell, ThumbsUp, ThumbsDown, Music, Check } from 'lucide-react'
@@ -16,9 +16,23 @@ import { cn } from '@/lib/utils'
 import { formatDistanceToNow } from 'date-fns'
 
 export function NotificationDropdown() {
+  const [isMounted, setIsMounted] = useState(false)
   const { token } = useAuth()
   const queryClient = useQueryClient()
   const [isOpen, setIsOpen] = useState(false)
+
+  // Only render on client side to avoid SSR issues with localStorage
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  if (!isMounted) {
+    return (
+      <Button variant="ghost" size="icon" className="relative h-9 w-9">
+        <Bell className="h-5 w-5" />
+      </Button>
+    )
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ['notifications'],
